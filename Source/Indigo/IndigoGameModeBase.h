@@ -13,5 +13,6 @@ UCLASS()
 class INDIGO_API AIndigoGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+public:
+	AIndigoGameModeBase();
 };
