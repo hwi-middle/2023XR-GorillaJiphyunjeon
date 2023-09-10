@@ -48,6 +48,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
     JumpAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Jump.IA_Jump'"));
     MoveAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Move.IA_Move'"));
     LookAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Look.IA_Look'"));
+    RunAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Run.IA_Run'"));
 }
 
 void AIGPlayerCharacter::BeginPlay()
@@ -78,12 +79,14 @@ void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AIGPlayerCharacter::Move);
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AIGPlayerCharacter::Look);
+        EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::SetIsRunning);
+        EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Completed, this, &AIGPlayerCharacter::SetIsRunning);
     }
 }
 
 void AIGPlayerCharacter::Move(const FInputActionValue& Value)
 {
-    const FVector2D MovementVector = Value.Get<FVector2D>();
+    FVector2D MovementVector = Value.Get<FVector2D>();
 
     if (Controller == nullptr)
     {
@@ -111,4 +114,18 @@ void AIGPlayerCharacter::Look(const FInputActionValue& Value)
 
     AddControllerYawInput(LookAxisVector.X);
     AddControllerPitchInput(LookAxisVector.Y);
+}
+
+void AIGPlayerCharacter::SetIsRunning(const FInputActionValue& Value)
+{
+    if (Value.Get<bool>())
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Sprint"));	
+        GetCharacterMovement()->MaxWalkSpeed = 1500.f;
+    }
+    else
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Walk"));	
+        GetCharacterMovement()->MaxWalkSpeed = 500.f;
+    }
 }
