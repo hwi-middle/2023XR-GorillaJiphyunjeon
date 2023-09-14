@@ -3,3 +3,10 @@
 
 #include "IndigoGameModeBase.h"
 
+#include "Character/IGPlayerCharacter.h"
+#include "Util/IGConstructorHelper.h"
+
+AIndigoGameModeBase::AIndigoGameModeBase()
+{
+	DefaultPawnClass = AIGPlayerCharacter::StaticClass();
+}
