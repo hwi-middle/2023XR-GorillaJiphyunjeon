@@ -13,6 +13,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Indigo/Constant/IGCollisionChannels.h"
+#include "Indigo/Interface/Interactable.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 
 AIGPlayerCharacter::AIGPlayerCharacter()
@@ -58,6 +60,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	MoveAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Move.IA_Move'"));
 	LookAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Look.IA_Look'"));
 	RunAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Run.IA_Run'"));
+	InteractAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Interact.IA_Interact'"));
 }
 
 void AIGPlayerCharacter::BeginPlay()
@@ -90,6 +93,7 @@ void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AIGPlayerCharacter::Look);
 		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::SetIsRunning);
 		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Completed, this, &AIGPlayerCharacter::SetIsRunning);
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::Interact);
 	}
 }
 
@@ -138,4 +142,32 @@ void AIGPlayerCharacter::SetIsRunning(const FInputActionValue& Value)
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Walk"));
 		GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	}
+}
+
+void AIGPlayerCharacter::Interact()
+{
+	UE_LOG(LogTemp, Log, TEXT("FindInteractableAndInteract"));
+
+	FHitResult Result;
+	FCollisionQueryParams CollisionParams;
+	float InRadius = 100.f;
+	CollisionParams.AddIgnoredActor(this);
+
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		Result,
+		GetActorLocation(),
+		GetActorLocation(),
+		FQuat::Identity,
+		ECC_INTERACTABLE,
+		FCollisionShape::MakeSphere(InRadius),
+		CollisionParams
+	);
+
+	if (!bHit)
+	{
+		return;
+	}
+
+	IInteractable* Interactable = Cast<IInteractable>(Result.GetActor());
+	Interactable->Interact();
 }

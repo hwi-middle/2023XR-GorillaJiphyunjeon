@@ -48,11 +48,15 @@ private:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     UInputAction* RunAction;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+    UInputAction* InteractAction;
 
 protected:
     void Move(const FInputActionValue& Value);
     void Look(const FInputActionValue& Value);
     void SetIsRunning(const FInputActionValue& Value);
+    void Interact();
 
 public:
     FORCEINLINE USpringArmComponent* GetCameraSpringArm() const { return CameraSpringArm; }
