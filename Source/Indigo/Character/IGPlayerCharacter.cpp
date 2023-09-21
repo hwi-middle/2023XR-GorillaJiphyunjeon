@@ -132,14 +132,9 @@ void AIGPlayerCharacter::Look(const FInputActionValue& Value)
 
 void AIGPlayerCharacter::SetIsRunning(const FInputActionValue& Value)
 {
-	if (Value.Get<bool>())
-	{
-		GetCharacterMovement()->MaxWalkSpeed = 1500.f;
-	}
-	else
-	{
-		GetCharacterMovement()->MaxWalkSpeed = 500.f;
-	}
+	bool IsSprintKeyDown = Value.Get<bool>();
+	float Speed = IsSprintKeyDown ? 1500.f : 500.f;
+	GetCharacterMovement()->MaxWalkSpeed = Speed;
 }
 
 void AIGPlayerCharacter::Interact()
