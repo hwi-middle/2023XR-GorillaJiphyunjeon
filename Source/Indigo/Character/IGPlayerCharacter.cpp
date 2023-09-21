@@ -167,7 +167,7 @@ void AIGPlayerCharacter::Interact()
 	}
 
 	IInteractable* Interactable = Cast<IInteractable>(Result.GetActor());
-	if(Interactable != nullptr)
+	if (Interactable != nullptr)
 	{
 		Interactable->Interact();
 	}
