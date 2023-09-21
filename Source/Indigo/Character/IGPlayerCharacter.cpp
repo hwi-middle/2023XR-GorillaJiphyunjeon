@@ -150,7 +150,7 @@ void AIGPlayerCharacter::Interact()
 
 	FHitResult Result;
 	FCollisionQueryParams CollisionParams;
-	float InRadius = 100.f;
+	float Radius = 100.f;
 	CollisionParams.AddIgnoredActor(this);
 
 	bool bHit = GetWorld()->SweepSingleByChannel(
@@ -159,15 +159,21 @@ void AIGPlayerCharacter::Interact()
 		GetActorLocation(),
 		FQuat::Identity,
 		ECC_INTERACTABLE,
-		FCollisionShape::MakeSphere(InRadius),
+		FCollisionShape::MakeSphere(Radius),
 		CollisionParams
 	);
+
+	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 16, FColor::Green, false, 2.f);
 
 	if (!bHit)
 	{
 		return;
 	}
 
+	UE_LOG(LogTemp, Log, TEXT("%s"), *Result.GetActor()->GetName());
 	IInteractable* Interactable = Cast<IInteractable>(Result.GetActor());
-	Interactable->Interact();
+	if(Interactable != nullptr)
+	{
+		Interactable->Interact();
+	}
 }

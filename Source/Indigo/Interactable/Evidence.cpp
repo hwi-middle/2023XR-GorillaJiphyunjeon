@@ -10,15 +10,14 @@ AEvidence::AEvidence()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	//RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-
+	
 	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/SampleSphere/SM_SampleSphere.SM_SampleSphere'"), [&](UStaticMesh* MeshRef)
 	{
 		Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 		Mesh->SetStaticMesh(MeshRef);
 		Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
 		RootComponent = Mesh;
+		Mesh->SetCollisionProfileName(TEXT("Evidence"));
 	}, EAssertionLevel::Check);
 }
 
