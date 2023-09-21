@@ -24,7 +24,7 @@ class INDIGO_API IIGCharacterStatus
 public:
 	//체력
 	virtual uint32 GetHp() const = 0;
-	virtual void HasDamage(const uint32 InValue) = 0;
+	virtual void SetHp(const uint32 InValue) = 0;
 
 	//공격력
 	virtual uint32 GetAttackValue() const = 0;
