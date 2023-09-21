@@ -10,7 +10,7 @@ AEvidence::AEvidence()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	
+
 	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/SampleSphere/SM_SampleSphere.SM_SampleSphere'"), [&](UStaticMesh* MeshRef)
 	{
 		Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
@@ -37,5 +37,5 @@ void AEvidence::Tick(float DeltaTime)
 
 void AEvidence::Interact()
 {
-	UE_LOG(LogTemp, Log, TEXT("단서 상호작용"));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%s] 단서 상호작용"), *GetActorLabel()));
 }

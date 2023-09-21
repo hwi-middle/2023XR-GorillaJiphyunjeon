@@ -134,20 +134,16 @@ void AIGPlayerCharacter::SetIsRunning(const FInputActionValue& Value)
 {
 	if (Value.Get<bool>())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Sprint"));
 		GetCharacterMovement()->MaxWalkSpeed = 1500.f;
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Walk"));
 		GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	}
 }
 
 void AIGPlayerCharacter::Interact()
 {
-	UE_LOG(LogTemp, Log, TEXT("FindInteractableAndInteract"));
-
 	FHitResult Result;
 	FCollisionQueryParams CollisionParams;
 	float Radius = 100.f;
@@ -170,7 +166,6 @@ void AIGPlayerCharacter::Interact()
 		return;
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("%s"), *Result.GetActor()->GetName());
 	IInteractable* Interactable = Cast<IInteractable>(Result.GetActor());
 	if(Interactable != nullptr)
 	{
