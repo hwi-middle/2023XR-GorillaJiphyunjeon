@@ -30,7 +30,7 @@ public:
 	int32 AttackRange;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
-	int32 DefenceValue;
+	int32 DefenseValue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
 	int32 StaminaValue;

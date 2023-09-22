@@ -14,7 +14,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Indigo/Util/IGConstructorHelper.h"
-#include "Indigo/Util/IGDataParser.h"
+#include "..\Util\IGCharacterDataParser.h"
 
 
 AIGPlayerCharacter::AIGPlayerCharacter()
@@ -63,6 +63,8 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	MoveAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Move.IA_Move'"));
 	LookAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Look.IA_Look'"));
 	RunAction  = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Run.IA_Run'"));
+
+	CharacterDataParser = nullptr;
 }
 
 void AIGPlayerCharacter::BeginPlay()

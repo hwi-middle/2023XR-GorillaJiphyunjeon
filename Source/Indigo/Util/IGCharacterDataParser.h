@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "IGDataParser.generated.h"
+#include "IGCharacterDataParser.generated.h"
 
 class IIGCharacterStatus;
 struct FIGCharacterDataTable;
@@ -30,7 +30,7 @@ public:
 
 public:
 	//데이터 테이블 초기화
-	void InitDataTable(FString InRowName, IIGCharacterStatus* OutStatus);
+	void InitDataTable(FString InRowName, IIGCharacterStatus* InStatus);
 	
 	//캐릭터 데이터 초기화 함수
 	void SetCharacterStatusData();
@@ -40,10 +40,15 @@ public:
 
 	//동적 데이터 테이블 불러오기
 	void DynamicLoadCharacterDataTable();
+
+	void SetCharacterDataTablePath(FString InPath);
+	
 public:
 	//캐릭터 데이터테이블 경로
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString CharacterDataTablePath = TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/CharaterDatabase.CharaterDatabase'");
+	FString CharacterDataTablePath;
+
+	
 	
 private:
 	//가져올 열 이름

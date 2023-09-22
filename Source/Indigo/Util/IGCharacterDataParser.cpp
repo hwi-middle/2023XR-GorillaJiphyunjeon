@@ -1,7 +1,7 @@
 // Copyright GorillaJiphyunjeon. All Rights Reserved.
 
 
-#include "IGDataParser.h"
+#include "IGCharacterDataParser.h"
 #include "IGCharacterDataTable.h"
 #include "../Interface/IGCharacterStatus.h"
 #include "IGConstructorHelper.h"
@@ -15,7 +15,8 @@ UIGDataParser::UIGDataParser()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
+	CharacterDataTablePath = TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/CharaterDatabase.CharaterDatabase'");
+	
 	// ...
 }
 
@@ -43,10 +44,10 @@ void UIGDataParser::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	
 }
 
-void UIGDataParser::InitDataTable(FString InRowName, IIGCharacterStatus* OutStatus)
+void UIGDataParser::InitDataTable(FString InRowName, IIGCharacterStatus* InStatus)
 {
 	RowName = InRowName;
-	CharacterInterface = OutStatus;
+	CharacterInterface = InStatus;
 	
 	FIGConstructorHelper::FindObjectAndInitialize<UDataTable>
 	(
@@ -57,20 +58,19 @@ void UIGDataParser::InitDataTable(FString InRowName, IIGCharacterStatus* OutStat
 					FName(RowName),
 					FString("")
 				);
-			UE_LOG(LogTemp, Log, TEXT("생성및 초기화 시 주솟값: %p"), IGCharacterDataTable);
 		},		EAssertionLevel::Check
 	);
 }
 
 void UIGDataParser::SetCharacterStatusData()
 {
-	if(IGCharacterDataTable != nullptr)
+	if (IGCharacterDataTable != nullptr)
 	{		
 		CharacterInterface->SetHp(IGCharacterDataTable->HPValue);
 		CharacterInterface->SetAttackRange(IGCharacterDataTable->AttackRange);
 		CharacterInterface->SetAttackRate(IGCharacterDataTable->AttackRate);
 		CharacterInterface->SetAttackValue(IGCharacterDataTable->AttackValue);
-		CharacterInterface->SetDefenseValue(IGCharacterDataTable->DefenceValue);
+		CharacterInterface->SetDefenseValue(IGCharacterDataTable->DefenseValue);
 		CharacterInterface->SetStaminaValue(IGCharacterDataTable->StaminaValue);
 	}
 }
@@ -78,19 +78,18 @@ void UIGDataParser::SetCharacterStatusData()
 
 void UIGDataParser::PrintCharacterDataTable()
 {
-	if(IGCharacterDataTable != nullptr)
+	if (IGCharacterDataTable != nullptr)
 	{		
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("HP: %d"), IGCharacterDataTable->HPValue));
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("AttackRange: %d"), IGCharacterDataTable->AttackRange));
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("AttackRate: %d"), IGCharacterDataTable->AttackValue));
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("DefenceValue: %d"), IGCharacterDataTable->DefenceValue));
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("DefenceValue: %d"), IGCharacterDataTable->DefenseValue));
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("Stamina: %d"), IGCharacterDataTable->StaminaValue));	
 	}
 }
 void UIGDataParser::DynamicLoadCharacterDataTable()
 {
-	UDataTable* temp = LoadObject<UDataTable>(nullptr, *CharacterDataTablePath, NULL, LOAD_None, NULL);
-	FIGCharacterDataTable* dest = temp->FindRow<FIGCharacterDataTable>(FName("Player"), TEXT(""));
-	UE_LOG(LogTemp, Log, TEXT("동적 오브젝트 로드시 주솟값: %p"), dest);
+	UDataTable* Temp = LoadObject<UDataTable>(nullptr, *CharacterDataTablePath, nullptr, LOAD_None, nullptr);
+	IGCharacterDataTable = Temp->FindRow<FIGCharacterDataTable>(FName("Player"), TEXT(""));
 }
 
