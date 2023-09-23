@@ -16,6 +16,8 @@
 #include "Indigo/Constant/IGCollisionChannels.h"
 #include "Indigo/Interface/Interactable.h"
 #include "Indigo/Util/IGConstructorHelper.h"
+#include "..\Util\IGCharacterDataParser.h"
+
 
 AIGPlayerCharacter::AIGPlayerCharacter()
 {
@@ -46,6 +48,9 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	FollowCamera->SetupAttachment(CameraSpringArm, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
+	CharacterDataParser = CreateDefaultSubobject<UIGCharacterDataParser>(TEXT("Parser"));	
+	CharacterDataParser->InitDataTable(TEXT("Player"), this);
+	
 	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/SampleCharacter/SKM_Manny.SKM_Manny'"), [&](USkeletalMesh* SkeletalMesh)
 	{
 		GetMesh()->SetSkeletalMesh(SkeletalMesh);
@@ -59,27 +64,28 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	JumpAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Jump.IA_Jump'"));
 	MoveAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Move.IA_Move'"));
 	LookAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Look.IA_Look'"));
-	RunAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Run.IA_Run'"));
+	RunAction  = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Run.IA_Run'"));
 	InteractAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Interact.IA_Interact'"));
+
+	CharacterDataParser = nullptr;
 }
 
 void AIGPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	if (const APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
-	}
+	}	
 }
 
 void AIGPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
