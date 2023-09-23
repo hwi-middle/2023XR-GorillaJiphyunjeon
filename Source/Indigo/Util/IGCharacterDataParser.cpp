@@ -10,7 +10,7 @@
 
 
 // Sets default values for this component's properties
-UIGDataParser::UIGDataParser()
+UIGCharacterDataParser::UIGCharacterDataParser()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -22,7 +22,7 @@ UIGDataParser::UIGDataParser()
 
 
 // Called when the game starts
-void UIGDataParser::BeginPlay()
+void UIGCharacterDataParser::BeginPlay()
 {
 	Super::BeginPlay();
 	
@@ -32,7 +32,7 @@ void UIGDataParser::BeginPlay()
 
 
 // Called every frame
-void UIGDataParser::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UIGCharacterDataParser::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
@@ -44,9 +44,8 @@ void UIGDataParser::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	
 }
 
-void UIGDataParser::InitDataTable(FString InRowName, IIGCharacterStatus* InStatus)
+void UIGCharacterDataParser::InitDataTable(FString InRowName, IIGCharacterStatus* InStatus)
 {
-	RowName = InRowName;
 	CharacterInterface = InStatus;
 	
 	FIGConstructorHelper::FindObjectAndInitialize<UDataTable>
@@ -55,14 +54,14 @@ void UIGDataParser::InitDataTable(FString InRowName, IIGCharacterStatus* InStatu
 		{
 				IGCharacterDataTable = CharacterDataTable->FindRow<FIGCharacterDataTable>
 				(
-					FName(RowName),
+					FName(InRowName),
 					FString("")
 				);
 		},		EAssertionLevel::Check
 	);
 }
 
-void UIGDataParser::SetCharacterStatusData()
+void UIGCharacterDataParser::SetCharacterStatusData()
 {
 	if (IGCharacterDataTable != nullptr)
 	{		
@@ -76,7 +75,7 @@ void UIGDataParser::SetCharacterStatusData()
 }
 
 
-void UIGDataParser::PrintCharacterDataTable()
+void UIGCharacterDataParser::PrintCharacterDataTable()
 {
 	if (IGCharacterDataTable != nullptr)
 	{		
@@ -87,9 +86,9 @@ void UIGDataParser::PrintCharacterDataTable()
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("Stamina: %d"), IGCharacterDataTable->StaminaValue));	
 	}
 }
-void UIGDataParser::DynamicLoadCharacterDataTable()
+void UIGCharacterDataParser::DynamicLoadCharacterDataTable()
 {
-	UDataTable* Temp = LoadObject<UDataTable>(nullptr, *CharacterDataTablePath, nullptr, LOAD_None, nullptr);
+	const UDataTable* Temp = LoadObject<UDataTable>(nullptr, *CharacterDataTablePath, nullptr, LOAD_None, nullptr);
 	IGCharacterDataTable = Temp->FindRow<FIGCharacterDataTable>(FName("Player"), TEXT(""));
 }
 

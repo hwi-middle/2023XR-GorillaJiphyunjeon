@@ -10,13 +10,13 @@ class IIGCharacterStatus;
 struct FIGCharacterDataTable;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class INDIGO_API UIGDataParser : public UActorComponent
+class INDIGO_API UIGCharacterDataParser : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UIGDataParser();
+	UIGCharacterDataParser();
 	
 protected:
 	// Called when the game starts
@@ -41,7 +41,7 @@ public:
 	//동적 데이터 테이블 불러오기
 	void DynamicLoadCharacterDataTable();
 
-	void SetCharacterDataTablePath(FString InPath);
+	FORCEINLINE void SetCharacterDataTablePath(const FString InPath) { CharacterDataTablePath = InPath; }
 	
 public:
 	//캐릭터 데이터테이블 경로
@@ -51,8 +51,7 @@ public:
 	
 	
 private:
-	//가져올 열 이름
-	FString RowName;
+
 	//가져올 캐릭터 데이터테이블
 	FIGCharacterDataTable* IGCharacterDataTable = nullptr;
 	//세팅할 캐릭터 인터페이스

@@ -46,7 +46,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	FollowCamera->SetupAttachment(CameraSpringArm, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
-	CharacterDataParser = CreateDefaultSubobject<UIGDataParser>(TEXT("Parser"));	
+	CharacterDataParser = CreateDefaultSubobject<UIGCharacterDataParser>(TEXT("Parser"));	
 	CharacterDataParser->InitDataTable(TEXT("Player"), this);
 	
 	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/SampleCharacter/SKM_Manny.SKM_Manny'"), [&](USkeletalMesh* SkeletalMesh)

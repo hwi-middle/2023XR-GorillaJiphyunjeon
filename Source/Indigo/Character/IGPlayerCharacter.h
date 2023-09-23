@@ -7,7 +7,7 @@
 #include "Indigo/Interface/IGCharacterStatus.h"
 #include "IGPlayerCharacter.generated.h"
 
-class UIGDataParser;
+class UIGCharacterDataParser;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
@@ -96,6 +96,6 @@ private:
     UPROPERTY(VisibleAnywhere)
     uint8 bIsDead : 1;
 
-    UIGDataParser* CharacterDataParser;
+    UIGCharacterDataParser* CharacterDataParser;
     
 };
