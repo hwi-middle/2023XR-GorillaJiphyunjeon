@@ -13,7 +13,11 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Indigo/Constant/IGCollisionChannels.h"
+#include "Indigo/Interface/Interactable.h"
 #include "Indigo/Util/IGConstructorHelper.h"
+#include "..\Util\IGCharacterDataParser.h"
+
 
 AIGPlayerCharacter::AIGPlayerCharacter()
 {
@@ -44,6 +48,9 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	FollowCamera->SetupAttachment(CameraSpringArm, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
+	CharacterDataParser = CreateDefaultSubobject<UIGCharacterDataParser>(TEXT("Parser"));	
+	CharacterDataParser->InitDataTable(TEXT("Player"), this);
+	
 	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/SampleCharacter/SKM_Manny.SKM_Manny'"), [&](USkeletalMesh* SkeletalMesh)
 	{
 		GetMesh()->SetSkeletalMesh(SkeletalMesh);
@@ -57,26 +64,28 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	JumpAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Jump.IA_Jump'"));
 	MoveAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Move.IA_Move'"));
 	LookAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Look.IA_Look'"));
-	RunAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Run.IA_Run'"));
+	RunAction  = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Run.IA_Run'"));
+	InteractAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Interact.IA_Interact'"));
+
+	CharacterDataParser = nullptr;
 }
 
 void AIGPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	if (const APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
-	}
+	}	
 }
 
 void AIGPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -90,6 +99,7 @@ void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AIGPlayerCharacter::Look);
 		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::SetIsRunning);
 		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Completed, this, &AIGPlayerCharacter::SetIsRunning);
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::Interact);
 	}
 }
 
@@ -128,14 +138,38 @@ void AIGPlayerCharacter::Look(const FInputActionValue& Value)
 
 void AIGPlayerCharacter::SetIsRunning(const FInputActionValue& Value)
 {
-	if (Value.Get<bool>())
+	bool IsSprintKeyDown = Value.Get<bool>();
+	float Speed = IsSprintKeyDown ? 1500.f : 500.f;
+	GetCharacterMovement()->MaxWalkSpeed = Speed;
+}
+
+void AIGPlayerCharacter::Interact()
+{
+	FHitResult Result;
+	FCollisionQueryParams CollisionParams;
+	float Radius = 100.f;
+	CollisionParams.AddIgnoredActor(this);
+
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		Result,
+		GetActorLocation(),
+		GetActorLocation(),
+		FQuat::Identity,
+		ECC_INTERACTABLE,
+		FCollisionShape::MakeSphere(Radius),
+		CollisionParams
+	);
+
+	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 16, FColor::Green, false, 2.f);
+
+	if (!bHit)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Sprint"));
-		GetCharacterMovement()->MaxWalkSpeed = 1500.f;
+		return;
 	}
-	else
+
+	IInteractable* Interactable = Cast<IInteractable>(Result.GetActor());
+	if (Interactable != nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Walk"));
-		GetCharacterMovement()->MaxWalkSpeed = 500.f;
+		Interactable->Interact();
 	}
 }
