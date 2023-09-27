@@ -18,7 +18,6 @@
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGCharacterDataTable.h"
 #include "Indigo/Util/IGDataTableParser.h"
-#include "Indigo/Util/TestDataBase.h"
 
 AIGPlayerCharacter::AIGPlayerCharacter()
 {
