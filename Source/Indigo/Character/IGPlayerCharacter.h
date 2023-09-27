@@ -13,6 +13,7 @@ class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
+struct FIGCharacterDataTable;
 
 UCLASS()
 class INDIGO_API AIGPlayerCharacter : public ACharacter, public IIGCharacterStatus
@@ -97,6 +98,6 @@ private:
     UPROPERTY(VisibleAnywhere)
     uint8 bIsDead : 1;
 
-    UIGCharacterDataParser* CharacterDataParser;
+    FIGCharacterDataTable* CharacterDataTable;
     
 };
