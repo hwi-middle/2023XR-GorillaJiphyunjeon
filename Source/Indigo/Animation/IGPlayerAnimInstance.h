@@ -6,6 +6,8 @@
 #include "Animation/AnimInstance.h"
 #include "IGPlayerAnimInstance.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnFinishRollDelgate)
+
 /**
  * 
  */
@@ -32,6 +34,8 @@ protected:
 	void AnimNotify_RollEnd();
 	
 public:
+	FOnFinishRollDelgate OnFinishRoll;
+
 	FORCEINLINE void SetSpeed(const float InValue) { Speed = InValue; }
 	void StartRoll() { bIsRolling = true; }
 };

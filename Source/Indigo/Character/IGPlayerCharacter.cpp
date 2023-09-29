@@ -79,6 +79,24 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	const TSubclassOf<UIGPlayerAnimInstance> BossAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGPlayerAnimInstance>(
 	TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/ABP_Player.ABP_Player_C"), EAssertionLevel::Check);
 	GetMesh()->SetAnimInstanceClass(BossAnimInstanceClass);
+
+	WalkSpeed = 500.f;
+	SprintSpeed = 800.f;
+}
+
+bool AIGPlayerCharacter::CheckPlayerState(const EPlayerState InState) const
+{
+	return EnumHasAnyFlags(CurrentState, InState);
+}
+
+void AIGPlayerCharacter::AddPlayerState(const EPlayerState InState)
+{
+	EnumAddFlags(CurrentState, InState);
+}
+
+void AIGPlayerCharacter::RemovePlayerState(const EPlayerState InState)
+{
+	EnumRemoveFlags(CurrentState, InState);
 }
 
 void AIGPlayerCharacter::BeginPlay()
@@ -95,6 +113,8 @@ void AIGPlayerCharacter::BeginPlay()
 
 	AnimInstance = CastChecked<UIGPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->SetSpeed(0.f);
+	AnimInstance->OnFinishRoll.AddUObject(this, &AIGPlayerCharacter::FinishRolling);
+	CurrentState = EPlayerState::Idling;
 }
 
 void AIGPlayerCharacter::Tick(float DeltaTime)
@@ -107,6 +127,34 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 	AttackRate = CharacterDataTable->AttackRate;
 	DefenceValue = CharacterDataTable->DefenseValue;
 	StaminaValue = CharacterDataTable->StaminaValue;
+
+	FString DebugMessage = TEXT("<플레이어 상태>\n");
+	
+	if(CheckPlayerState(EPlayerState::Idling))
+	{
+		DebugMessage.Append(TEXT("정지\n"));
+	}
+	if(CheckPlayerState(EPlayerState::Walking))
+	{
+		DebugMessage.Append(TEXT("걷기\n"));
+	}
+	if(CheckPlayerState(EPlayerState::Running))
+	{
+		DebugMessage.Append(TEXT("달리기\n"));
+	}
+	if(CheckPlayerState(EPlayerState::Jumping))
+	{
+		DebugMessage.Append(TEXT("점프\n"));
+	}
+	if(CheckPlayerState(EPlayerState::Rolling))
+	{
+		DebugMessage.Append(TEXT("구르기\n"));
+	}
+	if(CheckPlayerState(EPlayerState::Attacking))
+	{
+		DebugMessage.Append(TEXT("공격\n"));
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, *DebugMessage);
 #endif
 	AnimInstance->SetSpeed(GetVelocity().Size2D());
 } 
@@ -119,17 +167,25 @@ void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AIGPlayerCharacter::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AIGPlayerCharacter::SetIsIdling);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AIGPlayerCharacter::Look);
 		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::SetIsRunning);
 		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Completed, this, &AIGPlayerCharacter::SetIsRunning);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::Interact);
-		EnhancedInputComponent->BindAction(RollAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::Roll);
+		EnhancedInputComponent->BindAction(RollAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::StartRolling);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AIGPlayerCharacter::Attack);
 	}
 }
 
 void AIGPlayerCharacter::Move(const FInputActionValue& Value)
 {
-	FVector2D MovementVector = Value.Get<FVector2D>();
+	RemovePlayerState(EPlayerState::Idling);
+	if(!CheckPlayerState(EPlayerState::Running))
+	{
+		AddPlayerState(EPlayerState::Walking);
+	}
+
+	const FVector2D MovementVector = Value.Get<FVector2D>();
 
 	if (Controller == nullptr)
 	{
@@ -160,11 +216,28 @@ void AIGPlayerCharacter::Look(const FInputActionValue& Value)
 	AddControllerPitchInput(LookAxisVector.Y);
 }
 
+void AIGPlayerCharacter::SetIsIdling()
+{
+	RemovePlayerState(EPlayerState::Walking);
+	RemovePlayerState(EPlayerState::Running);
+	AddPlayerState(EPlayerState::Idling);
+}
+
 void AIGPlayerCharacter::SetIsRunning(const FInputActionValue& Value)
 {
-	bool IsSprintKeyDown = Value.Get<bool>();
-	float Speed = IsSprintKeyDown ? 800.f : 500.f;
-	GetCharacterMovement()->MaxWalkSpeed = Speed;
+	const bool IsSprintKeyDown = Value.Get<bool>();
+	if (IsSprintKeyDown)
+	{
+		RemovePlayerState(EPlayerState::Walking);
+		AddPlayerState(EPlayerState::Running);
+		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+	}
+	else
+	{
+		RemovePlayerState(EPlayerState::Running);
+		AddPlayerState(EPlayerState::Walking);
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	}
 }
 
 void AIGPlayerCharacter::Interact()
@@ -198,7 +271,29 @@ void AIGPlayerCharacter::Interact()
 	}
 }
 
-void AIGPlayerCharacter::Roll()
+void AIGPlayerCharacter::Attack()
 {
+	if (CheckPlayerState(EPlayerState::Attacking))
+	{
+		return;
+	}
+}
+
+void AIGPlayerCharacter::StartRolling()
+{
+	if(CheckPlayerState(EPlayerState::Rolling))
+	{
+		UE_LOG(LogTemp, Log, TEXT("이미 구르고 있음"));
+		return;
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("구르기 시작"));
+
+	AddPlayerState(EPlayerState::Rolling);
 	AnimInstance->StartRoll();
+}
+
+void AIGPlayerCharacter::FinishRolling()
+{
+	RemovePlayerState(EPlayerState::Rolling);
 }
