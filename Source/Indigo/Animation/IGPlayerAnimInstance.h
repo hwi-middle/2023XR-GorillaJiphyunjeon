@@ -27,6 +27,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
 	uint32 bIsRolling : 1;
 
+protected:
+	UFUNCTION()
+	void AnimNotify_RollEnd();
+	
 public:
 	FORCEINLINE void SetSpeed(const float InValue) { Speed = InValue; }
+	void StartRoll() { bIsRolling = true; }
 };

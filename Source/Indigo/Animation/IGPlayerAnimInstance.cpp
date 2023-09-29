@@ -10,3 +10,9 @@ void UIGPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	InterpolatedSpeed = FMath::FInterpTo(InterpolatedSpeed, Speed, DeltaSeconds, 10.f);
 }
 
+void UIGPlayerAnimInstance::AnimNotify_RollEnd()
+{
+	bIsRolling = false;
+	UE_LOG(LogTemp,Log,TEXT("end roll"));
+}
+

@@ -74,7 +74,8 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	LookAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Look.IA_Look'"));
 	RunAction  = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Run.IA_Run'"));
 	InteractAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Interact.IA_Interact'"));
-
+	RollAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Roll.IA_Roll'"));
+	
 	const TSubclassOf<UIGPlayerAnimInstance> BossAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGPlayerAnimInstance>(
 	TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/ABP_Player.ABP_Player_C"), EAssertionLevel::Check);
 	GetMesh()->SetAnimInstanceClass(BossAnimInstanceClass);
@@ -122,6 +123,7 @@ void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::SetIsRunning);
 		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Completed, this, &AIGPlayerCharacter::SetIsRunning);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::Interact);
+		EnhancedInputComponent->BindAction(RollAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::Roll);
 	}
 }
 
@@ -194,4 +196,9 @@ void AIGPlayerCharacter::Interact()
 	{
 		Interactable->Interact();
 	}
+}
+
+void AIGPlayerCharacter::Roll()
+{
+	AnimInstance->StartRoll();
 }

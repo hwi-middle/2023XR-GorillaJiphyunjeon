@@ -73,6 +73,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> InteractAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> RollAction;
+
 	// 애니메이션
 	UPROPERTY()
 	TObjectPtr<UIGPlayerAnimInstance> AnimInstance;
@@ -82,6 +85,7 @@ protected:
 	void Look(const FInputActionValue& Value);
 	void SetIsRunning(const FInputActionValue& Value);
 	void Interact();
+	void Roll();
 
 public:
     FORCEINLINE USpringArmComponent* GetCameraSpringArm() const { return CameraSpringArm; }
