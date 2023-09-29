@@ -7,6 +7,7 @@
 #include "Indigo/Interface/IGCharacterStatus.h"
 #include "IGPlayerCharacter.generated.h"
 
+class UIGPlayerAnimInstance;
 class UIGCharacterDataParser;
 class USpringArmComponent;
 class UCameraComponent;
@@ -47,6 +48,7 @@ public:
     virtual FORCEINLINE bool IsDead() const override {return bIsDead;} 
     
 private:
+	// 조작
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USpringArmComponent> CameraSpringArm;
 
@@ -70,6 +72,10 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> InteractAction;
+
+	// 애니메이션
+	UPROPERTY()
+	TObjectPtr<UIGPlayerAnimInstance> AnimInstance;
 
 protected:
 	void Move(const FInputActionValue& Value);
@@ -97,7 +103,7 @@ private:
     uint32 StaminaValue;
     UPROPERTY(VisibleAnywhere)
     uint8 bIsDead : 1;
-
+	
     FIGCharacterDataTable* CharacterDataTable;
     
 };

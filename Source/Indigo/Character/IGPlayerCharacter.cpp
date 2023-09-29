@@ -13,6 +13,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Indigo/Animation/IGPlayerAnimInstance.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
 #include "Indigo/Interface/Interactable.h"
 #include "Indigo/Util/IGConstructorHelper.h"
@@ -58,7 +59,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	DefenceValue = CharacterDataTable->DefenseValue;
 	StaminaValue = CharacterDataTable->StaminaValue;
 
-	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/SampleCharacter/SKM_Manny.SKM_Manny'"), [&](USkeletalMesh* SkeletalMesh)
+	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Mesh/SK_Main.SK_Main'"), [&](USkeletalMesh* SkeletalMesh)
 	{
 		GetMesh()->SetSkeletalMesh(SkeletalMesh);
 		// Temporal
@@ -74,6 +75,9 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	RunAction  = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Run.IA_Run'"));
 	InteractAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Interact.IA_Interact'"));
 
+	const TSubclassOf<UIGPlayerAnimInstance> BossAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGPlayerAnimInstance>(
+	TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/ABP_Player.ABP_Player_C"), EAssertionLevel::Check);
+	GetMesh()->SetAnimInstanceClass(BossAnimInstanceClass);
 }
 
 void AIGPlayerCharacter::BeginPlay()
@@ -86,7 +90,10 @@ void AIGPlayerCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
-	}	
+	}
+
+	AnimInstance = CastChecked<UIGPlayerAnimInstance>(GetMesh()->GetAnimInstance());
+	AnimInstance->SetSpeed(0.f);
 }
 
 void AIGPlayerCharacter::Tick(float DeltaTime)
@@ -100,8 +107,8 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 	DefenceValue = CharacterDataTable->DefenseValue;
 	StaminaValue = CharacterDataTable->StaminaValue;
 #endif
-	
-}
+	AnimInstance->SetSpeed(GetVelocity().Size2D());
+} 
 
 void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -154,7 +161,7 @@ void AIGPlayerCharacter::Look(const FInputActionValue& Value)
 void AIGPlayerCharacter::SetIsRunning(const FInputActionValue& Value)
 {
 	bool IsSprintKeyDown = Value.Get<bool>();
-	float Speed = IsSprintKeyDown ? 1500.f : 500.f;
+	float Speed = IsSprintKeyDown ? 800.f : 500.f;
 	GetCharacterMovement()->MaxWalkSpeed = Speed;
 }
 
