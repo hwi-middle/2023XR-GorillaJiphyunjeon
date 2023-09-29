@@ -16,6 +16,20 @@ class UInputAction;
 struct FInputActionValue;
 struct FIGCharacterDataTable;
 
+UENUM(Meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
+enum class EPlayerState : uint32
+{
+	None = 0x00,
+	Idling = 0x01,
+	Walking = 0x02,
+	Running = 0x04,
+	Jumping = 0x08,
+	Rolling = 0x10,
+	Attacking = 0x20,
+	All = 0xff,
+};
+ENUM_CLASS_FLAGS(EPlayerState);
+
 UCLASS()
 class INDIGO_API AIGPlayerCharacter : public ACharacter, public IIGCharacterStatus
 {
@@ -24,6 +38,13 @@ class INDIGO_API AIGPlayerCharacter : public ACharacter, public IIGCharacterStat
 public:
 	AIGPlayerCharacter();
 
+private:
+	EPlayerState CurrentState;
+
+	bool CheckPlayerState(const EPlayerState InState) const;
+	void AddPlayerState(const EPlayerState InState);
+	void RemovePlayerState(const EPlayerState InState);
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -75,6 +96,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> RollAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> AttackAction;
 
 	// 애니메이션
 	UPROPERTY()
@@ -83,9 +107,12 @@ private:
 protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+	void SetIsIdling();
 	void SetIsRunning(const FInputActionValue& Value);
 	void Interact();
-	void Roll();
+	void Attack();
+	void StartRolling();
+	void FinishRolling();
 
 public:
     FORCEINLINE USpringArmComponent* GetCameraSpringArm() const { return CameraSpringArm; }
@@ -95,18 +122,30 @@ private:
     //멤버 변수
     UPROPERTY(VisibleAnywhere)
     uint32 Hp;
+	
     UPROPERTY(VisibleAnywhere)
     uint32 AttackValue;
+	
     UPROPERTY(VisibleAnywhere)
     uint32 AttackRate;
+	
     UPROPERTY(VisibleAnywhere)
     uint32 AttackRange;
+	
     UPROPERTY(VisibleAnywhere)
     uint32 DefenceValue;
+	
     UPROPERTY(VisibleAnywhere)
     uint32 StaminaValue;
+	
     UPROPERTY(VisibleAnywhere)
     uint8 bIsDead : 1;
+
+	UPROPERTY(VisibleAnywhere)
+	float WalkSpeed;
+
+	UPROPERTY(VisibleAnywhere)
+	float SprintSpeed;
 	
     FIGCharacterDataTable* CharacterDataTable;
     

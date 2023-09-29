@@ -13,5 +13,6 @@ void UIGPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 void UIGPlayerAnimInstance::AnimNotify_RollEnd()
 {
 	bIsRolling = false;
+	OnFinishRoll.Broadcast();
 }
 
