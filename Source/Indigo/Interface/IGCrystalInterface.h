@@ -16,6 +16,7 @@ class INDIGO_API IIGCrystalInterface
 {
 	GENERATED_BODY()
 public:
-	
-	
+	virtual void TakeCrystal() = 0;
+	virtual bool IsGetCrystal() const = 0;
+	virtual FString GetCrystalName() const = 0;
 };

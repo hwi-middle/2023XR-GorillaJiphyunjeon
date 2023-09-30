@@ -1,17 +1,21 @@
 // Copyright GorillaJiphyunjeon. All Rights Reserved.
 
 
-#include "IGMoutainCrystal.h"
+#include "IGMountainCrystal.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGDataTableParser.h"
-#include "Indigo/Util/IGScriptDataTable.h"
+#include "Indigo/Management/IGCrystalManager.h"
+
+TSharedPtr<IGCrystalManager> Instance = IGCrystalManager::GetInstance();
 
 // Sets default values
-AIGMoutainCrystal::AIGMoutainCrystal()
+AIGMountainCrystal::AIGMountainCrystal()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	bIsGetCrystal = false;
+	
+	
 	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/SampleSphere/SM_SampleSphere.SM_SampleSphere'"), [&](UStaticMesh* MeshRef)
 {
 Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
@@ -26,25 +30,47 @@ Mesh->SetCollisionProfileName(TEXT("Evidence"));
 		{			
 			MountainCrystalScript = ScriptDataTable->FindRow<FIGScriptDataTable>(TEXT("바위산"),TEXT(""));			
 		});
+	
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%s]"), *MountainCrystalScript->Name));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%p]"), Instance.Get()->GetInstance().Get()));
 	
 }
 
 // Called when the game starts or when spawned
-void AIGMoutainCrystal::BeginPlay()
+void AIGMountainCrystal::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
+
 // Called every frame
-void AIGMoutainCrystal::Tick(float DeltaTime)
+void AIGMountainCrystal::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
-void AIGMoutainCrystal::Interact()
+void AIGMountainCrystal::Interact()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%s]"), *MountainCrystalScript->Script));
+	TakeCrystal();
 }
+
+void AIGMountainCrystal::TakeCrystal()
+{
+	if(bIsGetCrystal == true)
+	{
+		return;		
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("[%s]의 결정 습득"), *MountainCrystalScript->Name));
+
+	if(Instance.IsValid())
+	{
+		Instance.Get()->ActivitedCrystal(this);
+	}
+	bIsGetCrystal = true;
+	Destroy();
+}
+
+
 

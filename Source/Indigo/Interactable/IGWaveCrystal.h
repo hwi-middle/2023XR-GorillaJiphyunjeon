@@ -6,9 +6,11 @@
 #include "GameFramework/Actor.h"
 #include "Indigo/Interface/Interactable.h"
 #include "Indigo/Interface/IGCrystalInterface.h"
+#include "Indigo/Util/IGScriptDataTable.h"
 #include "IGWaveCrystal.generated.h"
 
 struct FIGScriptDataTable;
+class IGCrystalManager;
 
 UCLASS()
 class INDIGO_API AIGWaveCrystal : public AActor, public IInteractable, public IIGCrystalInterface
@@ -27,8 +29,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	virtual void Interact() override;
-		
+	virtual void TakeCrystal() override;
+	
+	virtual FORCEINLINE bool IsGetCrystal() const override{return bIsGetCrystal;};
+	virtual FORCEINLINE FString GetCrystalName() const override{return WaveCrystalScript->Name;};
+	
 private:
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	FIGScriptDataTable* WaveCrystalScript;
+	uint8 bIsGetCrystal : 1;
 };
