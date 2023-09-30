@@ -111,6 +111,7 @@ protected:
 	void SetIsRunning(const FInputActionValue& Value);
 	void Interact();
 	void Attack();
+	void FinishAttack();
 	void StartRolling();
 	void FinishRolling();
 

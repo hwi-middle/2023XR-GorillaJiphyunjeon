@@ -4,7 +4,6 @@
 #include "IGProjectile.h"
 
 #include "Indigo/Util/IGConstructorHelper.h"
-#include "Mac/CocoaThread.h"
 
 // Sets default values
 AIGProjectile::AIGProjectile()

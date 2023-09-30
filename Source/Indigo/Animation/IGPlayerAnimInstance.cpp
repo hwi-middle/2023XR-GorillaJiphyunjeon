@@ -16,3 +16,19 @@ void UIGPlayerAnimInstance::AnimNotify_RollEnd()
 	OnFinishRoll.Broadcast();
 }
 
+void UIGPlayerAnimInstance::AnimNotify_SunAttackEnd()
+{
+	bIsAttacking = false;
+	OnFinishAttack.Broadcast();
+}
+
+void UIGPlayerAnimInstance::StartRoll()
+{
+	bIsRolling = true;
+}
+
+void UIGPlayerAnimInstance::StartAttack()
+{
+	bIsAttacking = true;
+}
+
