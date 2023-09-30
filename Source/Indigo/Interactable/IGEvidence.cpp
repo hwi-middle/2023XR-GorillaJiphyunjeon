@@ -1,12 +1,12 @@
 // Copyright GorillaJiphyunjeon. All Rights Reserved.
 
 
-#include "Evidence.h"
+#include "IGEvidence.h"
 
 #include "Indigo/Util/IGConstructorHelper.h"
 
 // Sets default values
-AEvidence::AEvidence()
+AIGEvidence::AIGEvidence()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -22,20 +22,20 @@ AEvidence::AEvidence()
 }
 
 // Called when the game starts or when spawned
-void AEvidence::BeginPlay()
+void AIGEvidence::BeginPlay()
 {
 	Super::BeginPlay();
 
 }
 
 // Called every frame
-void AEvidence::Tick(float DeltaTime)
+void AIGEvidence::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-void AEvidence::Interact()
+void AIGEvidence::Interact()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%s] 단서 상호작용"), *GetActorLabel()));
 }
