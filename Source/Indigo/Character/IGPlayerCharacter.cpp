@@ -14,6 +14,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Indigo/Animation/IGPlayerAnimInstance.h"
+#include "Indigo/Battle/IGProjectile.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
 #include "Indigo/Interface/Interactable.h"
 #include "Indigo/Util/IGConstructorHelper.h"
@@ -75,6 +76,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	RunAction  = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Run.IA_Run'"));
 	InteractAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Interact.IA_Interact'"));
 	RollAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Roll.IA_Roll'"));
+	AttackAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Attack.IA_Attack'"));
 	
 	const TSubclassOf<UIGPlayerAnimInstance> BossAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGPlayerAnimInstance>(
 	TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/ABP_Player.ABP_Player_C"), EAssertionLevel::Check);
@@ -273,10 +275,17 @@ void AIGPlayerCharacter::Interact()
 
 void AIGPlayerCharacter::Attack()
 {
+	UE_LOG(LogTemp,Log,TEXT("공격"));
 	if (CheckPlayerState(EPlayerState::Attacking))
 	{
 		return;
 	}
+
+	// AddPlayerState(EPlayerState::Attacking);
+	// Temporal
+	FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
+	AIGProjectile* SpawnedActor = GetWorld()->SpawnActor<AIGProjectile>(SpawnLocation, FRotator::ZeroRotator);
+	SpawnedActor->Init(10.f, GetActorForwardVector(), 1000.f, 10.f);
 }
 
 void AIGPlayerCharacter::StartRolling()
