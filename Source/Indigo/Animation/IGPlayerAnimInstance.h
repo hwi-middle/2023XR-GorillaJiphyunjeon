@@ -7,6 +7,7 @@
 #include "IGPlayerAnimInstance.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnFinishRollDelgate)
+DECLARE_MULTICAST_DELEGATE(FOnFinishAttackDelgate)
 
 /**
  * 
@@ -29,13 +30,21 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
 	uint32 bIsRolling : 1;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
+	uint32 bIsAttacking : 1;
+
 protected:
 	UFUNCTION()
 	void AnimNotify_RollEnd();
 	
+	UFUNCTION()
+	void AnimNotify_SunAttackEnd();
+	
 public:
 	FOnFinishRollDelgate OnFinishRoll;
+	FOnFinishAttackDelgate OnFinishAttack;
 
 	FORCEINLINE void SetSpeed(const float InValue) { Speed = InValue; }
-	void StartRoll() { bIsRolling = true; }
+	void StartRoll();
+	void StartAttack();
 };

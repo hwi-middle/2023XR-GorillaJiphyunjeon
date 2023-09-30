@@ -116,6 +116,7 @@ void AIGPlayerCharacter::BeginPlay()
 	AnimInstance = CastChecked<UIGPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->SetSpeed(0.f);
 	AnimInstance->OnFinishRoll.AddUObject(this, &AIGPlayerCharacter::FinishRolling);
+	AnimInstance->OnFinishAttack.AddUObject(this, &AIGPlayerCharacter::FinishAttack);
 	CurrentState = EPlayerState::Idling;
 }
 
@@ -281,11 +282,19 @@ void AIGPlayerCharacter::Attack()
 		return;
 	}
 
-	// AddPlayerState(EPlayerState::Attacking);
-	// Temporal
+	AddPlayerState(EPlayerState::Attacking);
+	AnimInstance->StartAttack();
+	
+	// ---- Temporal
 	FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
 	AIGProjectile* SpawnedActor = GetWorld()->SpawnActor<AIGProjectile>(SpawnLocation, FRotator::ZeroRotator);
 	SpawnedActor->Init(10.f, GetActorForwardVector(), 1000.f, 10.f);
+	// ----
+}
+
+void AIGPlayerCharacter::FinishAttack()
+{
+	RemovePlayerState(EPlayerState::Attacking);
 }
 
 void AIGPlayerCharacter::StartRolling()
