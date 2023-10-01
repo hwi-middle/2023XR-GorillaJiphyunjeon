@@ -78,6 +78,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	InteractAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Interact.IA_Interact'"));
 	RollAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Roll.IA_Roll'"));
 	AttackAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Attack.IA_Attack'"));
+	ToggleSunMoonAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_ToggleSunMoon.IA_ToggleSunMoon'"));
 	
 	const TSubclassOf<UIGPlayerAnimInstance> BossAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGPlayerAnimInstance>(
 	TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/ABP_Player.ABP_Player_C"), EAssertionLevel::Check);
@@ -110,7 +111,6 @@ void AIGPlayerCharacter::RemovePlayerState(const EPlayerState InState)
 void AIGPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 	if (const APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -125,12 +125,15 @@ void AIGPlayerCharacter::BeginPlay()
 	AnimInstance->OnFinishAttack.AddUObject(this, &AIGPlayerCharacter::FinishAttack);
 	CurrentState = EPlayerState::Idling;
 
+	NormalAttackStaminaCost = 5.f;
+	StrongAttackStaminaCost = 7.f;
+	
 	HudWidget = CreateWidget<UIGIngameHUDWidget>(GetWorld(), HudWidgetClass);
 	if (HudWidget)
 	{
 		HudWidget->AddToViewport();
-		HudWidget->InitHpGauge(100.f, 100.f);
-		HudWidget->InitStaminaGauge(100.f, 100.f);
+		HudWidget->InitHpGauge(100.f, Hp);
+		HudWidget->InitStaminaGauge(100.f, StaminaValue);
 		HudWidget->InitSunMoonGauge(100.f, 0.f);
 	}
 }
@@ -139,13 +142,12 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 #if UE_EDITOR
-	Hp = CharacterDataTable->HPValue;
-	AttackValue = CharacterDataTable->AttackValue;
-	AttackRange = CharacterDataTable->AttackRange;
-	AttackRate = CharacterDataTable->AttackRate;
-	DefenceValue = CharacterDataTable->DefenseValue;
-	StaminaValue = CharacterDataTable->StaminaValue;
-
+	// Hp = CharacterDataTable->HPValue;
+	// AttackValue = CharacterDataTable->AttackValue;
+	// AttackRange = CharacterDataTable->AttackRange;
+	// AttackRate = CharacterDataTable->AttackRate;
+	// DefenceValue = CharacterDataTable->DefenseValue;
+	// StaminaValue = CharacterDataTable->StaminaValue;
 	FString DebugMessage = TEXT("<플레이어 상태>\n");
 	
 	if(CheckPlayerState(EPlayerState::Idling))
@@ -172,6 +174,10 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 	{
 		DebugMessage.Append(TEXT("공격\n"));
 	}
+	if(CheckPlayerState(EPlayerState::Enforced))
+	{
+		DebugMessage.Append(TEXT("강화됨\n"));
+	}
 	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, *DebugMessage);
 #endif
 	AnimInstance->SetSpeed(GetVelocity().Size2D());
@@ -192,6 +198,7 @@ void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::Interact);
 		EnhancedInputComponent->BindAction(RollAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::StartRolling);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AIGPlayerCharacter::Attack);
+		EnhancedInputComponent->BindAction(ToggleSunMoonAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::ToggleSunMoon);
 	}
 }
 
@@ -291,13 +298,31 @@ void AIGPlayerCharacter::Interact()
 
 void AIGPlayerCharacter::Attack()
 {
+	// 공격 중
 	if (CheckPlayerState(EPlayerState::Attacking))
 	{
 		return;
 	}
 
+	// 스태미너 부족
+	const uint32 Cost = CheckPlayerState(EPlayerState::Enforced) ? StrongAttackStaminaCost : NormalAttackStaminaCost;
+	if (StaminaValue < Cost)
+	{
+		return;
+	}
+	
+	// ----
+
+	UE_LOG(LogTemp, Log, TEXT("[Before] Stamina: %d"), StaminaValue);
+
+
+	StaminaValue -= Cost;
+	UE_LOG(LogTemp, Log, TEXT("Cost: %d"), Cost);
+
+	HudWidget->UpdateStaminaGauge(StaminaValue);
 	AddPlayerState(EPlayerState::Attacking);
 	AnimInstance->StartAttack();
+	UE_LOG(LogTemp, Log, TEXT("[After] Stamina: %d"), StaminaValue);
 	
 	// ---- Temporal
 	FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
@@ -315,12 +340,9 @@ void AIGPlayerCharacter::StartRolling()
 {
 	if(CheckPlayerState(EPlayerState::Rolling))
 	{
-		UE_LOG(LogTemp, Log, TEXT("이미 구르고 있음"));
 		return;
 	}
-
-	UE_LOG(LogTemp, Log, TEXT("구르기 시작"));
-
+	
 	AddPlayerState(EPlayerState::Rolling);
 	AnimInstance->StartRoll();
 }
@@ -328,4 +350,16 @@ void AIGPlayerCharacter::StartRolling()
 void AIGPlayerCharacter::FinishRolling()
 {
 	RemovePlayerState(EPlayerState::Rolling);
+}
+
+void AIGPlayerCharacter::ToggleSunMoon()
+{
+	if (CheckPlayerState(EPlayerState::Enforced))
+	{
+		RemovePlayerState(EPlayerState::Enforced);
+	}
+	else
+	{
+		AddPlayerState(EPlayerState::Enforced);
+	}
 }

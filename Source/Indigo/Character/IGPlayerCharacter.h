@@ -27,6 +27,7 @@ enum class EPlayerState : uint32
 	Jumping = 0x08,
 	Rolling = 0x10,
 	Attacking = 0x20,
+	Enforced = 0x40,
 	All = 0xff,
 };
 ENUM_CLASS_FLAGS(EPlayerState);
@@ -107,6 +108,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> AttackAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> ToggleSunMoonAction;
+	
 	// 애니메이션
 	UPROPERTY()
 	TObjectPtr<UIGPlayerAnimInstance> AnimInstance;
@@ -121,6 +125,7 @@ protected:
 	void FinishAttack();
 	void StartRolling();
 	void FinishRolling();
+	void ToggleSunMoon();
 
 public:
     FORCEINLINE USpringArmComponent* GetCameraSpringArm() const { return CameraSpringArm; }
@@ -154,6 +159,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	float SprintSpeed;
+
+	UPROPERTY(VisibleAnywhere)
+	uint32 NormalAttackStaminaCost;
+	
+	UPROPERTY(VisibleAnywhere)
+	uint32 StrongAttackStaminaCost;
 	
     FIGCharacterDataTable* CharacterDataTable;
     
