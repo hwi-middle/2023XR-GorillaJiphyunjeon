@@ -15,7 +15,7 @@ void UIGGauge::NativeConstruct()
 	Super::NativeConstruct();
 }
 
-void UIGGauge::Init(float InMaxValue, float InInitialValue)
+void UIGGauge::Init(uint32 InMaxValue, uint32 InInitialValue)
 {
 	ProgressBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("GaugeBar")));
 	MaxValue = InMaxValue;
@@ -24,7 +24,7 @@ void UIGGauge::Init(float InMaxValue, float InInitialValue)
 	UpdateGaugeBar(CurrentValue);
 }
 
-void UIGGauge::UpdateGaugeBar(float InValue)
+void UIGGauge::UpdateGaugeBar(uint32 InValue)
 {
 	ensure(ProgressBar);
 	CurrentValue = InValue;
