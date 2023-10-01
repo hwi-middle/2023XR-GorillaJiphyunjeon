@@ -7,6 +7,7 @@
 #include "Indigo/Interface/IGCharacterStatus.h"
 #include "IGPlayerCharacter.generated.h"
 
+class UIGIngameHUDWidget;
 class UIGPlayerAnimInstance;
 class UIGCharacterDataParser;
 class USpringArmComponent;
@@ -47,7 +48,13 @@ private:
 	
 protected:
 	virtual void BeginPlay() override;
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UIGIngameHUDWidget> HudWidgetClass;
 
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UIGIngameHUDWidget> HudWidget;
+	
 public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

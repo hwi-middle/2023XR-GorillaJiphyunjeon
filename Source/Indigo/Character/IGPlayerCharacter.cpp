@@ -17,6 +17,7 @@
 #include "Indigo/Battle/IGProjectile.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
 #include "Indigo/Interface/Interactable.h"
+#include "Indigo/UI/IGIngameHUDWidget.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGCharacterDataTable.h"
 #include "Indigo/Util/IGDataTableParser.h"
@@ -82,6 +83,11 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/ABP_Player.ABP_Player_C"), EAssertionLevel::Check);
 	GetMesh()->SetAnimInstanceClass(BossAnimInstanceClass);
 
+	FIGConstructorHelper::FindClassAndInitialize<UIGIngameHUDWidget>(TEXT("/Game/_GorillaJiphyunjeon/UI/Game/WBP_GameHUD.WBP_GameHUD_C"), [&](TSubclassOf<UIGIngameHUDWidget> Class)
+	{
+		HudWidgetClass = Class;
+	}, EAssertionLevel::Check);
+	
 	WalkSpeed = 500.f;
 	SprintSpeed = 800.f;
 }
@@ -118,6 +124,15 @@ void AIGPlayerCharacter::BeginPlay()
 	AnimInstance->OnFinishRoll.AddUObject(this, &AIGPlayerCharacter::FinishRolling);
 	AnimInstance->OnFinishAttack.AddUObject(this, &AIGPlayerCharacter::FinishAttack);
 	CurrentState = EPlayerState::Idling;
+
+	HudWidget = CreateWidget<UIGIngameHUDWidget>(GetWorld(), HudWidgetClass);
+	if (HudWidget)
+	{
+		HudWidget->AddToViewport();
+		HudWidget->InitHpGauge(100.f, 100.f);
+		HudWidget->InitStaminaGauge(100.f, 100.f);
+		HudWidget->InitSunMoonGauge(100.f, 0.f);
+	}
 }
 
 void AIGPlayerCharacter::Tick(float DeltaTime)
@@ -276,7 +291,6 @@ void AIGPlayerCharacter::Interact()
 
 void AIGPlayerCharacter::Attack()
 {
-	UE_LOG(LogTemp,Log,TEXT("공격"));
 	if (CheckPlayerState(EPlayerState::Attacking))
 	{
 		return;
