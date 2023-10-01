@@ -32,19 +32,23 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
 	uint32 bIsAttacking : 1;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
+	uint32 bIsEnforced : 1;
 
 protected:
 	UFUNCTION()
 	void AnimNotify_RollEnd();
 	
 	UFUNCTION()
-	void AnimNotify_SunAttackEnd();
+	void AnimNotify_AttackEnd();
 	
 public:
 	FOnFinishRollDelgate OnFinishRoll;
 	FOnFinishAttackDelgate OnFinishAttack;
 
 	FORCEINLINE void SetSpeed(const float InValue) { Speed = InValue; }
+	FORCEINLINE void SetEnforced(const bool InValue) { bIsEnforced = InValue; }
 	void StartRoll();
 	void StartAttack();
 };

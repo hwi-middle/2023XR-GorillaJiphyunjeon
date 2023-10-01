@@ -16,7 +16,7 @@ void UIGPlayerAnimInstance::AnimNotify_RollEnd()
 	OnFinishRoll.Broadcast();
 }
 
-void UIGPlayerAnimInstance::AnimNotify_SunAttackEnd()
+void UIGPlayerAnimInstance::AnimNotify_AttackEnd()
 {
 	bIsAttacking = false;
 	OnFinishAttack.Broadcast();

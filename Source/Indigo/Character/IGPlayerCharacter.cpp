@@ -313,17 +313,21 @@ void AIGPlayerCharacter::Attack()
 		return;
 	}
 	
+	
 	// ----
 
 	StaminaValue -= Cost;
 	HudWidget->UpdateStaminaGauge(StaminaValue);
 	AddPlayerState(EPlayerState::Attacking);
+
+	AnimInstance->SetEnforced(CheckPlayerState(EPlayerState::Enforced));
 	AnimInstance->StartAttack();
-	
+
 	// ---- Temporal
 	FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
 	AIGProjectile* SpawnedActor = GetWorld()->SpawnActor<AIGProjectile>(SpawnLocation, FRotator::ZeroRotator);
-	SpawnedActor->Init(10.f, GetActorForwardVector(), 1000.f, 10.f);
+	const float Damage = CheckPlayerState(EPlayerState::Enforced) ? StrongAttackDamage : NormalAttackDamage;
+	SpawnedActor->Init(Damage, GetActorForwardVector(), 1000.f, 10.f);
 	// ----
 }
 
