@@ -161,6 +161,12 @@ private:
 	float SprintSpeed;
 
 	UPROPERTY(VisibleAnywhere)
+	uint32 NormalAttackDamage;
+	
+	UPROPERTY(VisibleAnywhere)
+	uint32 StrongAttackDamage;
+
+	UPROPERTY(VisibleAnywhere)
 	uint32 NormalAttackStaminaCost;
 	
 	UPROPERTY(VisibleAnywhere)

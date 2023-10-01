@@ -125,8 +125,10 @@ void AIGPlayerCharacter::BeginPlay()
 	AnimInstance->OnFinishAttack.AddUObject(this, &AIGPlayerCharacter::FinishAttack);
 	CurrentState = EPlayerState::Idling;
 
-	NormalAttackStaminaCost = 5.f;
-	StrongAttackStaminaCost = 7.f;
+	NormalAttackDamage = 3;
+	StrongAttackDamage = 7;
+	NormalAttackStaminaCost = 5;
+	StrongAttackStaminaCost = 7;
 	
 	HudWidget = CreateWidget<UIGIngameHUDWidget>(GetWorld(), HudWidgetClass);
 	if (HudWidget)
@@ -313,16 +315,10 @@ void AIGPlayerCharacter::Attack()
 	
 	// ----
 
-	UE_LOG(LogTemp, Log, TEXT("[Before] Stamina: %d"), StaminaValue);
-
-
 	StaminaValue -= Cost;
-	UE_LOG(LogTemp, Log, TEXT("Cost: %d"), Cost);
-
 	HudWidget->UpdateStaminaGauge(StaminaValue);
 	AddPlayerState(EPlayerState::Attacking);
 	AnimInstance->StartAttack();
-	UE_LOG(LogTemp, Log, TEXT("[After] Stamina: %d"), StaminaValue);
 	
 	// ---- Temporal
 	FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;

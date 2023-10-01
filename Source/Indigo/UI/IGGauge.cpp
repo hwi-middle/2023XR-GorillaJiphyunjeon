@@ -6,8 +6,6 @@
 
 UIGGauge::UIGGauge(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	MaxValue = 100.f;
-	CurrentValue = MaxValue;
 }
 
 void UIGGauge::NativeConstruct()
