@@ -6,7 +6,7 @@
 #include "Indigo/Util/IGDataTableParser.h"
 #include "Indigo/Management/IGCrystalManager.h"
 
-TSharedPtr<IGCrystalManager> Instance = IGCrystalManager::GetInstance();
+
 
 // Sets default values
 AIGTreeCrystal::AIGTreeCrystal()
@@ -29,9 +29,9 @@ Mesh->SetCollisionProfileName(TEXT("Evidence"));
 		{			
 			TreeCrystalScript = ScriptDataTable->FindRow<FIGScriptDataTable>(TEXT("소나무"),TEXT(""));			
 		});
-	Instance = IGCrystalManager::GetInstance();
+
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%s]"), *TreeCrystalScript->Name));
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%p]"), Instance.Get()->GetInstance().Get()));
+
 }
 
 // Called when the game starts or when spawned
@@ -49,7 +49,7 @@ void AIGTreeCrystal::Tick(float DeltaTime)
 
 void AIGTreeCrystal::Interact()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%s]"), *TreeCrystalScript->Script));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%s]"), *TreeCrystalScript->Script));
 	TakeCrystal();
 }
 
@@ -61,10 +61,10 @@ void AIGTreeCrystal::TakeCrystal()
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("[%s]의 결정 습득"), *TreeCrystalScript->Name));
 
-	if(Instance.IsValid())
+	if(IGCrystalManager::GetInstance().IsValid())
 	{
-		Instance.Get()->ActivitedCrystal(this);
+		IGCrystalManager::GetInstance()->FoundCrystal();
 	}
+	
 	bIsGetCrystal = true;
-	Destroy();
 }

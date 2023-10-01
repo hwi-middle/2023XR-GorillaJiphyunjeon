@@ -32,12 +32,10 @@ AIGMainHint::AIGMainHint()
 			MainHintScript = ScriptDataTable->FindRow<FIGScriptDataTable>(FName(*(FString::FormatAsNumber(ScriptNum))),TEXT(""));
 
 			ScriptNum++;
-			if(ScriptArray.Num() < ScriptNum)
+			if (ScriptArray.Num() < ScriptNum)
 			{
 				ScriptNum = 1;
-				return;
-			}
-			
+			}			
 		});
 	
 }
@@ -57,7 +55,7 @@ void AIGMainHint::Tick(float DeltaTime)
 }
 
 void AIGMainHint::Interact()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%s]"), *MainHintScript->Script));
+{	
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("메인 힌트[%s]"), *MainHintScript->Script));
 }
 

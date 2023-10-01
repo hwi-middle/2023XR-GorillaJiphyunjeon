@@ -5,12 +5,14 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Indigo/Interface/Interactable.h"
+#include "Indigo/Interface/IGHintInterface.h"
+#include "Indigo/Util/IGScriptDataTable.h"
 #include "IGMainHint.generated.h"
 
 struct FIGScriptDataTable;
 
 UCLASS()
-class INDIGO_API AIGMainHint : public AActor, public IInteractable
+class INDIGO_API AIGMainHint : public AActor, public IInteractable, public IIGHintInterface
 {
 	GENERATED_BODY()
 	
@@ -27,6 +29,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void Interact() override;
 
+	virtual FORCEINLINE FString GetHintName() const override{return (MainHintScript == nullptr) ? TEXT("") : MainHintScript->Name;}
+	virtual FORCEINLINE FString GetHintScript() const override {return (MainHintScript == nullptr) ? TEXT("") : MainHintScript->Script;}
+	
 private:
 	TObjectPtr<UStaticMeshComponent> Mesh;
 

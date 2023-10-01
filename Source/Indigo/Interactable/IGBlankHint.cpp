@@ -22,7 +22,7 @@ AIGBlankHint::AIGBlankHint()
 }, EAssertionLevel::Check);
 
 	static uint8 ScriptNum = 1;
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%d]"), ScriptNum));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("[%d]"), ScriptNum));
 	FIGDataTableParser::LoadAndInitializeDataTable(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/ScriptDataTable/BlankHintScript.BlankHintScript'"),
 		[&](const UDataTable* ScriptDataTable)
 		{
@@ -32,10 +32,9 @@ AIGBlankHint::AIGBlankHint()
 			BlankHintScript = ScriptDataTable->FindRow<FIGScriptDataTable>(FName(*(FString::FormatAsNumber(ScriptNum))),TEXT(""));
 
 			ScriptNum++;
-			if(ScriptArray.Num() < ScriptNum)
+			if (ScriptArray.Num() < ScriptNum)
 			{
 				ScriptNum = 1;
-				return;
 			}
 			
 		});
@@ -57,5 +56,5 @@ void AIGBlankHint::Tick(float DeltaTime)
 
 void AIGBlankHint::Interact()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%s]"), *BlankHintScript->Script));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("꽝 힌트[%s]"), *BlankHintScript->Script));
 }

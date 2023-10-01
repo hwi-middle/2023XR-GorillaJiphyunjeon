@@ -10,7 +10,6 @@
 #include "IGTreeCrystal.generated.h"
 
 struct FIGScriptDataTable;
-class IGCrystalManager;
 
 UCLASS()
 class INDIGO_API AIGTreeCrystal : public AActor, public IInteractable, public IIGCrystalInterface

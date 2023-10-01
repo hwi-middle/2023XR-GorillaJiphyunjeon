@@ -10,7 +10,6 @@
 #include "IGWaveCrystal.generated.h"
 
 struct FIGScriptDataTable;
-class IGCrystalManager;
 
 UCLASS()
 class INDIGO_API AIGWaveCrystal : public AActor, public IInteractable, public IIGCrystalInterface

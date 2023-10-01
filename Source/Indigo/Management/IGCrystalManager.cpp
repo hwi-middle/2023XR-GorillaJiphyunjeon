@@ -2,35 +2,33 @@
 
 
 #include "IGCrystalManager.h"
+#include "Indigo/Management/IGBossZoneGateManager.h"
 
-#include "Indigo/Interface/IGCrystalInterface.h"
-#include "Indigo/Inventory/IGPlayerInventory.h"
-
-static TSharedPtr<IGCrystalManager> Instance = MakeShareable(new IGCrystalManager());
 
 IGCrystalManager::IGCrystalManager()
 {
-	PlayerInventory = nullptr;
 }
+
 
 IGCrystalManager::~IGCrystalManager()
 {
-	Instance.Reset();	
+	
 }
 
 TSharedPtr<IGCrystalManager> IGCrystalManager::GetInstance()
 {
-	Instance.Reset();
-	Instance = MakeShareable(new IGCrystalManager());
+	TSharedPtr<IGCrystalManager> Instance = MakeShareable(new IGCrystalManager());
 	return Instance;
 }
 
-void IGCrystalManager::ActivitedCrystal(IIGCrystalInterface* InCrystal)
+void IGCrystalManager::FoundAllCrystals()
 {
-	if(PlayerInventory == nullptr)
-	{
-		PlayerInventory = new IGPlayerInventory();
-	}
-	
-	PlayerInventory->AddCrystals(InCrystal);
+	IGBossZoneGateManager::GetInstance()->OpenGate();
 }
+
+void IGCrystalManager::FoundCrystal()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("남은 결정 수 [%d]개"), STAGE_CRYSTALS));
+}
+
+

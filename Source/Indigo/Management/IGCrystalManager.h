@@ -3,32 +3,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
 /**
  * 
  */
 
+constexpr uint8 STAGE_CRYSTALS = 3;
+
 class IIGCrystalInterface;
-class IGPlayerInventory;
 
-class AIGWaveCrystal;
-class AIGTreeCrystal;
-class AIGMountainCrystal;
-
-class INDIGO_API IGCrystalManager
+class INDIGO_API IGCrystalManager 
 {
-public:
-
-	
+public:	
 	IGCrystalManager();
 	~IGCrystalManager();
 
-public:
 	static TSharedPtr<IGCrystalManager> GetInstance();
 	
-	void ActivitedCrystal(IIGCrystalInterface* InCrystal);
-
+	void FoundAllCrystals();
+	void FoundCrystal();
 	
-private:
-	IGPlayerInventory* PlayerInventory;
+
 };

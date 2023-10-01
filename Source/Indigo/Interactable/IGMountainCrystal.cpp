@@ -6,7 +6,7 @@
 #include "Indigo/Util/IGDataTableParser.h"
 #include "Indigo/Management/IGCrystalManager.h"
 
-TSharedPtr<IGCrystalManager> Instance = IGCrystalManager::GetInstance();
+
 
 // Sets default values
 AIGMountainCrystal::AIGMountainCrystal()
@@ -32,8 +32,7 @@ Mesh->SetCollisionProfileName(TEXT("Evidence"));
 		});
 	
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%s]"), *MountainCrystalScript->Name));
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%p]"), Instance.Get()->GetInstance().Get()));
-	
+
 }
 
 // Called when the game starts or when spawned
@@ -52,9 +51,11 @@ void AIGMountainCrystal::Tick(float DeltaTime)
 
 void AIGMountainCrystal::Interact()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%s]"), *MountainCrystalScript->Script));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%s]"), *MountainCrystalScript->Script));
 	TakeCrystal();
 }
+
+
 
 void AIGMountainCrystal::TakeCrystal()
 {
@@ -63,14 +64,11 @@ void AIGMountainCrystal::TakeCrystal()
 		return;		
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("[%s]의 결정 습득"), *MountainCrystalScript->Name));
-
-	if(Instance.IsValid())
+	
+	if(IGCrystalManager::GetInstance().IsValid())
 	{
-		Instance.Get()->ActivitedCrystal(this);
+		IGCrystalManager::GetInstance()->FoundCrystal();
 	}
+		
 	bIsGetCrystal = true;
-	Destroy();
 }
-
-
-

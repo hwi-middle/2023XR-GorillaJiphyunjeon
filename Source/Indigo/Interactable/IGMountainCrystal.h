@@ -10,7 +10,6 @@
 #include "IGMountainCrystal.generated.h"
 
 struct FIGScriptDataTable;
-class IGCrystalManager;
 
 UCLASS()
 class INDIGO_API AIGMountainCrystal : public AActor, public IInteractable, public IIGCrystalInterface
@@ -20,7 +19,6 @@ class INDIGO_API AIGMountainCrystal : public AActor, public IInteractable, publi
 public:	
 	// Sets default values for this actor's properties
 	AIGMountainCrystal();
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -36,5 +34,6 @@ private:
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	FIGScriptDataTable* MountainCrystalScript;
 	uint8 bIsGetCrystal : 1;
+	
 
 };

@@ -2,44 +2,54 @@
 
 
 #include "IGPlayerInventory.h"
+#include "Indigo/Management/IGCrystalManager.h"
 
-IGPlayerInventory::IGPlayerInventory()
+
+UIGPlayerInventory::UIGPlayerInventory()
 {
+}
+UIGPlayerInventory::~UIGPlayerInventory()
+{		
+}
+
+void UIGPlayerInventory::BeginPlay()
+{
+	Super::BeginPlay();
 	
 }
 
-IGPlayerInventory::~IGPlayerInventory()
+void UIGPlayerInventory::TickComponent(float DeltaTime, ELevelTick TickType,
+	FActorComponentTickFunction* ThisTickFunction)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%d]개"), ArrCrystals.Num()));
-		
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	
 }
 
-void IGPlayerInventory::AddCrystals(IIGCrystalInterface* InCrystal)
-{
-	if(InCrystal == nullptr)
-	{
-		return;
-	}
-	
-	if(ArrCrystals.Num() > 0 && ArrCrystals.Num() < 3)
-	{		
-		for(const IIGCrystalInterface* Crystals : ArrCrystals)
-		{	
-			if(InCrystal->GetCrystalName() == Crystals->GetCrystalName())
-			{
-				return;
-			}
-		}
-	}
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%d]"), ArrCrystals.Num()));
-	ArrCrystals.Add(InCrystal);
+void UIGPlayerInventory::AddCrystals(IIGCrystalInterface* InCrystal)
+{	
+	ArrCrystals.AddUnique(InCrystal);
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("현재 결정 갯수: [%d]"), ArrCrystals.Num()));	
 	ShowMyCrystals();
+
+	if(ArrCrystals.Num() >= 3)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("결정을 다 찾았어!")));
+		IGCrystalManager::GetInstance()->FoundAllCrystals();		
+	}
+	
 }
 
-void IGPlayerInventory::ShowMyCrystals()
+void UIGPlayerInventory::ShowMyCrystals()
 {
 	for(const IIGCrystalInterface* Crystals: ArrCrystals)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%s]의 결정 소유"), *Crystals->GetCrystalName()));
 	}
+}
+
+void UIGPlayerInventory::AddHints(IIGHintInterface* InHint)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%d]"), ArrHints.Num()));
+	ArrHints.AddUnique(InHint);	
 }

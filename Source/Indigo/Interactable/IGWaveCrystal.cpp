@@ -6,7 +6,6 @@
 #include "Indigo/Util/IGDataTableParser.h"
 #include "Indigo/Management/IGCrystalManager.h"
 
-TSharedPtr<IGCrystalManager> Instance = IGCrystalManager::GetInstance();
 
 // Sets default values
 AIGWaveCrystal::AIGWaveCrystal()
@@ -29,9 +28,9 @@ Mesh->SetCollisionProfileName(TEXT("Evidence"));
 		{			
 			WaveCrystalScript = ScriptDataTable->FindRow<FIGScriptDataTable>(TEXT("파도"),TEXT(""));			
 		});
-	Instance = IGCrystalManager::GetInstance();
+
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%s]"), *WaveCrystalScript->Name));
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%p]"), Instance.Get()->GetInstance().Get()));
+
 
 }
 
@@ -50,7 +49,7 @@ void AIGWaveCrystal::Tick(float DeltaTime)
 
 void AIGWaveCrystal::Interact()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%s]"), *WaveCrystalScript->Script));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%s]"), *WaveCrystalScript->Script));
 	TakeCrystal();
 }
 
@@ -62,10 +61,10 @@ void AIGWaveCrystal::TakeCrystal()
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("[%s]의 결정 습득"), *WaveCrystalScript->Name));
 
-	if(Instance.IsValid())
+	if(IGCrystalManager::GetInstance().IsValid())
 	{
-		Instance.Get()->ActivitedCrystal(this);
+		IGCrystalManager::GetInstance()->FoundCrystal();
 	}
+	
 	bIsGetCrystal = true;
-	Destroy();
 }
