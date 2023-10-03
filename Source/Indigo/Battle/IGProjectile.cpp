@@ -7,6 +7,7 @@
 #include "Indigo/Constant/IGCollisionChannels.h"
 #include "Indigo/Enemy/IGEnemyBase.h"
 #include "Indigo/Util/IGConstructorHelper.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AIGProjectile::AIGProjectile()
@@ -59,6 +60,7 @@ void AIGProjectile::Tick(float DeltaTime)
 	FCollisionQueryParams CollisionParams;
 	float Radius = 50.f;
 	CollisionParams.AddIgnoredActor(this);
+	CollisionParams.AddIgnoredActor(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	
 	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 16, FColor::Green, false, 0.f);	
 
