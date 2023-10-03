@@ -97,11 +97,14 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	SunMoonSection2Threshold = 30;
 	SunMoonSection3Threshold = 70;
 	SunMoonSection1DamageScaleFactor = 1;
-	SunMoonSection1DamageScaleFactor = 2;
-	SunMoonSection1DamageScaleFactor = 3;
+	SunMoonSection2DamageScaleFactor = 2;
+	SunMoonSection3DamageScaleFactor = 3;
 	SunMoonAttackCost = 10;
 	ExhaustionPhase1Duration = 3.f;
 	ExhaustionPhase2Duration = 10.f;
+	SunMoonAutoConsumptionDelay = 5.f;
+	ElapsedSunMoonAutoConsumptionTime = 0.f;
+	SunMoonAutoConsumptionAmount = 2;
 
 	NormalAttackDamage = 3;
 	StrongAttackDamage = 7;
@@ -336,12 +339,15 @@ void AIGPlayerCharacter::Attack()
 	StaminaValue -= Cost;
 	HudWidget->UpdateStaminaGauge(StaminaValue);
 	AddPlayerState(EPlayerState::Attacking);
-
+	ElapsedSunMoonAutoConsumptionTime = 0.f;
 	AnimInstance->SetEnforced(IsEnforced);
 	AnimInstance->StartAttack();
 
+	float DamageScaleFactor = 1;
 	if (IsEnforced)
 	{
+		GetWorldTimerManager().ClearTimer(SunMoonAutoConsumptionTimerHandle);
+
 		// unsigned 값이므로 뺄셈 시 언더플로 주의
 		if (SunMoonValue < SunMoonAttackCost)
 		{
@@ -355,14 +361,27 @@ void AIGPlayerCharacter::Attack()
 			SunMoonValue -= SunMoonAttackCost;
 		}
 
-		UE_LOG(LogTemp, Log, TEXT("일월 게이지 차감 [%d]"), SunMoonValue);
 		HudWidget->UpdateSunMoonGauge(SunMoonValue);
+
+		// 데미지 배율 계산
+		if (SunMoonValue >= SunMoonSection3Threshold)
+		{
+			DamageScaleFactor = SunMoonSection3DamageScaleFactor;
+		}
+		else if (SunMoonValue >= SunMoonSection2Threshold)
+		{
+			DamageScaleFactor = SunMoonSection2DamageScaleFactor;
+		}
+		else
+		{
+			DamageScaleFactor = SunMoonSection1DamageScaleFactor;
+		}
 	}
 
 	// ---- Temporal (Socket 등으로 위치 조정해줘야함)
 	const FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
 	AIGProjectile* SpawnedActor = GetWorld()->SpawnActor<AIGProjectile>(SpawnLocation, FRotator::ZeroRotator);
-	const float Damage = CheckPlayerState(EPlayerState::Enforced) ? StrongAttackDamage : NormalAttackDamage;
+	const float Damage = IsEnforced ? StrongAttackDamage * DamageScaleFactor : NormalAttackDamage;
 	SpawnedActor->Init(Damage, GetActorForwardVector(), 1000.f, 10.f);
 	SpawnedActor->OnHitProjectile.AddUObject(this, &AIGPlayerCharacter::OnHitProjectile);
 	// ----
@@ -398,7 +417,51 @@ void AIGPlayerCharacter::ToggleSunMoon()
 	else
 	{
 		AddPlayerState(EPlayerState::Enforced);
+		ConsumeSunMoonByTime();
 	}
+}
+
+void AIGPlayerCharacter::ConsumeSunMoonByTime()
+{
+	static bool bIsInitialDelayDone = false;
+	const float DeltaTime = GWorld->GetDeltaSeconds();
+	ElapsedSunMoonAutoConsumptionTime += DeltaTime;
+
+	if(!CheckPlayerState(EPlayerState::Enforced))
+	{
+		bIsInitialDelayDone = false;
+		return;
+	}
+
+	if (!bIsInitialDelayDone)
+	{
+		if (ElapsedSunMoonAutoConsumptionTime < SunMoonAutoConsumptionDelay)
+		{
+			GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::ConsumeSunMoonByTime);
+			return;
+		}
+
+		bIsInitialDelayDone = true;
+		ensure(ElapsedSunMoonAutoConsumptionTime >= 1.f);
+	}
+
+	if (ElapsedSunMoonAutoConsumptionTime >= 1.f)
+	{
+		UE_LOG(LogTemp, Log, TEXT("일월 게이지 자동 소모"));
+		if (SunMoonValue < SunMoonAutoConsumptionAmount)
+		{
+			SunMoonValue = 0;
+		}
+		else
+		{
+			SunMoonValue -= SunMoonAutoConsumptionAmount;
+		}
+		HudWidget->UpdateSunMoonGauge(SunMoonValue);
+
+		ElapsedSunMoonAutoConsumptionTime = 0.f;
+	}
+
+	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::ConsumeSunMoonByTime);
 }
 
 void AIGPlayerCharacter::EnableExhaustion()
@@ -411,7 +474,7 @@ void AIGPlayerCharacter::EnableExhaustion()
 	{
 		AddPlayerState(EPlayerState::ExhaustedPhase1);
 	}
-	else if (ElapsedTime  <= ExhaustionPhase1Duration + ExhaustionPhase2Duration)
+	else if (ElapsedTime <= ExhaustionPhase1Duration + ExhaustionPhase2Duration)
 	{
 		RemovePlayerState(EPlayerState::ExhaustedPhase1);
 		AddPlayerState(EPlayerState::ExhaustedPhase2);
@@ -424,19 +487,35 @@ void AIGPlayerCharacter::EnableExhaustion()
 		return;
 	}
 
-	GWorld->GetTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::EnableExhaustion);
+	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::EnableExhaustion);
 }
 
 void AIGPlayerCharacter::OnHitProjectile()
 {
 	if (CheckPlayerState(EPlayerState::ExhaustedPhase1))
 	{
-		UE_LOG(LogTemp, Log, TEXT("탈진상태이므로 게이지 획득 불가"));
 		return;
 	}
 
 	const uint32 ActualRecoveryAmount = CheckPlayerState(EPlayerState::ExhaustedPhase2) ? AttackHitSunMoonRecoveryAmount / 2 : AttackHitSunMoonRecoveryAmount;
-	UE_LOG(LogTemp, Log, TEXT("게이지 획득: [%d]"), ActualRecoveryAmount);
 	SunMoonValue += ActualRecoveryAmount;
+	HudWidget->UpdateSunMoonGauge(SunMoonValue);
+}
+
+void AIGPlayerCharacter::SetHp_DEBUG(const uint32 Value)
+{
+	Hp = Value;
+	HudWidget->UpdateHpGauge(Hp);
+}
+
+void AIGPlayerCharacter::SetStaminaValue_DEBUG(const uint32 Value)
+{
+	StaminaValue = Value;
+	HudWidget->UpdateStaminaGauge(StaminaValue);
+}
+
+void AIGPlayerCharacter::SetSunMoon_DEBUG(const uint32 Value)
+{
+	SunMoonValue = Value;
 	HudWidget->UpdateSunMoonGauge(SunMoonValue);
 }
