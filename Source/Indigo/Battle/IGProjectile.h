@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "IGProjectile.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnHitProjectile)
+
 UCLASS()
 class INDIGO_API AIGProjectile : public AActor
 {
@@ -43,5 +45,6 @@ private:
 	float ElapsedTime;
 	
 public:
+	 FOnHitProjectile OnHitProjectile;
 	void Init(float InDamage, FVector InTargetDirection, float MaxDistance, float InSpeed);
 };

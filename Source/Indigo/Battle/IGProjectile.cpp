@@ -4,10 +4,12 @@
 #include "IGProjectile.h"
 
 #include "Engine/DamageEvents.h"
+#include "Indigo/Character/IGPlayerCharacter.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
 #include "Indigo/Enemy/IGEnemyBase.h"
 #include "Indigo/Util/IGCharacterDataTable.h"
 #include "Indigo/Util/IGConstructorHelper.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AIGProjectile::AIGProjectile()
@@ -50,7 +52,7 @@ void AIGProjectile::Tick(float DeltaTime)
 	ElapsedTime += DeltaTime;
 	if (ElapsedTime > Duration)
 	{
-		Destroy(this);
+		Destroy();
 	}
 
 	float Alpha = ElapsedTime / Duration;
@@ -82,8 +84,9 @@ void AIGProjectile::Tick(float DeltaTime)
 	if (Enemy)
 	{
 		FDamageEvent DamageEvent;
-		Enemy->TakeDamage(Damage, DamageEvent, GetInstigatorController(), this);;
+		Enemy->TakeDamage(Damage, DamageEvent, GetInstigatorController(), this);
+		OnHitProjectile.Broadcast();
 	}
 
-	Destroy(this);
+	Destroy();
 }

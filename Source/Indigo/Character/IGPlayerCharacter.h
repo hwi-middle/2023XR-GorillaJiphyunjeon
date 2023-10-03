@@ -21,13 +21,15 @@ UENUM(Meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
 enum class EPlayerState : uint32
 {
 	None = 0x00,
-	Idling = 0x01,
-	Walking = 0x02,
-	Running = 0x04,
-	Jumping = 0x08,
-	Rolling = 0x10,
-	Attacking = 0x20,
-	Enforced = 0x40,
+	Idling = 0x01, // 움직임이 없는 상태
+	Walking = 0x02, // 걷는 중
+	Running = 0x04, // 달리는 중
+	Jumping = 0x08, // 점프하는 중
+	Rolling = 0x10, // 구르는 중
+	Attacking = 0x20, // 공격 중
+	Enforced = 0x40, // 공격 강화 활성화
+	ExhaustedPhase1 = 0x80, // 탈진 (일월 게이지 비활성화)
+	ExhaustedPhase2 = 0x100, // 탈진 (일월 게이지 획득량 감소)
 	All = 0xff,
 };
 ENUM_CLASS_FLAGS(EPlayerState);
@@ -126,13 +128,19 @@ protected:
 	void StartRolling();
 	void FinishRolling();
 	void ToggleSunMoon();
+	void EnableExhaustion();
 
 public:
     FORCEINLINE USpringArmComponent* GetCameraSpringArm() const { return CameraSpringArm; }
     FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 private:
-    //멤버 변수
+    // 플레이어 능력치
+	FIGCharacterDataTable* CharacterDataTable;
+	
+	UPROPERTY(VisibleAnywhere)
+	uint32 SunMoonValue;
+	
     UPROPERTY(VisibleAnywhere)
     uint32 Hp;
 	
@@ -166,12 +174,44 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	uint32 StrongAttackDamage;
 
+	// 증감값
+	UPROPERTY(VisibleAnywhere)
+	uint32 AttackHitSunMoonRecoveryAmount;
+	
 	UPROPERTY(VisibleAnywhere)
 	uint32 NormalAttackStaminaCost;
 	
 	UPROPERTY(VisibleAnywhere)
 	uint32 StrongAttackStaminaCost;
+
+	UPROPERTY(VisibleAnywhere)
+	uint32 ExhaustionDecrementValuePerSecond;
+
+	// 기타 필요한 정보
+	UPROPERTY(VisibleAnywhere)
+	uint32 SunMoonSection2Threshold;
+
+	UPROPERTY(VisibleAnywhere)
+	uint32 SunMoonSection3Threshold;
 	
-    FIGCharacterDataTable* CharacterDataTable;
-    
+	UPROPERTY(VisibleAnywhere)
+	uint32 SunMoonSection1DamageScaleFactor;
+	
+	UPROPERTY(VisibleAnywhere)
+	uint32 SunMoonSection2DamageScaleFactor;
+	
+	UPROPERTY(VisibleAnywhere)
+	uint32 SunMoonSection3DamageScaleFactor;
+
+	UPROPERTY(VisibleAnywhere)
+	uint32 SunMoonAttackCost;
+
+	UPROPERTY(VisibleAnywhere)
+	float ExhaustionPhase1Duration;
+
+	UPROPERTY(VisibleAnywhere)
+	float ExhaustionPhase2Duration;
+
+private:
+	void OnHitProjectile();
 };

@@ -18,8 +18,8 @@
 #include "Indigo/Constant/IGCollisionChannels.h"
 #include "Indigo/Interface/Interactable.h"
 #include "Indigo/UI/IGIngameHUDWidget.h"
-#include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGCharacterDataTable.h"
+#include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGDataTableParser.h"
 
 AIGPlayerCharacter::AIGPlayerCharacter()
@@ -74,23 +74,39 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	JumpAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Jump.IA_Jump'"));
 	MoveAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Move.IA_Move'"));
 	LookAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Look.IA_Look'"));
-	RunAction  = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Run.IA_Run'"));
+	RunAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Run.IA_Run'"));
 	InteractAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Interact.IA_Interact'"));
 	RollAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Roll.IA_Roll'"));
 	AttackAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Attack.IA_Attack'"));
 	ToggleSunMoonAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_ToggleSunMoon.IA_ToggleSunMoon'"));
-	
+
 	const TSubclassOf<UIGPlayerAnimInstance> BossAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGPlayerAnimInstance>(
-	TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/ABP_Player.ABP_Player_C"), EAssertionLevel::Check);
+		TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/ABP_Player.ABP_Player_C"), EAssertionLevel::Check);
 	GetMesh()->SetAnimInstanceClass(BossAnimInstanceClass);
 
 	FIGConstructorHelper::FindClassAndInitialize<UIGIngameHUDWidget>(TEXT("/Game/_GorillaJiphyunjeon/UI/Game/WBP_GameHUD.WBP_GameHUD_C"), [&](TSubclassOf<UIGIngameHUDWidget> Class)
 	{
 		HudWidgetClass = Class;
 	}, EAssertionLevel::Check);
-	
+
 	WalkSpeed = 500.f;
 	SprintSpeed = 800.f;
+
+	SunMoonValue = 0;
+	AttackHitSunMoonRecoveryAmount = 5;
+	SunMoonSection2Threshold = 30;
+	SunMoonSection3Threshold = 70;
+	SunMoonSection1DamageScaleFactor = 1;
+	SunMoonSection1DamageScaleFactor = 2;
+	SunMoonSection1DamageScaleFactor = 3;
+	SunMoonAttackCost = 10;
+	ExhaustionPhase1Duration = 3.f;
+	ExhaustionPhase2Duration = 10.f;
+
+	NormalAttackDamage = 3;
+	StrongAttackDamage = 7;
+	NormalAttackStaminaCost = 5;
+	StrongAttackStaminaCost = 7;
 }
 
 bool AIGPlayerCharacter::CheckPlayerState(const EPlayerState InState) const
@@ -125,11 +141,6 @@ void AIGPlayerCharacter::BeginPlay()
 	AnimInstance->OnFinishAttack.AddUObject(this, &AIGPlayerCharacter::FinishAttack);
 	CurrentState = EPlayerState::Idling;
 
-	NormalAttackDamage = 3;
-	StrongAttackDamage = 7;
-	NormalAttackStaminaCost = 5;
-	StrongAttackStaminaCost = 7;
-	
 	HudWidget = CreateWidget<UIGIngameHUDWidget>(GetWorld(), HudWidgetClass);
 	if (HudWidget)
 	{
@@ -151,39 +162,47 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 	// DefenceValue = CharacterDataTable->DefenseValue;
 	// StaminaValue = CharacterDataTable->StaminaValue;
 	FString DebugMessage = TEXT("<플레이어 상태>\n");
-	
-	if(CheckPlayerState(EPlayerState::Idling))
+
+	if (CheckPlayerState(EPlayerState::Idling))
 	{
 		DebugMessage.Append(TEXT("정지\n"));
 	}
-	if(CheckPlayerState(EPlayerState::Walking))
+	if (CheckPlayerState(EPlayerState::Walking))
 	{
 		DebugMessage.Append(TEXT("걷기\n"));
 	}
-	if(CheckPlayerState(EPlayerState::Running))
+	if (CheckPlayerState(EPlayerState::Running))
 	{
 		DebugMessage.Append(TEXT("달리기\n"));
 	}
-	if(CheckPlayerState(EPlayerState::Jumping))
+	if (CheckPlayerState(EPlayerState::Jumping))
 	{
 		DebugMessage.Append(TEXT("점프\n"));
 	}
-	if(CheckPlayerState(EPlayerState::Rolling))
+	if (CheckPlayerState(EPlayerState::Rolling))
 	{
 		DebugMessage.Append(TEXT("구르기\n"));
 	}
-	if(CheckPlayerState(EPlayerState::Attacking))
+	if (CheckPlayerState(EPlayerState::Attacking))
 	{
 		DebugMessage.Append(TEXT("공격\n"));
 	}
-	if(CheckPlayerState(EPlayerState::Enforced))
+	if (CheckPlayerState(EPlayerState::Enforced))
 	{
 		DebugMessage.Append(TEXT("강화됨\n"));
+	}
+	if (CheckPlayerState(EPlayerState::ExhaustedPhase1))
+	{
+		DebugMessage.Append(TEXT("탈진상태(게이지 획득 불가)\n"));
+	}
+	if (CheckPlayerState(EPlayerState::ExhaustedPhase2))
+	{
+		DebugMessage.Append(TEXT("탈진상태(게이지 획득량 감소)\n"));
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, *DebugMessage);
 #endif
 	AnimInstance->SetSpeed(GetVelocity().Size2D());
-} 
+}
 
 void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -207,7 +226,7 @@ void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 void AIGPlayerCharacter::Move(const FInputActionValue& Value)
 {
 	RemovePlayerState(EPlayerState::Idling);
-	if(!CheckPlayerState(EPlayerState::Running))
+	if (!CheckPlayerState(EPlayerState::Running))
 	{
 		AddPlayerState(EPlayerState::Walking);
 	}
@@ -306,28 +325,46 @@ void AIGPlayerCharacter::Attack()
 		return;
 	}
 
+	const bool IsEnforced = CheckPlayerState(EPlayerState::Enforced);
 	// 스태미너 부족
-	const uint32 Cost = CheckPlayerState(EPlayerState::Enforced) ? StrongAttackStaminaCost : NormalAttackStaminaCost;
+	const uint32 Cost = IsEnforced ? StrongAttackStaminaCost : NormalAttackStaminaCost;
 	if (StaminaValue < Cost)
 	{
 		return;
 	}
-	
-	
-	// ----
 
 	StaminaValue -= Cost;
 	HudWidget->UpdateStaminaGauge(StaminaValue);
 	AddPlayerState(EPlayerState::Attacking);
 
-	AnimInstance->SetEnforced(CheckPlayerState(EPlayerState::Enforced));
+	AnimInstance->SetEnforced(IsEnforced);
 	AnimInstance->StartAttack();
 
-	// ---- Temporal
-	FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
+	if (IsEnforced)
+	{
+		// unsigned 값이므로 뺄셈 시 언더플로 주의
+		if (SunMoonValue < SunMoonAttackCost)
+		{
+			SunMoonValue = 0;
+			RemovePlayerState(EPlayerState::Enforced);
+			AddPlayerState(EPlayerState::ExhaustedPhase1);
+			EnableExhaustion();
+		}
+		else
+		{
+			SunMoonValue -= SunMoonAttackCost;
+		}
+
+		UE_LOG(LogTemp, Log, TEXT("일월 게이지 차감 [%d]"), SunMoonValue);
+		HudWidget->UpdateSunMoonGauge(SunMoonValue);
+	}
+
+	// ---- Temporal (Socket 등으로 위치 조정해줘야함)
+	const FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
 	AIGProjectile* SpawnedActor = GetWorld()->SpawnActor<AIGProjectile>(SpawnLocation, FRotator::ZeroRotator);
 	const float Damage = CheckPlayerState(EPlayerState::Enforced) ? StrongAttackDamage : NormalAttackDamage;
 	SpawnedActor->Init(Damage, GetActorForwardVector(), 1000.f, 10.f);
+	SpawnedActor->OnHitProjectile.AddUObject(this, &AIGPlayerCharacter::OnHitProjectile);
 	// ----
 }
 
@@ -338,11 +375,11 @@ void AIGPlayerCharacter::FinishAttack()
 
 void AIGPlayerCharacter::StartRolling()
 {
-	if(CheckPlayerState(EPlayerState::Rolling))
+	if (CheckPlayerState(EPlayerState::Rolling))
 	{
 		return;
 	}
-	
+
 	AddPlayerState(EPlayerState::Rolling);
 	AnimInstance->StartRoll();
 }
@@ -362,4 +399,44 @@ void AIGPlayerCharacter::ToggleSunMoon()
 	{
 		AddPlayerState(EPlayerState::Enforced);
 	}
+}
+
+void AIGPlayerCharacter::EnableExhaustion()
+{
+	static float ElapsedTime = 0.f;
+	const float DeltaTime = GWorld->GetDeltaSeconds();
+	ElapsedTime += DeltaTime;
+
+	if (ElapsedTime <= ExhaustionPhase1Duration)
+	{
+		AddPlayerState(EPlayerState::ExhaustedPhase1);
+	}
+	else if (ElapsedTime  <= ExhaustionPhase1Duration + ExhaustionPhase2Duration)
+	{
+		RemovePlayerState(EPlayerState::ExhaustedPhase1);
+		AddPlayerState(EPlayerState::ExhaustedPhase2);
+	}
+	else
+	{
+		RemovePlayerState(EPlayerState::ExhaustedPhase1);
+		RemovePlayerState(EPlayerState::ExhaustedPhase2);
+		ElapsedTime = 0.f;
+		return;
+	}
+
+	GWorld->GetTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::EnableExhaustion);
+}
+
+void AIGPlayerCharacter::OnHitProjectile()
+{
+	if (CheckPlayerState(EPlayerState::ExhaustedPhase1))
+	{
+		UE_LOG(LogTemp, Log, TEXT("탈진상태이므로 게이지 획득 불가"));
+		return;
+	}
+
+	const uint32 ActualRecoveryAmount = CheckPlayerState(EPlayerState::ExhaustedPhase2) ? AttackHitSunMoonRecoveryAmount / 2 : AttackHitSunMoonRecoveryAmount;
+	UE_LOG(LogTemp, Log, TEXT("게이지 획득: [%d]"), ActualRecoveryAmount);
+	SunMoonValue += ActualRecoveryAmount;
+	HudWidget->UpdateSunMoonGauge(SunMoonValue);
 }
