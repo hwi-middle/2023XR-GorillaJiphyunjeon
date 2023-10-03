@@ -492,7 +492,7 @@ void AIGPlayerCharacter::EnableExhaustion()
 
 void AIGPlayerCharacter::OnHitProjectile()
 {
-	if (CheckPlayerState(EPlayerState::ExhaustedPhase1))
+	if (CheckPlayerState(EPlayerState::ExhaustedPhase1) || CheckPlayerState(EPlayerState::Enforced))
 	{
 		return;
 	}
