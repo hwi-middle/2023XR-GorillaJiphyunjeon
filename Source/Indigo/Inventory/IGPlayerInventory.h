@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Indigo/Interface/IGCrystalInterface.h"
 #include "Indigo/Interface/IGHintInterface.h"
 #include "Components/ActorComponent.h"
 #include "IGPlayerInventory.generated.h"
+
+class AIGCrystalParent;
 
 UCLASS()
 class INDIGO_API UIGPlayerInventory : public UActorComponent
@@ -21,16 +22,16 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 public:
-	void AddCrystals(IIGCrystalInterface* InCrystal);
+	void AddCrystals(AIGCrystalParent* InCrystal);
 	void ShowMyCrystals();
 
 	void AddHints(IIGHintInterface* InHint);
 
-	FORCEINLINE TArray<IIGCrystalInterface*> GetArrCrystals(){return ArrCrystals;}
+	FORCEINLINE TArray<AIGCrystalParent*> GetArrCrystals(){return ArrCrystals;}
 	FORCEINLINE TArray<IIGHintInterface*> GetArrHints(){return ArrHints;}
 	
 private:
-	TArray<IIGCrystalInterface*> ArrCrystals;
+	TArray<AIGCrystalParent*> ArrCrystals;
 	TArray<IIGHintInterface*> ArrHints;
 	
 };

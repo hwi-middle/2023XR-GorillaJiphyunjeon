@@ -4,15 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Indigo/Interface/Interactable.h"
-#include "Indigo/Interface/IGCrystalInterface.h"
-#include "Indigo/Util/IGScriptDataTable.h"
+#include "IGCrystalParent.h"
 #include "IGWaveCrystal.generated.h"
 
 struct FIGScriptDataTable;
 
 UCLASS()
-class INDIGO_API AIGWaveCrystal : public AActor, public IInteractable, public IIGCrystalInterface
+class INDIGO_API AIGWaveCrystal : public AIGCrystalParent
 {
 	GENERATED_BODY()
 	
@@ -24,17 +22,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	virtual void Interact() override;
 	virtual void TakeCrystal() override;
-	
-	virtual FORCEINLINE bool IsGetCrystal() const override{return bIsGetCrystal;};
-	virtual FORCEINLINE FString GetCrystalName() const override{return WaveCrystalScript->Name;};
-	
-private:
-	TObjectPtr<UStaticMeshComponent> Mesh;
-	FIGScriptDataTable* WaveCrystalScript;
-	uint8 bIsGetCrystal : 1;
+
 };

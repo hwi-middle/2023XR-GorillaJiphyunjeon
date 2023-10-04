@@ -23,7 +23,7 @@
 #include "Indigo/Util/IGDataTableParser.h"
 
 #include "Indigo/Inventory/IGPlayerInventory.h"
-#include "Indigo/Interface/IGCrystalInterface.h"
+#include "Indigo/Interactable/IGCrystalParent.h"
 
 AIGPlayerCharacter::AIGPlayerCharacter()
 {
@@ -318,7 +318,7 @@ void AIGPlayerCharacter::Interact()
 	}
 
 	IInteractable* Interactable = Cast<IInteractable>(Result.GetActor());
-	IIGCrystalInterface* Crystal = Cast<IIGCrystalInterface>(Result.GetActor());
+	AIGCrystalParent* Crystal = Cast<AIGCrystalParent>(Result.GetActor());
 	
 	if (Interactable != nullptr)
 	{
