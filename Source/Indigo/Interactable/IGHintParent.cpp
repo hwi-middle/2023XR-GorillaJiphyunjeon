@@ -23,7 +23,6 @@ AIGHintParent::AIGHintParent(FString InPath)
 }, EAssertionLevel::Check);
 
 	static uint8 ScriptNum = 1;
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("[%d]"), ScriptNum));
 	FIGDataTableParser::LoadAndInitializeDataTable(*Path,
 		[&](const UDataTable* ScriptDataTable)
 		{
