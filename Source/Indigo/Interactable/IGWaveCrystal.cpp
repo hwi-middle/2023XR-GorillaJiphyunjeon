@@ -29,7 +29,7 @@ Mesh->SetCollisionProfileName(TEXT("Evidence"));
 			WaveCrystalScript = ScriptDataTable->FindRow<FIGScriptDataTable>(TEXT("파도"),TEXT(""));			
 		});
 
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%s]"), *WaveCrystalScript->Name));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%s]"), *WaveCrystalScript->Name));
 
 
 }
@@ -61,10 +61,5 @@ void AIGWaveCrystal::TakeCrystal()
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("[%s]의 결정 습득"), *WaveCrystalScript->Name));
 
-	if(IGCrystalManager::GetInstance().IsValid())
-	{
-		IGCrystalManager::GetInstance()->FoundCrystal();
-	}
-	
 	bIsGetCrystal = true;
 }

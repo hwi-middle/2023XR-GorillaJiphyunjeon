@@ -14,6 +14,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
+class UIGPlayerInventory;
 struct FInputActionValue;
 struct FIGCharacterDataTable;
 
@@ -248,4 +249,6 @@ private:
 
 	UFUNCTION(Exec, Category="Command")
 	void SetSunMoon_DEBUG(const uint32 Value);
+	UIGPlayerInventory* PlayerInventory;
+
 };

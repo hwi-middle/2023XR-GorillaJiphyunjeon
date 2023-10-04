@@ -2,7 +2,7 @@
 
 
 #include "IGBossZoneGateManager.h"
-TSharedPtr<IGBossZoneGateManager> Instance = MakeShareable(new IGBossZoneGateManager());
+
 IGBossZoneGateManager::IGBossZoneGateManager()
 {
 	
@@ -23,6 +23,6 @@ void IGBossZoneGateManager::OpenGate()
 
 TSharedPtr<IGBossZoneGateManager> IGBossZoneGateManager::GetInstance()
 {
-
+	static TSharedPtr<IGBossZoneGateManager> Instance = MakeShareable(new IGBossZoneGateManager());
 	return Instance;
 }

@@ -30,7 +30,7 @@ Mesh->SetCollisionProfileName(TEXT("Evidence"));
 			TreeCrystalScript = ScriptDataTable->FindRow<FIGScriptDataTable>(TEXT("소나무"),TEXT(""));			
 		});
 
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%s]"), *TreeCrystalScript->Name));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%s]"), *TreeCrystalScript->Name));
 
 }
 
@@ -61,10 +61,5 @@ void AIGTreeCrystal::TakeCrystal()
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("[%s]의 결정 습득"), *TreeCrystalScript->Name));
 
-	if(IGCrystalManager::GetInstance().IsValid())
-	{
-		IGCrystalManager::GetInstance()->FoundCrystal();
-	}
-	
 	bIsGetCrystal = true;
 }

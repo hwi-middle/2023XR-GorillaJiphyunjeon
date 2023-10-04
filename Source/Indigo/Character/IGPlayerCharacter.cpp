@@ -22,6 +22,9 @@
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGDataTableParser.h"
 
+#include "Indigo/Inventory/IGPlayerInventory.h"
+#include "Indigo/Interface/IGCrystalInterface.h"
+
 AIGPlayerCharacter::AIGPlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -69,6 +72,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 		GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -100.f));
 	}, EAssertionLevel::Check);
 
+	PlayerInventory = CreateDefaultSubobject<UIGPlayerInventory>(TEXT("Inventory"));
 
 	DefaultMappingContext = FIGConstructorHelper::FindAndGetObject<UInputMappingContext>(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/_GorillaJiphyunjeon/Input/IMC_Default.IMC_Default'"));
 	JumpAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Jump.IA_Jump'"));
@@ -314,9 +318,16 @@ void AIGPlayerCharacter::Interact()
 	}
 
 	IInteractable* Interactable = Cast<IInteractable>(Result.GetActor());
+	IIGCrystalInterface* Crystal = Cast<IIGCrystalInterface>(Result.GetActor());
+	
 	if (Interactable != nullptr)
 	{
 		Interactable->Interact();
+
+		if(Crystal != nullptr)
+		{
+			PlayerInventory->AddCrystals(Crystal);
+		}
 	}
 }
 
