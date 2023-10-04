@@ -32,10 +32,10 @@ public:
 	virtual void TakeCrystal();
 	
 	virtual FORCEINLINE bool IsGetCrystal() const {return bIsGetCrystal;}
-	virtual FORCEINLINE FString GetCrystalName() const {return MountainCrystalScript->Name;};
+	virtual FORCEINLINE FString GetCrystalName() const {return CrystalScript->Name;};
 private:
 	TObjectPtr<UStaticMeshComponent> Mesh;
-	FIGScriptDataTable* MountainCrystalScript;
+	FIGScriptDataTable* CrystalScript;
 	uint8 bIsGetCrystal : 1;
 
 };

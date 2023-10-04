@@ -30,8 +30,8 @@ Mesh->SetCollisionProfileName(TEXT("Evidence"));
 
 	FIGDataTableParser::LoadAndInitializeDataTable(*InPath,
 		[&](const UDataTable* ScriptDataTable)
-		{			
-			MountainCrystalScript = ScriptDataTable->FindRow<FIGScriptDataTable>(InName,TEXT(""));			
+		{
+			CrystalScript = ScriptDataTable->FindRow<FIGScriptDataTable>(InName,TEXT(""));			
 		});
 }
 
@@ -51,7 +51,7 @@ void AIGCrystalParent::Tick(float DeltaTime)
 
 void AIGCrystalParent::Interact()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%s]"), *MountainCrystalScript->Script));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%s]"), *CrystalScript->Script));
 	TakeCrystal();
 }
 
@@ -61,7 +61,7 @@ void AIGCrystalParent::TakeCrystal()
 	{
 		return;		
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("[%s]의 결정 습득"), *MountainCrystalScript->Name));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("[%s]의 결정 습득"), *CrystalScript->Name));
 
 	bIsGetCrystal = true;
 }
