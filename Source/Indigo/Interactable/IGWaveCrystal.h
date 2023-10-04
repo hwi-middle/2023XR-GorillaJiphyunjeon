@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "IGCrystalParent.h"
+#include "IGCrystalBase.h"
 #include "IGWaveCrystal.generated.h"
 
 struct FIGScriptDataTable;
 
 UCLASS()
-class INDIGO_API AIGWaveCrystal : public AIGCrystalParent
+class INDIGO_API AIGWaveCrystal : public AIGCrystalBase
 {
 	GENERATED_BODY()
 	

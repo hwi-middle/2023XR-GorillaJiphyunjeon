@@ -3,7 +3,7 @@
 
 #include "IGPlayerInventory.h"
 
-#include "Indigo/Interactable/IGCrystalParent.h"
+#include "..\Interactable\IGCrystalBase.h"
 #include "Indigo/Management/IGCrystalManager.h"
 
 
@@ -28,7 +28,7 @@ void UIGPlayerInventory::TickComponent(float DeltaTime, ELevelTick TickType,
 	
 }
 
-void UIGPlayerInventory::AddCrystals(AIGCrystalParent* InCrystal)
+void UIGPlayerInventory::AddCrystals(AIGCrystalBase* InCrystal)
 {	
 	ArrCrystals.AddUnique(InCrystal);
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("현재 결정 갯수: [%d]"), ArrCrystals.Num()));	
@@ -44,7 +44,7 @@ void UIGPlayerInventory::AddCrystals(AIGCrystalParent* InCrystal)
 
 void UIGPlayerInventory::ShowMyCrystals()
 {
-	for(const AIGCrystalParent* Crystals: ArrCrystals)
+	for(const AIGCrystalBase* Crystals: ArrCrystals)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%s]의 결정 소유"), *Crystals->GetCrystalName()));
 	}

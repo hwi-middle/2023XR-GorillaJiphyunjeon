@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "IGCrystalParent.h"
+#include "IGCrystalBase.h"
 #include "IGMountainCrystal.generated.h"
 
 
 
 UCLASS()
-class INDIGO_API AIGMountainCrystal : public AIGCrystalParent
+class INDIGO_API AIGMountainCrystal : public AIGCrystalBase
 {
 	GENERATED_BODY()
 	

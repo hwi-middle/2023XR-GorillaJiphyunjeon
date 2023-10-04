@@ -8,7 +8,7 @@
 
 // Sets default values
 AIGMountainCrystal::AIGMountainCrystal()
-	:AIGCrystalParent(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/ScriptDataTable/ProvisoStoryScript.ProvisoStoryScript'"), TEXT("바위산"))
+	:AIGCrystalBase(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/ScriptDataTable/ProvisoStoryScript.ProvisoStoryScript'"), TEXT("바위산"))
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -33,12 +33,12 @@ void AIGMountainCrystal::Tick(float DeltaTime)
 
 void AIGMountainCrystal::Interact()
 {
-	AIGCrystalParent::Interact();
+	AIGCrystalBase::Interact();
 }
 
 
 
 void AIGMountainCrystal::TakeCrystal()
 {
-	AIGCrystalParent::TakeCrystal();
+	AIGCrystalBase::TakeCrystal();
 }

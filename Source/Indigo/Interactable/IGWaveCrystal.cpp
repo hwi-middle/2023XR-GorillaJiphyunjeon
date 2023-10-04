@@ -9,7 +9,7 @@
 
 // Sets default values
 AIGWaveCrystal::AIGWaveCrystal()
-:AIGCrystalParent(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/ScriptDataTable/ProvisoStoryScript.ProvisoStoryScript'"), TEXT("파도"))
+:AIGCrystalBase(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/ScriptDataTable/ProvisoStoryScript.ProvisoStoryScript'"), TEXT("파도"))
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -31,10 +31,10 @@ void AIGWaveCrystal::Tick(float DeltaTime)
 
 void AIGWaveCrystal::Interact()
 {
-	AIGCrystalParent::Interact();
+	AIGCrystalBase::Interact();
 }
 
 void AIGWaveCrystal::TakeCrystal()
 {
-	AIGCrystalParent::TakeCrystal();
+	AIGCrystalBase::TakeCrystal();
 }

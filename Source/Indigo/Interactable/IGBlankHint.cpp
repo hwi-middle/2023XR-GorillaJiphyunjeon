@@ -1,10 +1,10 @@
 // Copyright GorillaJiphyunjeon. All Rights Reserved.
 #include "IGBlankHint.h"
-#include "IGHintParent.h"
+#include "IGHintBase.h"
 
 // Sets default values
 AIGBlankHint::AIGBlankHint()
-	:AIGHintParent(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/ScriptDataTable/BlankHintScript.BlankHintScript'"))
+	:AIGHintBase(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/ScriptDataTable/BlankHintScript.BlankHintScript'"))
 {
 	
 }
@@ -25,5 +25,5 @@ void AIGBlankHint::Tick(float DeltaTime)
 
 void AIGBlankHint::Interact()
 {
-	AIGHintParent::Interact();
+	AIGHintBase::Interact();
 }

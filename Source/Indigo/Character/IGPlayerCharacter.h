@@ -234,6 +234,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	uint32 SunMoonAutoConsumptionAmount;
 
+	//인벤토리
+	UIGPlayerInventory* PlayerInventory;
+
 	// 타이머 핸들
 	UPROPERTY()
 	FTimerHandle SunMoonAutoConsumptionTimerHandle;

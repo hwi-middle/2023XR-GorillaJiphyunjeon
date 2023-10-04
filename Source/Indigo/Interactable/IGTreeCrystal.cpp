@@ -10,7 +10,7 @@
 
 // Sets default values
 AIGTreeCrystal::AIGTreeCrystal()
-:AIGCrystalParent(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/ScriptDataTable/ProvisoStoryScript.ProvisoStoryScript'"), TEXT("소나무"))
+:AIGCrystalBase(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/ScriptDataTable/ProvisoStoryScript.ProvisoStoryScript'"), TEXT("소나무"))
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -32,11 +32,11 @@ void AIGTreeCrystal::Tick(float DeltaTime)
 
 void AIGTreeCrystal::Interact()
 {
-	AIGCrystalParent::Interact();
+	AIGCrystalBase::Interact();
 }
 
 void AIGTreeCrystal::TakeCrystal()
 {
-	AIGCrystalParent::TakeCrystal();
+	AIGCrystalBase::TakeCrystal();
 	
 }

@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "IGHintParent.h"
+#include "IGHintBase.h"
 #include "GameFramework/Actor.h"
 #include "IGMainHint.generated.h"
 
 struct FIGScriptDataTable;
 
 UCLASS()
-class INDIGO_API AIGMainHint : public AIGHintParent
+class INDIGO_API AIGMainHint : public AIGHintBase
 {
 	GENERATED_BODY()
 public:	

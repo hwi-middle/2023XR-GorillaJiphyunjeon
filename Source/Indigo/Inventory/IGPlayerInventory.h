@@ -7,7 +7,7 @@
 #include "Components/ActorComponent.h"
 #include "IGPlayerInventory.generated.h"
 
-class AIGCrystalParent;
+class AIGCrystalBase;
 
 UCLASS()
 class INDIGO_API UIGPlayerInventory : public UActorComponent
@@ -22,16 +22,16 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 public:
-	void AddCrystals(AIGCrystalParent* InCrystal);
+	void AddCrystals(AIGCrystalBase* InCrystal);
 	void ShowMyCrystals();
 
 	void AddHints(IIGHintInterface* InHint);
 
-	FORCEINLINE TArray<AIGCrystalParent*> GetArrCrystals(){return ArrCrystals;}
+	FORCEINLINE TArray<AIGCrystalBase*> GetArrCrystals(){return ArrCrystals;}
 	FORCEINLINE TArray<IIGHintInterface*> GetArrHints(){return ArrHints;}
 	
 private:
-	TArray<AIGCrystalParent*> ArrCrystals;
+	TArray<AIGCrystalBase*> ArrCrystals;
 	TArray<IIGHintInterface*> ArrHints;
 	
 };

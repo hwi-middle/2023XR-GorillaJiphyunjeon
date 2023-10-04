@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "IGHintParent.h"
+#include "IGHintBase.h"
 #include "IGBlankHint.generated.h"
 
 struct FIGScriptDataTable;
 
 UCLASS()
-class INDIGO_API AIGBlankHint : public AIGHintParent
+class INDIGO_API AIGBlankHint : public AIGHintBase
 {
 	GENERATED_BODY()
 public:	
