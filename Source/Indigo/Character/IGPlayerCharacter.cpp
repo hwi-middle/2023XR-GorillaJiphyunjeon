@@ -97,23 +97,27 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	SprintSpeed = 800.f;
 
 	SunMoonValue = 0;
-	AttackHitSunMoonRecoveryAmount = 5;
+	SunMoonRecoveryAmountOnAttackHit = 5;
 	SunMoonSection2Threshold = 30;
 	SunMoonSection3Threshold = 70;
 	SunMoonSection1DamageScaleFactor = 1;
 	SunMoonSection2DamageScaleFactor = 2;
 	SunMoonSection3DamageScaleFactor = 3;
-	SunMoonAttackCost = 10;
+	SunMoonConsumptionAmountOnAttack = 10;
 	ExhaustionPhase1Duration = 3.f;
 	ExhaustionPhase2Duration = 10.f;
 	SunMoonAutoConsumptionDelay = 5.f;
 	ElapsedSunMoonAutoConsumptionTime = 0.f;
 	SunMoonAutoConsumptionAmount = 2;
-
+	StaminaRecoveryAmountPerSecondOnIdle = 10.f;
+	StaminaRecoveryAmountPerSecondOnWalk = 2.f;
+	StaminaConsumptionAmountPerSecondOnRunning = 2.f;
+	StaminaConsumptionAmountOnRoll = 10.f;
+	
 	NormalAttackDamage = 3;
 	StrongAttackDamage = 7;
-	NormalAttackStaminaCost = 5;
-	StrongAttackStaminaCost = 7;
+	StaminaConsumptionAmountOnNormalAttack = 5;
+	StaminaConsumptionAmountOnStrongAttack = 7;
 }
 
 bool AIGPlayerCharacter::CheckPlayerState(const EPlayerState InState) const
@@ -156,6 +160,8 @@ void AIGPlayerCharacter::BeginPlay()
 		HudWidget->InitStaminaGauge(100.f, StaminaValue);
 		HudWidget->InitSunMoonGauge(100.f, 0.f);
 	}
+
+	ManageStaminaByTime();
 }
 
 void AIGPlayerCharacter::Tick(float DeltaTime)
@@ -341,7 +347,7 @@ void AIGPlayerCharacter::Attack()
 
 	const bool IsEnforced = CheckPlayerState(EPlayerState::Enforced);
 	// 스태미너 부족
-	const float Cost = IsEnforced ? StrongAttackStaminaCost : NormalAttackStaminaCost;
+	const float Cost = IsEnforced ? StaminaConsumptionAmountOnStrongAttack : StaminaConsumptionAmountOnNormalAttack;
 	if (StaminaValue < Cost)
 	{
 		return;
@@ -349,6 +355,7 @@ void AIGPlayerCharacter::Attack()
 
 	StaminaValue -= Cost;
 	HudWidget->UpdateStaminaGauge(StaminaValue);
+	
 	AddPlayerState(EPlayerState::Attacking);
 	ElapsedSunMoonAutoConsumptionTime = 0.f;
 	AnimInstance->SetEnforced(IsEnforced);
@@ -359,7 +366,7 @@ void AIGPlayerCharacter::Attack()
 	{
 		GetWorldTimerManager().ClearTimer(SunMoonAutoConsumptionTimerHandle);
 
-		SunMoonValue -= SunMoonAttackCost;
+		SunMoonValue -= SunMoonConsumptionAmountOnAttack;
 		if (SunMoonValue < 0)
 		{
 			SunMoonValue = 0;
@@ -406,6 +413,14 @@ void AIGPlayerCharacter::StartRolling()
 		return;
 	}
 
+	if (StaminaValue < StaminaConsumptionAmountOnRoll)
+	{
+		return;
+	}
+
+	StaminaValue -= StaminaConsumptionAmountOnRoll;
+	HudWidget->UpdateStaminaGauge(StaminaValue);
+
 	AddPlayerState(EPlayerState::Rolling);
 	AnimInstance->StartRoll();
 }
@@ -431,10 +446,10 @@ void AIGPlayerCharacter::ToggleSunMoon()
 void AIGPlayerCharacter::ConsumeSunMoonByTime()
 {
 	static bool bIsInitialDelayDone = false;
-	const float DeltaTime = GWorld->GetDeltaSeconds();
+	const float DeltaTime = GWorld->DeltaTimeSeconds;
 	ElapsedSunMoonAutoConsumptionTime += DeltaTime;
 
-	if(!CheckPlayerState(EPlayerState::Enforced))
+	if (!CheckPlayerState(EPlayerState::Enforced))
 	{
 		bIsInitialDelayDone = false;
 		return;
@@ -454,7 +469,6 @@ void AIGPlayerCharacter::ConsumeSunMoonByTime()
 
 	if (ElapsedSunMoonAutoConsumptionTime >= 1.f)
 	{
-		UE_LOG(LogTemp, Log, TEXT("일월 게이지 자동 소모"));
 		if (SunMoonValue < SunMoonAutoConsumptionAmount)
 		{
 			SunMoonValue = 0;
@@ -504,9 +518,35 @@ void AIGPlayerCharacter::OnHitProjectile()
 		return;
 	}
 
-	const uint32 ActualRecoveryAmount = CheckPlayerState(EPlayerState::ExhaustedPhase2) ? AttackHitSunMoonRecoveryAmount / 2 : AttackHitSunMoonRecoveryAmount;
+	const uint32 ActualRecoveryAmount = CheckPlayerState(EPlayerState::ExhaustedPhase2) ? SunMoonRecoveryAmountOnAttackHit / 2 : SunMoonRecoveryAmountOnAttackHit;
 	SunMoonValue += ActualRecoveryAmount;
 	HudWidget->UpdateSunMoonGauge(SunMoonValue);
+}
+
+void AIGPlayerCharacter::ManageStaminaByTime()
+{
+	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::ManageStaminaByTime);
+	
+	const float DeltaTime = GWorld->DeltaTimeSeconds;
+	if (CheckPlayerState(EPlayerState::Idling))
+	{
+		StaminaValue += StaminaRecoveryAmountPerSecondOnIdle * DeltaTime;
+	}
+	else if (CheckPlayerState(EPlayerState::Walking))
+	{
+		StaminaValue += StaminaRecoveryAmountPerSecondOnWalk * DeltaTime;
+	}
+	else if (CheckPlayerState(EPlayerState::Running))
+	{
+		StaminaValue -= StaminaConsumptionAmountPerSecondOnRunning * DeltaTime;
+	}
+	else
+	{
+		return;
+	}
+	
+	StaminaValue = FMath::Clamp(StaminaValue,0.f, 100.f);
+	HudWidget->UpdateStaminaGauge(StaminaValue);
 }
 
 void AIGPlayerCharacter::SetHp_DEBUG(const uint32 Value)

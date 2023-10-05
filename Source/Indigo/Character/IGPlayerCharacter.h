@@ -142,6 +142,7 @@ private:
 	void ConsumeSunMoonByTime();
 	void EnableExhaustion();
 	void OnHitProjectile();
+	void ManageStaminaByTime(); // 초당 스태미나 소모/회복량 관리
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraSpringArm() const { return CameraSpringArm; }
@@ -189,17 +190,32 @@ private:
 
 	// 증감값
 	UPROPERTY(VisibleAnywhere)
-	float AttackHitSunMoonRecoveryAmount;
+	float SunMoonRecoveryAmountOnAttackHit;
+	
+	UPROPERTY(VisibleAnywhere)
+	float StaminaConsumptionAmountOnNormalAttack;
 
 	UPROPERTY(VisibleAnywhere)
-	float NormalAttackStaminaCost;
+	float StaminaConsumptionAmountOnStrongAttack;
 
 	UPROPERTY(VisibleAnywhere)
-	float StrongAttackStaminaCost;
-
+	float StaminaConsumptionAmountOnRoll;
+	
 	UPROPERTY(VisibleAnywhere)
-	float ExhaustionDecrementValuePerSecond;
-
+	float SunMoonConsumptionAmountOnAttack;
+	
+	UPROPERTY(VisibleAnywhere)
+	float StaminaRecoveryAmountPerSecondOnIdle;
+	
+	UPROPERTY(VisibleAnywhere)
+	float StaminaRecoveryAmountPerSecondOnWalk;
+	
+	UPROPERTY(VisibleAnywhere)
+	float StaminaConsumptionAmountPerSecondOnRunning;
+	
+	UPROPERTY(VisibleAnywhere)
+	float SunMoonAutoConsumptionAmount;
+	
 	// 기타 필요한 정보
 	UPROPERTY(VisibleAnywhere)
 	float SunMoonSection2Threshold;
@@ -215,10 +231,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	float SunMoonSection3DamageScaleFactor;
-
-	UPROPERTY(VisibleAnywhere)
-	float SunMoonAttackCost;
-
+	
 	UPROPERTY(VisibleAnywhere)
 	float ExhaustionPhase1Duration;
 
