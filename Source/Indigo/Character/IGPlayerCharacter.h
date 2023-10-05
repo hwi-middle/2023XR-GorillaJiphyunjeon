@@ -28,17 +28,15 @@ enum class EPlayerState : uint32
 	// 걷는 중
 	Running = 0x04,
 	// 달리는 중
-	Jumping = 0x08,
-	// 점프하는 중
-	Rolling = 0x10,
+	Rolling = 0x08,
 	// 구르는 중
-	Attacking = 0x20,
+	Attacking = 0x10,
 	// 공격 중
-	Enforced = 0x40,
+	Enforced = 0x20,
 	// 공격 강화 활성화
-	ExhaustedPhase1 = 0x80,
+	ExhaustedPhase1 = 0x40,
 	// 탈진 (일월 게이지 비활성화)
-	ExhaustedPhase2 = 0x100,
+	ExhaustedPhase2 = 0x80,
 	// 탈진 (일월 게이지 획득량 감소)
 	All = 0xff,
 };
@@ -99,9 +97,6 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> JumpAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> MoveAction;

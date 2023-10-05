@@ -38,7 +38,6 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 
-	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
@@ -75,7 +74,6 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	PlayerInventory = CreateDefaultSubobject<UIGPlayerInventory>(TEXT("Inventory"));
 
 	DefaultMappingContext = FIGConstructorHelper::FindAndGetObject<UInputMappingContext>(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/_GorillaJiphyunjeon/Input/IMC_Default.IMC_Default'"));
-	JumpAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Jump.IA_Jump'"));
 	MoveAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Move.IA_Move'"));
 	LookAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Look.IA_Look'"));
 	RunAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Run.IA_Run'"));
@@ -188,10 +186,6 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 	{
 		DebugMessage.Append(TEXT("달리기\n"));
 	}
-	if (CheckPlayerState(EPlayerState::Jumping))
-	{
-		DebugMessage.Append(TEXT("점프\n"));
-	}
 	if (CheckPlayerState(EPlayerState::Rolling))
 	{
 		DebugMessage.Append(TEXT("구르기\n"));
@@ -222,8 +216,6 @@ void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AIGPlayerCharacter::Move);
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AIGPlayerCharacter::SetIsIdling);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AIGPlayerCharacter::Look);
