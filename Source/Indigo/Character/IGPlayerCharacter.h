@@ -244,11 +244,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	float SunMoonAutoConsumptionDelay;
 
-	UPROPERTY(VisibleAnywhere)
-	float SunMoonAutoConsumptionAmount;
-
 	//인벤토리
-	UIGPlayerInventory* PlayerInventory;
+	UPROPERTY()
+	TObjectPtr<UIGPlayerInventory> PlayerInventory;
 
 	// 타이머 핸들
 	UPROPERTY()
@@ -264,6 +262,4 @@ private:
 
 	UFUNCTION(Exec, Category="Command")
 	void SetSunMoon_DEBUG(const uint32 Value);
-	UIGPlayerInventory* PlayerInventory;
-
 };
