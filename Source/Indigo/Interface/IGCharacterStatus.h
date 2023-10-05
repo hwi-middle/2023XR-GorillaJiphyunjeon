@@ -23,27 +23,27 @@ class INDIGO_API IIGCharacterStatus
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	//체력
-	virtual uint32 GetHp() const = 0;
+	virtual float GetHp() const = 0;
 	virtual void SetHp(const uint32 InValue) = 0;
 
 	//공격력
-	virtual uint32 GetAttackValue() const = 0;
+	virtual float GetAttackValue() const = 0;
 	virtual void SetAttackValue(const uint32 InValue) = 0;
 
 	//공격 속도
-	virtual uint32 GetAttackRate() const = 0;
+	virtual float GetAttackRate() const = 0;
 	virtual void SetAttackRate(const uint32 InValue) = 0;
 
 	//공격 사거리
-	virtual uint32 GetAttackRange() const = 0;
+	virtual float GetAttackRange() const = 0;
 	virtual void SetAttackRange(const uint32 InValue) = 0;
 
 	//방어력
-	virtual uint32 GetDefenceValue() const = 0;
+	virtual float GetDefenceValue() const = 0;
 	virtual void SetDefenseValue(const uint32 InValue) = 0;
 
 	//스테미나
-	virtual uint32 GetStaminaValue() const = 0;
+	virtual float GetStaminaValue() const = 0;
 	virtual void SetStaminaValue(const uint32 InValue) = 0;
 
 	//사망 여부

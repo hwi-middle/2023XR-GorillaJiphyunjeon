@@ -16,20 +16,20 @@ struct FIGCharacterDataTable : public FTableRowBase
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
-	int32 HPValue;
+	float HPValue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
-	int32 AttackValue;
+	float AttackValue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
-	int32 AttackRate;
+	float AttackRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
-	int32 AttackRange;
+	float AttackRange;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
-	int32 DefenseValue;
+	float DefenseValue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
-	int32 StaminaValue;
+	float StaminaValue;
 };

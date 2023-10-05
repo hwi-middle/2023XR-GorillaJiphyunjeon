@@ -75,17 +75,17 @@ public:
 
 public:
 	//인터페이스 함수
-	virtual FORCEINLINE uint32 GetHp() const override { return Hp; }
+	virtual FORCEINLINE float GetHp() const override { return Hp; }
 	virtual FORCEINLINE void SetHp(const uint32 InValue) override { Hp = InValue; }
-	virtual FORCEINLINE uint32 GetAttackValue() const override { return AttackValue; }
+	virtual FORCEINLINE float GetAttackValue() const override { return AttackValue; }
 	virtual FORCEINLINE void SetAttackValue(const uint32 InValue) override { AttackValue = InValue; }
-	virtual FORCEINLINE uint32 GetAttackRate() const override { return AttackRate; }
+	virtual FORCEINLINE float GetAttackRate() const override { return AttackRate; }
 	virtual FORCEINLINE void SetAttackRate(const uint32 InValue) override { AttackRate = InValue; }
-	virtual FORCEINLINE uint32 GetAttackRange() const override { return AttackRange; }
+	virtual FORCEINLINE float GetAttackRange() const override { return AttackRange; }
 	virtual FORCEINLINE void SetAttackRange(const uint32 InValue) override { AttackRange = InValue; }
-	virtual FORCEINLINE uint32 GetDefenceValue() const override { return DefenceValue; }
+	virtual FORCEINLINE float GetDefenceValue() const override { return DefenceValue; }
 	virtual FORCEINLINE void SetDefenseValue(const uint32 InValue) override { DefenceValue = InValue; }
-	virtual FORCEINLINE uint32 GetStaminaValue() const override { return StaminaValue; }
+	virtual FORCEINLINE float GetStaminaValue() const override { return StaminaValue; }
 	virtual FORCEINLINE void SetStaminaValue(const uint32 InValue) override { StaminaValue = InValue; }
 	virtual FORCEINLINE bool IsDead() const override { return bIsDead; }
 
@@ -128,7 +128,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<UIGPlayerAnimInstance> AnimInstance;
 
-protected:
+private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void SetIsIdling();
@@ -152,25 +152,25 @@ private:
 	FIGCharacterDataTable* CharacterDataTable;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 SunMoonValue;
+	float SunMoonValue;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 Hp;
+	float Hp;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 AttackValue;
+	float AttackValue;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 AttackRate;
+	float AttackRate;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 AttackRange;
+	float AttackRange;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 DefenceValue;
+	float DefenceValue;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 StaminaValue;
+	float StaminaValue;
 
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDead : 1;
@@ -182,42 +182,42 @@ private:
 	float SprintSpeed;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 NormalAttackDamage;
+	float NormalAttackDamage;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 StrongAttackDamage;
+	float StrongAttackDamage;
 
 	// 증감값
 	UPROPERTY(VisibleAnywhere)
-	uint32 AttackHitSunMoonRecoveryAmount;
+	float AttackHitSunMoonRecoveryAmount;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 NormalAttackStaminaCost;
+	float NormalAttackStaminaCost;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 StrongAttackStaminaCost;
+	float StrongAttackStaminaCost;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 ExhaustionDecrementValuePerSecond;
+	float ExhaustionDecrementValuePerSecond;
 
 	// 기타 필요한 정보
 	UPROPERTY(VisibleAnywhere)
-	uint32 SunMoonSection2Threshold;
+	float SunMoonSection2Threshold;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 SunMoonSection3Threshold;
+	float SunMoonSection3Threshold;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 SunMoonSection1DamageScaleFactor;
+	float SunMoonSection1DamageScaleFactor;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 SunMoonSection2DamageScaleFactor;
+	float SunMoonSection2DamageScaleFactor;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 SunMoonSection3DamageScaleFactor;
+	float SunMoonSection3DamageScaleFactor;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 SunMoonAttackCost;
+	float SunMoonAttackCost;
 
 	UPROPERTY(VisibleAnywhere)
 	float ExhaustionPhase1Duration;
@@ -232,7 +232,7 @@ private:
 	float SunMoonAutoConsumptionDelay;
 
 	UPROPERTY(VisibleAnywhere)
-	uint32 SunMoonAutoConsumptionAmount;
+	float SunMoonAutoConsumptionAmount;
 
 	//인벤토리
 	UIGPlayerInventory* PlayerInventory;
@@ -241,9 +241,8 @@ private:
 	UPROPERTY()
 	FTimerHandle SunMoonAutoConsumptionTimerHandle;
 
-	// 디버그용
-
 private:
+	// 디버그용
 	UFUNCTION(Exec, Category="Command")
 	void SetHp_DEBUG(const uint32 Value);
 
