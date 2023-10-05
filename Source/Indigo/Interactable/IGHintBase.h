@@ -6,7 +6,7 @@
 #include "Indigo/Interface/Interactable.h"
 #include "Indigo/Util/IGScriptDataTable.h"
 #include "GameFramework/Actor.h"
-#include "IGHintParent.generated.h"
+#include "IGHintBase.generated.h"
 
 struct FIGScriptDataTable;
 
@@ -14,13 +14,13 @@ struct FIGScriptDataTable;
  * 
  */
 UCLASS()
-class INDIGO_API AIGHintParent : public AActor, public IInteractable
+class INDIGO_API AIGHintBase : public AActor, public IInteractable
 {
 	GENERATED_BODY()
 public:
-	AIGHintParent();
-	AIGHintParent(FString InPath);
-	virtual ~AIGHintParent() override;
+	AIGHintBase();
+	AIGHintBase(FString InPath);
+	virtual ~AIGHintBase() override;
 
 protected:
 	virtual void Interact() override; 

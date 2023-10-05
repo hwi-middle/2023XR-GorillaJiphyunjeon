@@ -1,16 +1,16 @@
 // Copyright GorillaJiphyunjeon. All Rights Reserved.
 
 
-#include "IGHintParent.h"
+#include "IGHintBase.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGDataTableParser.h"
 #include "Indigo/Util/IGScriptDataTable.h"
 
-AIGHintParent::AIGHintParent()
+AIGHintBase::AIGHintBase()
 {
 }
 
-AIGHintParent::AIGHintParent(FString InPath)
+AIGHintBase::AIGHintBase(FString InPath)
 	:Path(InPath)
 {
 	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/SampleSphere/SM_SampleSphere.SM_SampleSphere'"), [&](UStaticMesh* MeshRef)
@@ -40,12 +40,12 @@ AIGHintParent::AIGHintParent(FString InPath)
 		});
 }
 
-AIGHintParent::~AIGHintParent()
+AIGHintBase::~AIGHintBase()
 {
 }
 
 
-void AIGHintParent::Interact()
+void AIGHintBase::Interact()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("[%s]"), *HintScript->Script));
 }
