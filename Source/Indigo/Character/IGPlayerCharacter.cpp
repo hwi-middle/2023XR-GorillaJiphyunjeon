@@ -23,7 +23,7 @@
 #include "Indigo/Util/IGDataTableParser.h"
 
 #include "Indigo/Inventory/IGPlayerInventory.h"
-#include "..\Interactable\IGCrystalBase.h"
+#include "Indigo/Interactable/IGCrystalBase.h"
 
 AIGPlayerCharacter::AIGPlayerCharacter()
 {

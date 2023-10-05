@@ -6,19 +6,19 @@
 #include "GameFramework/Actor.h"
 #include "Indigo/Interface/Interactable.h"
 #include "Indigo/Util/IGScriptDataTable.h"
-#include "IGCrystalParent.generated.h"
+#include "IGCrystalBase.generated.h"
 
 struct FIGScriptDataTable;
 
 UCLASS()
-class INDIGO_API AIGCrystalParent : public AActor, public IInteractable
+class INDIGO_API AIGCrystalBase : public AActor, public IInteractable
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AIGCrystalParent();
-	AIGCrystalParent(FString InPath, FName InName);
+	AIGCrystalBase();
+	AIGCrystalBase(FString InPath, FName InName);
 
 protected:
 	// Called when the game starts or when spawned

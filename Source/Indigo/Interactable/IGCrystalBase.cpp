@@ -1,20 +1,20 @@
 // Copyright GorillaJiphyunjeon. All Rights Reserved.
 
 
-#include "IGCrystalParent.h"
+#include "IGCrystalBase.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGDataTableParser.h"
 #include "Indigo/Management/IGCrystalManager.h"
 
 // Sets default values
-AIGCrystalParent::AIGCrystalParent()
+AIGCrystalBase::AIGCrystalBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
 
-AIGCrystalParent::AIGCrystalParent(FString InPath, FName InName)
+AIGCrystalBase::AIGCrystalBase(FString InPath, FName InName)
 {
 	bIsGetCrystal = false;
 	
@@ -36,26 +36,26 @@ Mesh->SetCollisionProfileName(TEXT("Evidence"));
 }
 
 // Called when the game starts or when spawned
-void AIGCrystalParent::BeginPlay()
+void AIGCrystalBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
 // Called every frame
-void AIGCrystalParent::Tick(float DeltaTime)
+void AIGCrystalBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-void AIGCrystalParent::Interact()
+void AIGCrystalBase::Interact()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%s]"), *CrystalScript->Script));
 	TakeCrystal();
 }
 
-void AIGCrystalParent::TakeCrystal()
+void AIGCrystalBase::TakeCrystal()
 {
 	if(bIsGetCrystal == true)
 	{
