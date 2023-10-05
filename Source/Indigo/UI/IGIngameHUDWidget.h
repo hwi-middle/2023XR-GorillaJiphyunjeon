@@ -20,7 +20,7 @@ public:
 	void InitSunMoonGauge(float InMaxValue, float InInitialValue) const;
 	
 	void UpdateHpGauge(float InValue) const;
-	void UpdateStaminaGauge(const uint32 InValue) const;
+	void UpdateStaminaGauge(const float InValue) const;
 	void UpdateSunMoonGauge(float InValue) const;
 
 protected:

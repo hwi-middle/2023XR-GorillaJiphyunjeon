@@ -24,7 +24,7 @@ void UIGIngameHUDWidget::UpdateHpGauge(const float InValue) const
 	HpGauge->UpdateGaugeBar(InValue);
 }
 
-void UIGIngameHUDWidget::UpdateStaminaGauge(const uint32 InValue) const
+void UIGIngameHUDWidget::UpdateStaminaGauge(const float InValue) const
 {
 	StaminaGauge->UpdateGaugeBar(InValue);
 }

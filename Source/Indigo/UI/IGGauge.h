@@ -21,8 +21,8 @@ protected:
 	virtual void NativeConstruct() override;
 
 public:
-	void Init(uint32 InMaxValue, uint32 InInitialValue);
-	void UpdateGaugeBar(uint32 InValue);
+	void Init(float InMaxValue, float InInitialValue);
+	void UpdateGaugeBar(float InValue);
 	
 protected:
 	UPROPERTY()
