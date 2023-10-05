@@ -341,7 +341,7 @@ void AIGPlayerCharacter::Attack()
 
 	const bool IsEnforced = CheckPlayerState(EPlayerState::Enforced);
 	// 스태미너 부족
-	const uint32 Cost = IsEnforced ? StrongAttackStaminaCost : NormalAttackStaminaCost;
+	const float Cost = IsEnforced ? StrongAttackStaminaCost : NormalAttackStaminaCost;
 	if (StaminaValue < Cost)
 	{
 		return;
@@ -359,17 +359,13 @@ void AIGPlayerCharacter::Attack()
 	{
 		GetWorldTimerManager().ClearTimer(SunMoonAutoConsumptionTimerHandle);
 
-		// unsigned 값이므로 뺄셈 시 언더플로 주의
-		if (SunMoonValue < SunMoonAttackCost)
+		SunMoonValue -= SunMoonAttackCost;
+		if (SunMoonValue < 0)
 		{
 			SunMoonValue = 0;
 			RemovePlayerState(EPlayerState::Enforced);
 			AddPlayerState(EPlayerState::ExhaustedPhase1);
 			EnableExhaustion();
-		}
-		else
-		{
-			SunMoonValue -= SunMoonAttackCost;
 		}
 
 		HudWidget->UpdateSunMoonGauge(SunMoonValue);
