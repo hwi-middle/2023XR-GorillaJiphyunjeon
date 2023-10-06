@@ -16,6 +16,8 @@ class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
 class UIGPlayerInventory;
+class UIGSoundDataAsset;
+class USoundCue;
 struct FInputActionValue;
 struct FIGCharacterDataTable;
 
@@ -270,6 +272,11 @@ private:
 	UPROPERTY()
 	ECrystal ActivatedCrystal;
 
+	//사운드
+	UPROPERTY()
+	TObjectPtr<UIGSoundDataAsset> TestSound;
+	TObjectPtr<USoundCue> CurrentSoundCue;
+	
 	// 타이머 핸들
 	UPROPERTY()
 	FTimerHandle ActivateCrystalTimerHandle;
