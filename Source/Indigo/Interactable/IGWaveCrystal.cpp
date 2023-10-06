@@ -34,7 +34,7 @@ void AIGWaveCrystal::Interact()
 	AIGCrystalBase::Interact();
 }
 
-void AIGWaveCrystal::TakeCrystal()
+void AIGWaveCrystal::Take()
 {
-	AIGCrystalBase::TakeCrystal();
+	AIGCrystalBase::Take();
 }

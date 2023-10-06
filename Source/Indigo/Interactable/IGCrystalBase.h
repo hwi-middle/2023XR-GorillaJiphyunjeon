@@ -10,12 +10,20 @@
 
 struct FIGScriptDataTable;
 
+UENUM()
+enum class ECrystal : uint32
+{
+	Tree,
+	Wave,
+	Mountain,
+};
+
 UCLASS()
 class INDIGO_API AIGCrystalBase : public AActor, public IInteractable
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AIGCrystalBase();
 	AIGCrystalBase(FString InPath, FName InName);
@@ -24,18 +32,26 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void Interact() override;
-	virtual void TakeCrystal();
-	
-	virtual FORCEINLINE bool IsGetCrystal() const {return bIsGetCrystal;}
-	virtual FORCEINLINE FString GetCrystalName() const {return CrystalScript->Name;};
-private:
-	TObjectPtr<UStaticMeshComponent> Mesh;
-	FIGScriptDataTable* CrystalScript;
-	uint8 bIsGetCrystal : 1;
+	virtual void Take();
 
+	virtual FORCEINLINE bool IsTaken() const { return bIsTaken; }
+	virtual FORCEINLINE FString GetCrystalName() const { return CrystalScript->Name; };
+	virtual FORCEINLINE ECrystal GetCrystalType() const { return CrystalType; };
+
+private:
+	UPROPERTY()
+	TObjectPtr<UStaticMeshComponent> Mesh;
+
+	FIGScriptDataTable* CrystalScript;
+
+	UPROPERTY()
+	uint8 bIsTaken : 1;
+
+	UPROPERTY()
+	ECrystal CrystalType;
 };

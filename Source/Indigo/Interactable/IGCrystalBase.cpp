@@ -2,44 +2,43 @@
 
 
 #include "IGCrystalBase.h"
+#include "Indigo/Management/IGCrystalManager.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGDataTableParser.h"
-#include "Indigo/Management/IGCrystalManager.h"
 
 // Sets default values
 AIGCrystalBase::AIGCrystalBase()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
 
 AIGCrystalBase::AIGCrystalBase(FString InPath, FName InName)
 {
-	bIsGetCrystal = false;
-	
-	
-	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/SampleSphere/SM_SampleSphere.SM_SampleSphere'"), [&](UStaticMesh* MeshRef)
-{
-Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-Mesh->SetStaticMesh(MeshRef);
-Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
-RootComponent = Mesh;
-Mesh->SetCollisionProfileName(TEXT("Evidence"));
-}, EAssertionLevel::Check);
+	bIsTaken = false;
 
-	FIGDataTableParser::LoadAndInitializeDataTable(*InPath,
-		[&](const UDataTable* ScriptDataTable)
-		{
-			CrystalScript = ScriptDataTable->FindRow<FIGScriptDataTable>(InName,TEXT(""));			
-		});
+
+	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/SampleSphere/SM_SampleSphere.SM_SampleSphere'"), [&](UStaticMesh* MeshRef)
+	{
+		Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+		Mesh->SetStaticMesh(MeshRef);
+		Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
+		RootComponent = Mesh;
+		Mesh->SetCollisionProfileName(TEXT("Evidence"));
+	}, EAssertionLevel::Check);
+
+	FIGDataTableParser::LoadAndInitializeDataTable(*InPath, [&](const UDataTable* ScriptDataTable)
+	{
+		CrystalScript = ScriptDataTable->FindRow<FIGScriptDataTable>(InName,TEXT(""));
+	});
 }
 
 // Called when the game starts or when spawned
 void AIGCrystalBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
@@ -52,17 +51,16 @@ void AIGCrystalBase::Tick(float DeltaTime)
 void AIGCrystalBase::Interact()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%s]"), *CrystalScript->Script));
-	TakeCrystal();
+	Take();
 }
 
-void AIGCrystalBase::TakeCrystal()
+void AIGCrystalBase::Take()
 {
-	if(bIsGetCrystal == true)
+	if (bIsTaken)
 	{
-		return;		
+		return;
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("[%s]의 결정 습득"), *CrystalScript->Name));
 
-	bIsGetCrystal = true;
+	bIsTaken = true;
 }
-

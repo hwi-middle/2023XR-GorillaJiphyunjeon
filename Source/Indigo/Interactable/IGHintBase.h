@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
 #include "Indigo/Interface/Interactable.h"
 #include "Indigo/Util/IGScriptDataTable.h"
-#include "GameFramework/Actor.h"
 #include "IGHintBase.generated.h"
 
 struct FIGScriptDataTable;
@@ -29,7 +29,9 @@ protected:
 	virtual FORCEINLINE FString GetHintScript() const  {return (HintScript == nullptr) ? TEXT("") : HintScript->Script;}
 	
 private:
+	UPROPERTY()
 	TObjectPtr<UStaticMeshComponent> Mesh;
+	
 	FIGScriptDataTable* HintScript;
 
 	FString Path;

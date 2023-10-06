@@ -7,6 +7,7 @@
 #include "Indigo/Interface/IGCharacterStatus.h"
 #include "IGPlayerCharacter.generated.h"
 
+enum class ECrystal : uint32;
 class UIGIngameHUDWidget;
 class UIGPlayerAnimInstance;
 class UIGCharacterDataParser;

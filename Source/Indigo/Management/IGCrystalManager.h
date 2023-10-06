@@ -19,7 +19,7 @@ public:
 
 	static TSharedPtr<IGCrystalManager> GetInstance();
 	
-	void FoundAllCrystals();
+	void OnFoundAllCrystals();
 	
 
 };

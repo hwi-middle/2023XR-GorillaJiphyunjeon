@@ -21,7 +21,7 @@ TSharedPtr<IGCrystalManager> IGCrystalManager::GetInstance()
 	return Instance;
 }
 
-void IGCrystalManager::FoundAllCrystals()
+void IGCrystalManager::OnFoundAllCrystals()
 {
 	IGBossZoneGateManager::GetInstance()->OpenGate();
 }
