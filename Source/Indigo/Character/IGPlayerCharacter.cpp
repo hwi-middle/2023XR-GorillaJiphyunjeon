@@ -27,8 +27,8 @@
 #include "Indigo/Inventory/IGPlayerInventory.h"
 #include "Indigo/Interactable/IGCrystalBase.h"
 #include "Indigo/Util/IGSoundDataAsset.h"
-#include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
 
 AIGPlayerCharacter::AIGPlayerCharacter()
 {
@@ -49,17 +49,6 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
-	TestSound = NewObject<UIGSoundDataAsset>();
-	TestSound->InitSoundCueByPath(TEXT("WalkSound"), TEXT("/Script/Engine.SoundCue'/Game/_GorillaJiphyunjeon/Sounds/TestWalkSoundCue.TestWalkSoundCue'"));
-	TestSound->InitSoundCueByPath(TEXT("RollingSound"), TEXT("/Script/Engine.SoundCue'/Game/_GorillaJiphyunjeon/Sounds/TestRollingSoundCue.TestRollingSoundCue'"));
-	TestSound->InitSoundCueByPath(TEXT("ShotSound"), TEXT("/Script/Engine.SoundCue'/Game/_GorillaJiphyunjeon/Sounds/TestSoundcue.TestSoundcue'"));
-
-	
-	
-	
-	CurrentSoundCue = FIGConstructorHelper::FindAndGetObject<USoundCue>(TEXT("/Script/Engine.SoundCue'/Game/_GorillaJiphyunjeon/Sounds/TestWalkSoundCue.TestWalkSoundCue'"));	
-	
-	
 	CameraSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraSpringArm"));
 	CameraSpringArm->SetupAttachment(RootComponent);
 	CameraSpringArm->TargetArmLength = 400.0f;
@@ -110,6 +99,10 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 		HudWidgetClass = Class;
 	}, EAssertionLevel::Check);
 
+	
+	TestSoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/SoundCueDataAsset.SoundCueDataAsset'"), nullptr, LOAD_None, nullptr, nullptr);
+	
+	
 	WalkSpeed = 500.f;
 	SprintSpeed = 800.f;
 
@@ -284,7 +277,6 @@ void AIGPlayerCharacter::Move(const FInputActionValue& Value)
 	AddMovementInput(ForwardDirection, MovementVector.Y);
 	AddMovementInput(RightDirection, MovementVector.X);
 
-	UGameplayStatics::PlaySound2D(this, TestSound->GetCurrentSoundCue());
 }
 
 void AIGPlayerCharacter::Look(const FInputActionValue& Value)
@@ -421,7 +413,7 @@ void AIGPlayerCharacter::Attack()
 	SpawnedActor->Init(Damage, GetActorForwardVector(), 1000.f, 10.f);
 	SpawnedActor->OnHitProjectile.AddUObject(this, &AIGPlayerCharacter::OnHitProjectile);
 	// ----
-	TestSound->PlaySound(this, TEXT("ShotSound"));
+	UGameplayStatics::PlaySound2D(this, TestSoundDataAsset->PlayerAttackSoundCue);
 }
 
 void AIGPlayerCharacter::FinishAttack()
@@ -446,7 +438,7 @@ void AIGPlayerCharacter::StartRolling()
 
 	AddPlayerState(EPlayerState::Rolling);
 	AnimInstance->StartRoll();
-	TestSound->PlaySound(this, TEXT("RollingSound"));
+	UGameplayStatics::PlaySound2D(this, TestSoundDataAsset->PlayerRollingSoundCue);
 }
 
 void AIGPlayerCharacter::FinishRolling()
