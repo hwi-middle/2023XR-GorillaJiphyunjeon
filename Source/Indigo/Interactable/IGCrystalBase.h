@@ -40,8 +40,8 @@ public:
 	virtual void Take();
 
 	virtual FORCEINLINE bool IsTaken() const { return bIsTaken; }
-	virtual FORCEINLINE FString GetCrystalName() const { return CrystalScript->Name; };
-	virtual FORCEINLINE ECrystal GetCrystalType() const { return CrystalType; };
+	virtual FORCEINLINE FString GetCrystalName() const { return CrystalScript->Name; }
+	virtual FORCEINLINE ECrystal GetCrystalType() const { return CrystalType; }
 
 private:
 	UPROPERTY()

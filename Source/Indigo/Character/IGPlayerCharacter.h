@@ -258,4 +258,7 @@ private:
 
 	UFUNCTION(Exec, Category="Command")
 	void SetSunMoon_DEBUG(const uint32 Value);
+
+	UFUNCTION(Exec, Category="Command")
+	void CheckCrystal_DEBUG();
 };

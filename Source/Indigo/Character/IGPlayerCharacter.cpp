@@ -556,3 +556,14 @@ void AIGPlayerCharacter::SetSunMoon_DEBUG(const uint32 Value)
 	SunMoonValue = Value;
 	HudWidget->UpdateSunMoonGauge(SunMoonValue);
 }
+
+void AIGPlayerCharacter::CheckCrystal_DEBUG()
+{
+	UE_LOG(LogTemp, Log, TEXT("크리스탈 목록"));
+	
+	auto CrystalArray = PlayerInventory->GetCrystalArray();
+	for (auto Crystal : CrystalArray)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[크리스탈]: %s"), *Crystal->GetCrystalName());
+	}
+}
