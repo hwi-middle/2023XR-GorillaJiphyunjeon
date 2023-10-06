@@ -13,6 +13,7 @@ struct FIGScriptDataTable;
 UENUM()
 enum class ECrystal : uint32
 {
+	None,
 	Tree,
 	Wave,
 	Mountain,
@@ -43,7 +44,7 @@ public:
 	virtual FORCEINLINE FString GetCrystalName() const { return CrystalScript->Name; }
 	virtual FORCEINLINE ECrystal GetCrystalType() const { return CrystalType; }
 
-private:
+protected:
 	UPROPERTY()
 	TObjectPtr<UStaticMeshComponent> Mesh;
 

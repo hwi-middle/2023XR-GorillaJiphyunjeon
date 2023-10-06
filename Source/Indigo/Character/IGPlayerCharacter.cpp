@@ -80,6 +80,9 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	RollAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Roll.IA_Roll'"));
 	AttackAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Attack.IA_Attack'"));
 	ToggleSunMoonAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_ToggleSunMoon.IA_ToggleSunMoon'"));
+	Crystal1Action = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Crystal1.IA_Crystal1'"));
+	Crystal2Action = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Crystal2.IA_Crystal2'"));
+	Crystal3Action = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Crystal3.IA_Crystal3'"));
 
 	const TSubclassOf<UIGPlayerAnimInstance> BossAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGPlayerAnimInstance>(
 		TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/ABP_Player.ABP_Player_C"), EAssertionLevel::Check);
@@ -110,6 +113,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	StaminaRecoveryAmountPerSecondOnWalk = 2.f;
 	StaminaConsumptionAmountPerSecondOnRunning = 2.f;
 	StaminaConsumptionAmountOnRoll = 10.f;
+	ActivatedCrystal = ECrystal::None;
 
 	NormalAttackDamage = 3;
 	StrongAttackDamage = 7;
@@ -205,6 +209,14 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 	{
 		DebugMessage.Append(TEXT("탈진상태(게이지 획득량 감소)\n"));
 	}
+	if (CheckPlayerState(EPlayerState::CrystalActivated))
+	{
+		DebugMessage.Append(TEXT("결정 활성화 됨\n"));
+	}
+	if (CheckPlayerState(EPlayerState::CrystalCooldown))
+	{
+		DebugMessage.Append(TEXT("결정 활성화 쿨타임\n"));
+	}
 	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, *DebugMessage);
 #endif
 	AnimInstance->SetSpeed(GetVelocity().Size2D());
@@ -224,6 +236,9 @@ void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(RollAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::StartRolling);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AIGPlayerCharacter::Attack);
 		EnhancedInputComponent->BindAction(ToggleSunMoonAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::ToggleSunMoon);
+		EnhancedInputComponent->BindAction(Crystal1Action, ETriggerEvent::Started, this, &AIGPlayerCharacter::ActivateCrystal1);
+		EnhancedInputComponent->BindAction(Crystal2Action, ETriggerEvent::Started, this, &AIGPlayerCharacter::ActivateCrystal2);
+		EnhancedInputComponent->BindAction(Crystal3Action, ETriggerEvent::Started, this, &AIGPlayerCharacter::ActivateCrystal3);
 	}
 }
 
@@ -354,8 +369,6 @@ void AIGPlayerCharacter::Attack()
 	float DamageScaleFactor = 1;
 	if (IsEnforced)
 	{
-		GetWorldTimerManager().ClearTimer(SunMoonAutoConsumptionTimerHandle);
-
 		SunMoonValue -= SunMoonConsumptionAmountOnAttack;
 		if (SunMoonValue < 0)
 		{
@@ -539,6 +552,97 @@ void AIGPlayerCharacter::ManageStaminaByTime()
 	HudWidget->UpdateStaminaGauge(StaminaValue);
 }
 
+
+void AIGPlayerCharacter::ActivateCrystalByIndex(uint32 Index)
+{
+	if (CheckPlayerState(EPlayerState::CrystalActivated) || CheckPlayerState(EPlayerState::CrystalCooldown))
+	{
+		return;
+	}
+
+	const TArray<AIGCrystalBase*> CrystalArray = PlayerInventory->GetCrystalArray();
+	if (!CrystalArray.IsValidIndex(Index))
+	{
+		return;
+	}
+
+	const ECrystal Type = CrystalArray[Index]->GetCrystalType();
+	ensure(Type != ECrystal::None);
+
+	ActivatedCrystal = Type;
+	switch (Type)
+	{
+	case ECrystal::Tree:
+		UE_LOG(LogTemp, Log, TEXT("소나무의 결정 활성화"));
+		break;
+	case ECrystal::Wave:
+		UE_LOG(LogTemp, Log, TEXT("물결의 결정 활성화"));
+		break;
+	case ECrystal::Mountain:
+		UE_LOG(LogTemp, Log, TEXT("산의 결정 활성화"));
+		break;
+	case ECrystal::None:
+		// intentional fall-through
+	default:
+		checkNoEntry();
+	}
+
+	AddPlayerState(EPlayerState::CrystalActivated);
+	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::ManageCrystalActivationByTime);
+}
+
+void AIGPlayerCharacter::ManageCrystalActivationByTime()
+{
+	constexpr float Duration = 3.f;
+	const float DeltaTime = GWorld->DeltaTimeSeconds;
+	ElapsedCrystalActivationTime += DeltaTime;
+	
+	if (ElapsedCrystalActivationTime >= Duration)
+	{
+		ActivatedCrystal = ECrystal::None;
+		ElapsedCrystalActivationTime = 0.f;
+		RemovePlayerState(EPlayerState::CrystalActivated);
+		AddPlayerState(EPlayerState::CrystalCooldown);
+		GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::ManageCrystalCooldownByTime);
+		return;
+	}
+
+	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::ManageCrystalActivationByTime);
+}
+
+void AIGPlayerCharacter::ManageCrystalCooldownByTime()
+{
+	constexpr float Duration = 5.f;
+	const float DeltaTime = GWorld->DeltaTimeSeconds;
+	ElapsedCrystalCooldownTime += DeltaTime;
+	
+	if (ElapsedCrystalCooldownTime >= Duration)
+	{
+		ElapsedCrystalCooldownTime = 0.f;
+		RemovePlayerState(EPlayerState::CrystalCooldown);
+		return;
+	}
+	
+	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::ManageCrystalCooldownByTime);
+}
+
+
+
+void AIGPlayerCharacter::ActivateCrystal1()
+{
+	ActivateCrystalByIndex(0);
+}
+
+void AIGPlayerCharacter::ActivateCrystal2()
+{
+	ActivateCrystalByIndex(1);
+}
+
+void AIGPlayerCharacter::ActivateCrystal3()
+{
+	ActivateCrystalByIndex(2);
+}
+
 void AIGPlayerCharacter::SetHp_DEBUG(const uint32 Value)
 {
 	Hp = Value;
@@ -560,7 +664,7 @@ void AIGPlayerCharacter::SetSunMoon_DEBUG(const uint32 Value)
 void AIGPlayerCharacter::CheckCrystal_DEBUG()
 {
 	UE_LOG(LogTemp, Log, TEXT("크리스탈 목록"));
-	
+
 	auto CrystalArray = PlayerInventory->GetCrystalArray();
 	for (auto Crystal : CrystalArray)
 	{

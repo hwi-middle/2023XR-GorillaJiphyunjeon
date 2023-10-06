@@ -39,6 +39,8 @@ enum class EPlayerState : uint32
 	// 탈진 (일월 게이지 비활성화)
 	ExhaustedPhase2 = 0x80,
 	// 탈진 (일월 게이지 획득량 감소)
+	CrystalActivated = 0x100,
+	CrystalCooldown = 0x200,
 	All = 0xff,
 };
 
@@ -120,6 +122,15 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> ToggleSunMoonAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> Crystal1Action;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> Crystal2Action;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> Crystal3Action;
+
 	// 애니메이션
 	UPROPERTY()
 	TObjectPtr<UIGPlayerAnimInstance> AnimInstance;
@@ -139,6 +150,12 @@ private:
 	void EnableExhaustion();
 	void OnHitProjectile();
 	void ManageStaminaByTime(); // 초당 스태미나 소모/회복량 관리
+	void ActivateCrystalByIndex(uint32 Index);
+	void ManageCrystalActivationByTime();
+	void ManageCrystalCooldownByTime();
+	void ActivateCrystal1();
+	void ActivateCrystal2();
+	void ActivateCrystal3();
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraSpringArm() const { return CameraSpringArm; }
@@ -236,6 +253,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	float ElapsedSunMoonAutoConsumptionTime;
+	
+	UPROPERTY(VisibleAnywhere)
+	float ElapsedCrystalActivationTime;
+
+	UPROPERTY(VisibleAnywhere)
+	float ElapsedCrystalCooldownTime;
 
 	UPROPERTY(VisibleAnywhere)
 	float SunMoonAutoConsumptionDelay;
@@ -244,9 +267,12 @@ private:
 	UPROPERTY()
 	TObjectPtr<UIGPlayerInventory> PlayerInventory;
 
+	UPROPERTY()
+	ECrystal ActivatedCrystal;
+
 	// 타이머 핸들
 	UPROPERTY()
-	FTimerHandle SunMoonAutoConsumptionTimerHandle;
+	FTimerHandle ActivateCrystalTimerHandle;
 
 private:
 	// 디버그용
