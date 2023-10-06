@@ -369,7 +369,7 @@ void AIGPlayerCharacter::Attack()
 		return;
 	}
 
-	StaminaValue -= Cost;
+	//StaminaValue -= Cost;
 	HudWidget->UpdateStaminaGauge(StaminaValue);
 
 	AddPlayerState(EPlayerState::Attacking);

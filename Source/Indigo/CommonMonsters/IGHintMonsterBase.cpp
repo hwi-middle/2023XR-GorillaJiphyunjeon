@@ -26,7 +26,22 @@ AIGHintMonsterBase::AIGHintMonsterBase(const FString InSectorName)
 	RootComponent = Mesh;
 }, EAssertionLevel::Check);
 	
-	AIGEnemyBase::SetHp(1);
+
+}
+
+// Called when the game starts or when spawned
+void AIGHintMonsterBase::BeginPlay()
+{
+	Super::BeginPlay();	
+
+	AIGEnemyBase::SetHp(9);
+}
+
+// Called every frame
+void AIGHintMonsterBase::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	
 }
 
 void AIGHintMonsterBase::DropHint()
@@ -59,22 +74,15 @@ void AIGHintMonsterBase::DropHint()
 float AIGHintMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	AActor* DamageCauser)
 {
-	DropHint();	
-	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-}
-
-// Called when the game starts or when spawned
-void AIGHintMonsterBase::BeginPlay()
-{
-	Super::BeginPlay();	
-
+	SetHp(GetHp() - DamageAmount);
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("[도깨비불 체력] %f"), GetHp()));
+	if(GetHp() <= 0)
+	{
+		DropHint();
+	}
 	
+	return DamageAmount;
 }
 
-// Called every frame
-void AIGHintMonsterBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	
-}
+
 
