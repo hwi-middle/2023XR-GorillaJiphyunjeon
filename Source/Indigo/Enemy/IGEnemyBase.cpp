@@ -38,7 +38,7 @@ float AIGEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEve
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	Hp -= DamageAmount;
-	UE_LOG(LogTemp,Log,TEXT("[보스 체력] %d / %d"), Hp, MaxHp);
+	UE_LOG(LogTemp,Log,TEXT("[보스 체력] %f / %f"), Hp, MaxHp);
 	return DamageAmount;
 }
 
