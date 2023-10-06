@@ -35,8 +35,8 @@ void AIGTreeCrystal::Interact()
 	AIGCrystalBase::Interact();
 }
 
-void AIGTreeCrystal::TakeCrystal()
+void AIGTreeCrystal::Take()
 {
-	AIGCrystalBase::TakeCrystal();
+	AIGCrystalBase::Take();
 	
 }

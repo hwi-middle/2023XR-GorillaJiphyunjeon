@@ -16,14 +16,13 @@
 #include "Indigo/Animation/IGPlayerAnimInstance.h"
 #include "Indigo/Battle/IGProjectile.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
+#include "Indigo/Interactable/IGCrystalBase.h"
 #include "Indigo/Interface/Interactable.h"
+#include "Indigo/Inventory/IGPlayerInventory.h"
 #include "Indigo/UI/IGIngameHUDWidget.h"
 #include "Indigo/Util/IGCharacterDataTable.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGDataTableParser.h"
-
-#include "Indigo/Inventory/IGPlayerInventory.h"
-#include "Indigo/Interactable/IGCrystalBase.h"
 
 AIGPlayerCharacter::AIGPlayerCharacter()
 {
@@ -111,7 +110,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	StaminaRecoveryAmountPerSecondOnWalk = 2.f;
 	StaminaConsumptionAmountPerSecondOnRunning = 2.f;
 	StaminaConsumptionAmountOnRoll = 10.f;
-	
+
 	NormalAttackDamage = 3;
 	StrongAttackDamage = 7;
 	StaminaConsumptionAmountOnNormalAttack = 5;
@@ -317,22 +316,21 @@ void AIGPlayerCharacter::Interact()
 
 	IInteractable* Interactable = Cast<IInteractable>(Result.GetActor());
 	AIGCrystalBase* Crystal = Cast<AIGCrystalBase>(Result.GetActor());
-	
+
 	if (Interactable != nullptr)
 	{
 		Interactable->Interact();
 
-		if(Crystal != nullptr)
+		if (Crystal != nullptr)
 		{
-			PlayerInventory->AddCrystals(Crystal);
+			PlayerInventory->AddCrystal(Crystal);
 		}
 	}
 }
 
 void AIGPlayerCharacter::Attack()
 {
-	// 공격 중
-	if (CheckPlayerState(EPlayerState::Attacking))
+	if (CheckPlayerState(EPlayerState::Attacking) || CheckPlayerState(EPlayerState::Rolling))
 	{
 		return;
 	}
@@ -347,7 +345,7 @@ void AIGPlayerCharacter::Attack()
 
 	StaminaValue -= Cost;
 	HudWidget->UpdateStaminaGauge(StaminaValue);
-	
+
 	AddPlayerState(EPlayerState::Attacking);
 	ElapsedSunMoonAutoConsumptionTime = 0.f;
 	AnimInstance->SetEnforced(IsEnforced);
@@ -518,7 +516,7 @@ void AIGPlayerCharacter::OnHitProjectile()
 void AIGPlayerCharacter::ManageStaminaByTime()
 {
 	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::ManageStaminaByTime);
-	
+
 	const float DeltaTime = GWorld->DeltaTimeSeconds;
 	if (CheckPlayerState(EPlayerState::Idling))
 	{
@@ -536,8 +534,8 @@ void AIGPlayerCharacter::ManageStaminaByTime()
 	{
 		return;
 	}
-	
-	StaminaValue = FMath::Clamp(StaminaValue,0.f, 100.f);
+
+	StaminaValue = FMath::Clamp(StaminaValue, 0.f, 100.f);
 	HudWidget->UpdateStaminaGauge(StaminaValue);
 }
 

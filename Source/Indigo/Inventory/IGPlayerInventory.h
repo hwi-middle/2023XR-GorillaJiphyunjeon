@@ -11,27 +11,26 @@ class AIGCrystalBase;
 
 UCLASS()
 class INDIGO_API UIGPlayerInventory : public UActorComponent
-{	
+{
 	GENERATED_BODY()
 
 public:
 	UIGPlayerInventory();
 	virtual ~UIGPlayerInventory() override;
-	
-	virtual void BeginPlay() override;	
+
+	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
+
 public:
-	void AddCrystals(AIGCrystalBase* InCrystal);
-	void ShowMyCrystals();
+	void AddCrystal(AIGCrystalBase* InCrystal);
+	void ShowOwnedCrystals();
 
-	void AddHints(IIGHintInterface* InHint);
+	void AddHint(IIGHintInterface* InHint);
 
-	FORCEINLINE TArray<AIGCrystalBase*> GetArrCrystals(){return ArrCrystals;}
-	FORCEINLINE TArray<IIGHintInterface*> GetArrHints(){return ArrHints;}
-	
+	FORCEINLINE TArray<AIGCrystalBase*> GetCrystalArray() { return CrystalArray; }
+	FORCEINLINE TArray<IIGHintInterface*> GetHintArray() { return HintArray; }
+
 private:
-	TArray<AIGCrystalBase*> ArrCrystals;
-	TArray<IIGHintInterface*> ArrHints;
-	
+	TArray<AIGCrystalBase*> CrystalArray;
+	TArray<IIGHintInterface*> HintArray;
 };

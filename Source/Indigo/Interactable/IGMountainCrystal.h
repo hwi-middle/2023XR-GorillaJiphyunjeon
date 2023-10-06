@@ -25,7 +25,7 @@ protected:
 
 	virtual void Interact() override;
 
-	virtual void TakeCrystal() override;
+	virtual void Take() override;
 	
 public:	
 

@@ -38,7 +38,7 @@ void AIGMountainCrystal::Interact()
 
 
 
-void AIGMountainCrystal::TakeCrystal()
+void AIGMountainCrystal::Take()
 {
-	AIGCrystalBase::TakeCrystal();
+	AIGCrystalBase::Take();
 }

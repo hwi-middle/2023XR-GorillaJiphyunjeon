@@ -25,6 +25,6 @@ protected:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	virtual void Interact() override;
-	virtual void TakeCrystal() override;
+	virtual void Take() override;
 
 };
