@@ -3,6 +3,7 @@
 
 #include "IGDummyEnemy.h"
 
+#include "Indigo/AI/IGBossAIController.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 
 AIGDummyEnemy::AIGDummyEnemy()
@@ -12,4 +13,7 @@ AIGDummyEnemy::AIGDummyEnemy()
 		GetMesh()->SetSkeletalMesh(MeshRef);
 		GetMesh()->SetRelativeRotation(FRotator(0.f, 270.f, 0.f));
 	}, EAssertionLevel::Check);
+
+	AIControllerClass = AIGBossAIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
