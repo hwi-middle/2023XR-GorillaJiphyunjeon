@@ -20,7 +20,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -31,42 +31,44 @@ public:
 
 public:
 	//인터페이스 함수
-	virtual FORCEINLINE float GetHp() const override {return Hp;}
-	virtual FORCEINLINE void SetHp(const uint32 InValue) override{Hp = InValue;}
-	virtual FORCEINLINE float GetAttackValue() const override {return AttackValue;}
-	virtual FORCEINLINE void SetAttackValue(const uint32 InValue) override {AttackValue = InValue;}
-	virtual FORCEINLINE float GetAttackRate() const override {return AttackRate;}
-	virtual FORCEINLINE void SetAttackRate(const uint32 InValue) override {AttackRate = InValue;}
-	virtual FORCEINLINE float GetAttackRange() const override {return AttackRange;}
-	virtual FORCEINLINE void SetAttackRange(const uint32 InValue) override {AttackRange = InValue;}
-	virtual FORCEINLINE float GetDefenceValue() const override {return DefenceValue;}
-	virtual FORCEINLINE void SetDefenseValue(const uint32 InValue) override {DefenceValue = InValue;}
-	virtual FORCEINLINE float GetStaminaValue() const override {return StaminaValue;}
-	virtual FORCEINLINE void SetStaminaValue(const uint32 InValue) override {StaminaValue = InValue;}
-	virtual FORCEINLINE bool IsDead() const override {return bIsDead;}
-	
+	virtual FORCEINLINE float GetHp() const override { return Hp; }
+	virtual FORCEINLINE void SetHp(const uint32 InValue) override { Hp = InValue; }
+	virtual FORCEINLINE float GetAttackValue() const override { return AttackValue; }
+	virtual FORCEINLINE void SetAttackValue(const uint32 InValue) override { AttackValue = InValue; }
+	virtual FORCEINLINE float GetAttackRate() const override { return AttackRate; }
+	virtual FORCEINLINE void SetAttackRate(const uint32 InValue) override { AttackRate = InValue; }
+	virtual FORCEINLINE float GetAttackRange() const override { return AttackRange; }
+	virtual FORCEINLINE void SetAttackRange(const uint32 InValue) override { AttackRange = InValue; }
+	virtual FORCEINLINE float GetDefenceValue() const override { return DefenceValue; }
+	virtual FORCEINLINE void SetDefenseValue(const uint32 InValue) override { DefenceValue = InValue; }
+	virtual FORCEINLINE float GetStaminaValue() const override { return StaminaValue; }
+	virtual FORCEINLINE void SetStaminaValue(const uint32 InValue) override { StaminaValue = InValue; }
+	virtual FORCEINLINE bool IsDead() const override { return bIsDead; }
+
+	FORCEINLINE float GetDetectRange() const { return 1000.f; }
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	float MaxHp;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	float Hp;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	float AttackValue;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	float AttackRate;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	float AttackRange;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	float DefenceValue;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	float StaminaValue;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDead : 1;
 };
