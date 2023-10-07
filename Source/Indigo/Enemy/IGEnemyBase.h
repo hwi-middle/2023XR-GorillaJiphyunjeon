@@ -45,7 +45,7 @@ public:
 	virtual FORCEINLINE void SetStaminaValue(const uint32 InValue) override { StaminaValue = InValue; }
 	virtual FORCEINLINE bool IsDead() const override { return bIsDead; }
 
-	FORCEINLINE float GetDetectRange() const { return 1000.f; }
+	FORCEINLINE float GetDetectRange() const { return 500.f; }
 
 private:
 	UPROPERTY(VisibleAnywhere)

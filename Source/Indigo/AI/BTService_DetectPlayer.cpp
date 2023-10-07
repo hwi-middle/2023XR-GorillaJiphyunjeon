@@ -19,7 +19,7 @@ UBTService_DetectPlayer::UBTService_DetectPlayer()
 void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	APawn* ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
-	const FVector Origin = ControllingPawn->GetActorLocation();
+	static const FVector Origin = ControllingPawn->GetActorLocation();
 	const UWorld* World = ControllingPawn->GetWorld();
 	ensure(ControllingPawn);
 	ensure(World);
