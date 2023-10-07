@@ -125,8 +125,11 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	StaminaConsumptionAmountOnRoll = 10.f;
 	ActivatedCrystal = ECrystal::None;
 
-	NormalAttackDamage = 3;
-	StrongAttackDamage = 7;
+	NormalAttackDamageMin = 2;
+	NormalAttackDamageMax = 4;
+	StrongAttackDamageMin = 5;
+	StrongAttackDamageMax = 9;
+	
 	StaminaConsumptionAmountOnNormalAttack = 5;
 	StaminaConsumptionAmountOnStrongAttack = 7;
 }
@@ -377,7 +380,6 @@ void AIGPlayerCharacter::Attack()
 	AnimInstance->SetEnforced(IsEnforced);
 	AnimInstance->StartAttack();
 
-	float DamageScaleFactor = 1;
 	if (IsEnforced)
 	{
 		SunMoonValue -= SunMoonConsumptionAmountOnAttack;
@@ -388,28 +390,14 @@ void AIGPlayerCharacter::Attack()
 			AddPlayerState(EPlayerState::ExhaustedPhase1);
 			EnableExhaustion();
 		}
-
 		HudWidget->UpdateSunMoonGauge(SunMoonValue);
-
-		// 데미지 배율 계산
-		if (SunMoonValue >= SunMoonSection3Threshold)
-		{
-			DamageScaleFactor = SunMoonSection3DamageScaleFactor;
-		}
-		else if (SunMoonValue >= SunMoonSection2Threshold)
-		{
-			DamageScaleFactor = SunMoonSection2DamageScaleFactor;
-		}
-		else
-		{
-			DamageScaleFactor = SunMoonSection1DamageScaleFactor;
-		}
 	}
-
+	
 	// ---- Temporal (Socket 등으로 위치 조정해줘야함)
 	const FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
 	AIGProjectile* SpawnedActor = GetWorld()->SpawnActor<AIGProjectile>(SpawnLocation, FRotator::ZeroRotator);
-	const float Damage = IsEnforced ? StrongAttackDamage * DamageScaleFactor : NormalAttackDamage;
+	const float Damage = DamageCompute();
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("데미지: [%f]"), Damage));
 	SpawnedActor->Init(Damage, GetActorForwardVector(), 1000.f, 10.f);
 	SpawnedActor->OnHitProjectile.AddUObject(this, &AIGPlayerCharacter::OnHitProjectile);
 	// ----
@@ -654,6 +642,19 @@ void AIGPlayerCharacter::ActivateCrystal2()
 void AIGPlayerCharacter::ActivateCrystal3()
 {
 	ActivateCrystalByIndex(2);
+}
+
+float AIGPlayerCharacter::DamageCompute()
+{
+	float OutDamage = 0.0f;
+	if (CheckPlayerState(EPlayerState::Enforced))
+	{
+		OutDamage = FMath::RandRange(StrongAttackDamageMin, StrongAttackDamageMax);
+		return OutDamage;
+	}
+	
+	OutDamage = FMath::RandRange(NormalAttackDamageMin, NormalAttackDamageMax);
+	return OutDamage;
 }
 
 void AIGPlayerCharacter::SetHp_DEBUG(const uint32 Value)

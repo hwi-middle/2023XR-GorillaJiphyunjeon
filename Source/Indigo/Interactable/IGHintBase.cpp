@@ -27,7 +27,6 @@ AIGHintBase::AIGHintBase(FString InPath)
 		[&](const UDataTable* ScriptDataTable)
 		{
 			TArray<FIGScriptDataTable*> ScriptArray;
-			ScriptDataTable->GetAllRows(TEXT(""), ScriptArray);
 			
 			HintScript = ScriptDataTable->FindRow<FIGScriptDataTable>(FName(*(FString::FormatAsNumber(ScriptNum))),TEXT(""));
 
