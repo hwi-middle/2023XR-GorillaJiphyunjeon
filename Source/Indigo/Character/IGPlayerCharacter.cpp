@@ -244,7 +244,7 @@ void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Completed, this, &AIGPlayerCharacter::SetIsRunning);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::Interact);
 		EnhancedInputComponent->BindAction(RollAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::StartRolling);
-		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AIGPlayerCharacter::Attack);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::Attack);
 		EnhancedInputComponent->BindAction(ToggleSunMoonAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::ToggleSunMoon);
 		EnhancedInputComponent->BindAction(Crystal1Action, ETriggerEvent::Started, this, &AIGPlayerCharacter::ActivateCrystal1);
 		EnhancedInputComponent->BindAction(Crystal2Action, ETriggerEvent::Started, this, &AIGPlayerCharacter::ActivateCrystal2);
@@ -423,7 +423,7 @@ void AIGPlayerCharacter::FinishAttack()
 
 void AIGPlayerCharacter::StartRolling()
 {
-	if (CheckPlayerState(EPlayerState::Rolling))
+	if (CheckPlayerState(EPlayerState::Rolling) || CheckPlayerState(EPlayerState::Attacking))
 	{
 		return;
 	}
