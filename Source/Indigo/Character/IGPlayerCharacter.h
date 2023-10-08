@@ -159,7 +159,7 @@ private:
 	void ActivateCrystal3();
 
 	//데미지 계산
-	float DamageCompute(); 
+	float ComputeDamage(); 
 	
 public:
 	FORCEINLINE USpringArmComponent* GetCameraSpringArm() const { return CameraSpringArm; }

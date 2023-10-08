@@ -25,11 +25,10 @@ AIGMainLobby::~AIGMainLobby()
 void AIGMainLobby::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = true;
-
-	UGameplayStatics::GetPlayerController(this, 0)->bEnableMouseOverEvents = true;
-	UGameplayStatics::GetPlayerController(this, 0)->bEnableClickEvents = true;
+	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
+	Controller->bShowMouseCursor = true;
+	Controller->bEnableMouseOverEvents = true;
+	Controller->bEnableClickEvents = true;
 	
 	MainLobbyWidget = CreateWidget<UIGMainLobbyWidget>(GetWorld(), MainLobbyWidgetClass);
 	if(MainLobbyWidget)

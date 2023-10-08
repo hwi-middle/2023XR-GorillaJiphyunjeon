@@ -396,7 +396,7 @@ void AIGPlayerCharacter::Attack()
 	// ---- Temporal (Socket 등으로 위치 조정해줘야함)
 	const FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
 	AIGProjectile* SpawnedActor = GetWorld()->SpawnActor<AIGProjectile>(SpawnLocation, FRotator::ZeroRotator);
-	const float Damage = DamageCompute();
+	const float Damage = ComputeDamage();
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("데미지: [%f]"), Damage));
 	SpawnedActor->Init(Damage, GetActorForwardVector(), 1000.f, 10.f);
 	SpawnedActor->OnHitProjectile.AddUObject(this, &AIGPlayerCharacter::OnHitProjectile);
@@ -644,17 +644,30 @@ void AIGPlayerCharacter::ActivateCrystal3()
 	ActivateCrystalByIndex(2);
 }
 
-float AIGPlayerCharacter::DamageCompute()
+float AIGPlayerCharacter::ComputeDamage()
 {
-	float OutDamage = 0.0f;
 	if (CheckPlayerState(EPlayerState::Enforced))
-	{
-		OutDamage = FMath::RandRange(StrongAttackDamageMin, StrongAttackDamageMax);
-		return OutDamage;
-	}
+	{		
+		float DamageScaleFactor = 1.0f;
+		
+		// 데미지 배율 계산
+		if (SunMoonValue >= SunMoonSection3Threshold)
+		{
+			DamageScaleFactor = SunMoonSection3DamageScaleFactor;
+		}
+		else if (SunMoonValue >= SunMoonSection2Threshold)
+		{
+			DamageScaleFactor = SunMoonSection2DamageScaleFactor;
+		}
+		else
+		{
+			DamageScaleFactor = SunMoonSection1DamageScaleFactor;
+		}
+		
+		return DamageScaleFactor * FMath::RandRange(StrongAttackDamageMin, StrongAttackDamageMax);
+	}	
 	
-	OutDamage = FMath::RandRange(NormalAttackDamageMin, NormalAttackDamageMax);
-	return OutDamage;
+	return FMath::RandRange(NormalAttackDamageMin, NormalAttackDamageMax);
 }
 
 void AIGPlayerCharacter::SetHp_DEBUG(const uint32 Value)
