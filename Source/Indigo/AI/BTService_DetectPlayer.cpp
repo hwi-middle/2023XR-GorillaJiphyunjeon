@@ -13,13 +13,12 @@
 UBTService_DetectPlayer::UBTService_DetectPlayer()
 {
 	NodeName = TEXT("Detect Player");
-	Interval = 0.5f;
+	Interval = 0.1f;
 }
 
 void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	APawn* ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
-	static const FVector Origin = ControllingPawn->GetActorLocation();
 	const UWorld* World = ControllingPawn->GetWorld();
 	ensure(ControllingPawn);
 	ensure(World);
@@ -30,6 +29,7 @@ void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		return;
 	}
 
+	const FVector Origin = EnemyPawn->GetOrigin();
 	const float DetectRadius = EnemyPawn->GetDetectRange();
 
 	TArray<FOverlapResult> OverlapResults;
@@ -55,13 +55,13 @@ void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		if (AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(OverlapResult.GetActor()))
 		{
 			OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, Player);
-			DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Green, false, 0.f);
+			DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Green, false, 0.1f);
 
-			DrawDebugPoint(World, Player->GetActorLocation(), 10.0f, FColor::Green, false, 0.f);
 			DrawDebugLine(World, ControllingPawn->GetActorLocation(), Player->GetActorLocation(), FColor::Green, false, 0.f);
 			return;
 		}
 	}
-
-	DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Red, false, 0.f);
+	
+	OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, nullptr);
+	DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Red, false, 0.1f);
 }
