@@ -3,6 +3,7 @@
 
 #include "IGDummyEnemy.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Indigo/AI/IGBossAIController.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 
@@ -16,4 +17,5 @@ AIGDummyEnemy::AIGDummyEnemy()
 
 	AIControllerClass = AIGBossAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	GetCharacterMovement()->MaxWalkSpeed = 200.f;
 }
