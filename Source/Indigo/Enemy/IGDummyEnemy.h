@@ -6,6 +6,8 @@
 #include "IGEnemyBase.h"
 #include "IGDummyEnemy.generated.h"
 
+class UIGBossAnimInstance;
+class UIGPlayerAnimInstance;
 /**
  * 
  */
@@ -16,4 +18,12 @@ class INDIGO_API AIGDummyEnemy : public AIGEnemyBase
 
 public:
 	AIGDummyEnemy();
+
+protected:
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
+
+private:
+	UPROPERTY()
+	TObjectPtr<UIGBossAnimInstance> AnimInstance;
 };
