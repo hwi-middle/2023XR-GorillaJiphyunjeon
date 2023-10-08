@@ -7,6 +7,7 @@
 #include "Indigo/AI/IGBossAIController.h"
 #include "Indigo/Animation/IGBossAnimInstance.h"
 #include "Indigo/Util/IGConstructorHelper.h"
+#include "Indigo/Constant/IGBossSockets.h"
 
 AIGDummyEnemy::AIGDummyEnemy()
 {
@@ -37,4 +38,7 @@ void AIGDummyEnemy::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	AnimInstance->SetSpeed(GetVelocity().Size2D());
+
+	DrawDebugSphere(GetWorld(), GetMesh()->GetSocketLocation(BOSS_LEFT_HAND), 50.f, 16, FColor::Red, false, 0.f);
+	DrawDebugSphere(GetWorld(), GetMesh()->GetSocketLocation(BOSS_RIGHT_HAND), 50.f, 16, FColor::Red, false, 0.f);
 }
