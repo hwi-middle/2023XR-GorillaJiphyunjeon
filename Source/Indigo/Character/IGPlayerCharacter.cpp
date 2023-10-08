@@ -99,10 +99,10 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 		HudWidgetClass = Class;
 	}, EAssertionLevel::Check);
 
-	
+
 	TestSoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/SoundCueDataAsset.SoundCueDataAsset'"), nullptr, LOAD_None, nullptr, nullptr);
-	
-	
+
+
 	WalkSpeed = 500.f;
 	SprintSpeed = 800.f;
 
@@ -353,6 +353,15 @@ void AIGPlayerCharacter::Interact()
 		if (Crystal != nullptr)
 		{
 			PlayerInventory->AddCrystal(Crystal);
+
+			// Temporal
+			FString CrystalDebugText;
+			auto CrystalArray = PlayerInventory->GetCrystalArray();
+			for (int i = 0; i < CrystalArray.Num(); i++)
+			{
+				CrystalDebugText.Append(FString::Printf(TEXT("%d. %s\n"), i + 1, *CrystalArray[i]->GetCrystalName()));
+			}
+			HudWidget->UpdateCrystalDebug(CrystalDebugText);
 		}
 	}
 }
@@ -598,7 +607,7 @@ void AIGPlayerCharacter::ManageCrystalActivationByTime()
 	constexpr float Duration = 3.f;
 	const float DeltaTime = GWorld->DeltaTimeSeconds;
 	ElapsedCrystalActivationTime += DeltaTime;
-	
+
 	if (ElapsedCrystalActivationTime >= Duration)
 	{
 		ActivatedCrystal = ECrystal::None;
@@ -617,17 +626,16 @@ void AIGPlayerCharacter::ManageCrystalCooldownByTime()
 	constexpr float Duration = 5.f;
 	const float DeltaTime = GWorld->DeltaTimeSeconds;
 	ElapsedCrystalCooldownTime += DeltaTime;
-	
+
 	if (ElapsedCrystalCooldownTime >= Duration)
 	{
 		ElapsedCrystalCooldownTime = 0.f;
 		RemovePlayerState(EPlayerState::CrystalCooldown);
 		return;
 	}
-	
+
 	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::ManageCrystalCooldownByTime);
 }
-
 
 
 void AIGPlayerCharacter::ActivateCrystal1()

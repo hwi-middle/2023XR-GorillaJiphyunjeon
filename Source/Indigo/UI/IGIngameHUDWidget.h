@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "IGIngameHUDWidget.generated.h"
 
+class UTextBlock;
 class UIGGauge;
 /**
  * 
@@ -22,6 +23,7 @@ public:
 	void UpdateHpGauge(float InValue) const;
 	void UpdateStaminaGauge(const float InValue) const;
 	void UpdateSunMoonGauge(float InValue) const;
+	void UpdateCrystalDebug(const FString& Str) const;
 
 protected:
 	virtual void NativeConstruct() override;
@@ -35,4 +37,7 @@ protected:
 	
 	UPROPERTY()
 	TObjectPtr<UIGGauge> SunMoonGauge;
+
+	UPROPERTY()
+	TObjectPtr<UTextBlock> CrystalTextBlock;
 };

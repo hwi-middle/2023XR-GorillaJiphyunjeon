@@ -3,6 +3,7 @@
 
 #include "IGIngameHUDWidget.h"
 #include "IGGauge.h"
+#include "Components/TextBlock.h"
 
 void UIGIngameHUDWidget::InitHpGauge(float InMaxValue, float InInitialValue) const
 {
@@ -34,6 +35,11 @@ void UIGIngameHUDWidget::UpdateSunMoonGauge(const float InValue) const
 	SunMoonGauge->UpdateGaugeBar(InValue);
 }
 
+void UIGIngameHUDWidget::UpdateCrystalDebug(const FString& Str) const
+{
+	CrystalTextBlock->SetText(FText::FromString(Str));	
+}
+
 void UIGIngameHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -41,4 +47,5 @@ void UIGIngameHUDWidget::NativeConstruct()
 	HpGauge = Cast<UIGGauge>(GetWidgetFromName(TEXT("HpGaugeBar")));
 	StaminaGauge = Cast<UIGGauge>(GetWidgetFromName(TEXT("StaminaGaugeBar")));
 	SunMoonGauge = Cast<UIGGauge>(GetWidgetFromName(TEXT("SunMoonGaugeBar")));
+	CrystalTextBlock = Cast<UTextBlock>(GetWidgetFromName(TEXT("CrystalDebug")));
 }
