@@ -17,18 +17,17 @@
 #include "Indigo/Battle/IGProjectile.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
 #include "Indigo/Interactable/IGCrystalBase.h"
+#include "Indigo/Interactable/IGCrystalBase.h"
 #include "Indigo/Interface/Interactable.h"
+#include "Indigo/Inventory/IGPlayerInventory.h"
 #include "Indigo/Inventory/IGPlayerInventory.h"
 #include "Indigo/UI/IGIngameHUDWidget.h"
 #include "Indigo/Util/IGCharacterDataTable.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGDataTableParser.h"
-
-#include "Indigo/Inventory/IGPlayerInventory.h"
-#include "Indigo/Interactable/IGCrystalBase.h"
 #include "Indigo/Util/IGSoundDataAsset.h"
-#include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 AIGPlayerCharacter::AIGPlayerCharacter()
 {
@@ -541,6 +540,12 @@ void AIGPlayerCharacter::ManageStaminaByTime()
 {
 	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::ManageStaminaByTime);
 
+	// 구르기와 이동상태는 중첩될 수 있으나, 스태미너 계산에는 제외
+	if (CheckPlayerState(EPlayerState::Rolling))
+	{
+		return;
+	}
+	
 	const float DeltaTime = GWorld->DeltaTimeSeconds;
 	if (CheckPlayerState(EPlayerState::Idling))
 	{
