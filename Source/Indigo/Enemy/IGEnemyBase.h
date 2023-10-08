@@ -46,7 +46,7 @@ public:
 	virtual FORCEINLINE bool IsDead() const override { return bIsDead; }
 
 	// Getter/Setter
-	FORCEINLINE float GetDetectRange() const { return 500.f; }
+	FORCEINLINE float GetDetectRange() const { return 3000.f; }
 	FORCEINLINE FVector GetOrigin() const { return Origin; }
 
 

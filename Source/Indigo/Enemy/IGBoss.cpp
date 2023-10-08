@@ -1,7 +1,7 @@
 // Copyright GorillaJiphyunjeon. All Rights Reserved.
 
 
-#include "IGDummyEnemy.h"
+#include "IGBoss.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Indigo/AI/IGBossAIController.h"
@@ -9,7 +9,7 @@
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Constant/IGBossSockets.h"
 
-AIGDummyEnemy::AIGDummyEnemy()
+AIGBoss::AIGBoss()
 {
 	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Boss/Mesh/SK_Boss.SK_Boss'"),[&](USkeletalMesh* MeshRef)
 	{
@@ -26,15 +26,15 @@ AIGDummyEnemy::AIGDummyEnemy()
 	GetCharacterMovement()->MaxWalkSpeed = 200.f;
 }
 
-void AIGDummyEnemy::BeginPlay()
+void AIGBoss::BeginPlay()
 {
 	Super::BeginPlay();
 	AnimInstance = CastChecked<UIGBossAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->SetSpeed(0.f);
-
+	StoppingDistance = 500.f;
 }
 
-void AIGDummyEnemy::Tick(float DeltaSeconds)
+void AIGBoss::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	AnimInstance->SetSpeed(GetVelocity().Size2D());

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "IGEnemyBase.h"
-#include "IGDummyEnemy.generated.h"
+#include "IGBoss.generated.h"
 
 class UIGBossAnimInstance;
 class UIGPlayerAnimInstance;
@@ -12,12 +12,12 @@ class UIGPlayerAnimInstance;
  * 
  */
 UCLASS()
-class INDIGO_API AIGDummyEnemy : public AIGEnemyBase
+class INDIGO_API AIGBoss : public AIGEnemyBase
 {
 	GENERATED_BODY()
 
 public:
-	AIGDummyEnemy();
+	AIGBoss();
 
 protected:
 	virtual void BeginPlay() override;
@@ -26,4 +26,10 @@ protected:
 private:
 	UPROPERTY()
 	TObjectPtr<UIGBossAnimInstance> AnimInstance;
+
+	UPROPERTY()
+	float StoppingDistance;
+
+public:
+	FORCEINLINE float GetStoppingDistance() const { return StoppingDistance; }
 };
