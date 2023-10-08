@@ -380,6 +380,9 @@ void AIGPlayerCharacter::Attack()
 	AnimInstance->SetEnforced(IsEnforced);
 	AnimInstance->StartAttack();
 
+	//데미지 연산뒤 선문게이지 감소
+	const float Damage = ComputeDamage();
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("데미지: [%f]"), Damage));
 	if (IsEnforced)
 	{
 		SunMoonValue -= SunMoonConsumptionAmountOnAttack;
@@ -396,8 +399,6 @@ void AIGPlayerCharacter::Attack()
 	// ---- Temporal (Socket 등으로 위치 조정해줘야함)
 	const FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
 	AIGProjectile* SpawnedActor = GetWorld()->SpawnActor<AIGProjectile>(SpawnLocation, FRotator::ZeroRotator);
-	const float Damage = ComputeDamage();
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("데미지: [%f]"), Damage));
 	SpawnedActor->Init(Damage, GetActorForwardVector(), 1000.f, 10.f);
 	SpawnedActor->OnHitProjectile.AddUObject(this, &AIGPlayerCharacter::OnHitProjectile);
 	// ----
