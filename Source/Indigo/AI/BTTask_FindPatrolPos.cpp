@@ -3,7 +3,6 @@
 
 #include "BTTask_FindPatrolPos.h"
 #include "AIController.h"
-#include "ClassViewerFilter.h"
 #include "IGAI.h"
 #include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
