@@ -6,6 +6,7 @@
 #include "Animation/AnimInstance.h"
 #include "IGBossAnimInstance.generated.h"
 
+enum EAttackPattern : uint32;
 /**
  * 
  */
@@ -22,8 +23,14 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
 	float InterpolatedSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
+	TEnumAsByte<EAttackPattern> CurrentAttackPattern;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
+	uint8 bShouldPerformCloseAttack : 1;
 	
 public:
 	FORCEINLINE void SetSpeed(const float InValue) { Speed = InValue; }
-
+	FORCEINLINE void StartCloseAttack() { bShouldPerformCloseAttack = true; }
 };

@@ -11,6 +11,16 @@ class UIGPlayerAnimInstance;
 /**
  * 
  */
+
+UENUM(BlueprintType)
+enum EAttackPattern : uint32
+{
+	None,
+	Close,
+	Far,
+	Floor,
+};
+
 UCLASS()
 class INDIGO_API AIGBoss : public AIGEnemyBase
 {
@@ -22,6 +32,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
+	void PerformCloseAttack();
 
 private:
 	UPROPERTY()
@@ -29,6 +40,9 @@ private:
 
 	UPROPERTY()
 	float StoppingDistance;
+
+	// UPROPERTY()
+	// EAttackPattern CurrentAttackPattern;
 
 public:
 	FORCEINLINE float GetStoppingDistance() const { return StoppingDistance; }

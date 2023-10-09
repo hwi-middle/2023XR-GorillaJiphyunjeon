@@ -44,3 +44,8 @@ void AIGBoss::Tick(float DeltaSeconds)
 	DrawDebugSphere(GetWorld(), GetMesh()->GetSocketLocation(BOSS_LEFT_HAND), 50.f, 16, FColor::Red, false, 0.f);
 	DrawDebugSphere(GetWorld(), GetMesh()->GetSocketLocation(BOSS_RIGHT_HAND), 50.f, 16, FColor::Red, false, 0.f);
 }
+
+void AIGBoss::PerformCloseAttack()
+{
+	
+}
