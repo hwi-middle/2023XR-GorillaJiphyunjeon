@@ -254,6 +254,13 @@ void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	}
 }
 
+float AIGPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Hp -= DamageAmount;
+	HudWidget->UpdateHpGauge(Hp);
+	return DamageAmount;
+}
+
 void AIGPlayerCharacter::Move(const FInputActionValue& Value)
 {
 	RemovePlayerState(EPlayerState::Idling);

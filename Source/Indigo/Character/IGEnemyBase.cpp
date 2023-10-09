@@ -6,7 +6,7 @@
 // Sets default values
 AIGEnemyBase::AIGEnemyBase()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
@@ -34,12 +34,10 @@ void AIGEnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
-float AIGEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
-	AActor* DamageCauser)
+float AIGEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	Hp -= DamageAmount;
-	UE_LOG(LogTemp,Log,TEXT("[보스 체력] %f / %f"), Hp, MaxHp);
+	UE_LOG(LogTemp, Log, TEXT("[보스 체력] %f / %f"), Hp, MaxHp);
 	return DamageAmount;
 }
-

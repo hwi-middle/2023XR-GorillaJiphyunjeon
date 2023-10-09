@@ -22,15 +22,22 @@ EBTNodeResult::Type UBTTask_CloseAttack::ExecuteTask(UBehaviorTreeComponent& Own
 		return EBTNodeResult::Failed;
 	}
 
-	// FAICharacterAttackFinished OnAttackFinished;
-	// OnAttackFinished.BindLambda(
+	// FOnFinishBossCloseAttackDelegate OnAttackFinished;
+	// OnAttackFinished.AddLambda(
 	// 	[&]()
 	// 	{
 	// 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	// 	}
 	// );
-	//
-	// AIPawn->SetAIAttackDelegate(OnAttackFinished);
+
+	AIPawn->OnFinishBossCloseAttack.AddLambda(
+		[&]()
+		{
+			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+			UE_LOG(LogTemp, Log, TEXT("ㅎㅇㅎㅇ"));
+		}
+	);
 	AIPawn->PerformCloseAttack();
 	return EBTNodeResult::InProgress;
 }
+

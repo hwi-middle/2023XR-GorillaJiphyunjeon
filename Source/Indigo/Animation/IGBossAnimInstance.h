@@ -44,4 +44,7 @@ public:
 
 	UFUNCTION()
 	void AnimNotify_GenerateCloseAttack();
+
+	UFUNCTION()
+	void AnimNotify_EndCloseAttack();
 };

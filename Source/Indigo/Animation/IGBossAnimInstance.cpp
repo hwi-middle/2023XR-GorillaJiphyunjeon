@@ -14,3 +14,9 @@ void UIGBossAnimInstance::AnimNotify_GenerateCloseAttack()
 {
 	OnGenerateBossCloseAttack.Broadcast();
 }
+
+void UIGBossAnimInstance::AnimNotify_EndCloseAttack()
+{
+	OnFinishAttack.Broadcast();
+	bShouldPerformCloseAttack = false;
+}

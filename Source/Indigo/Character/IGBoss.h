@@ -6,6 +6,8 @@
 #include "IGEnemyBase.h"
 #include "IGBoss.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnFinishBossCloseAttackDelegate)
+
 class UIGBossAnimInstance;
 class UIGPlayerAnimInstance;
 /**
@@ -44,8 +46,11 @@ private:
 	// EAttackPattern CurrentAttackPattern;
 
 public:
+	FOnFinishBossCloseAttackDelegate OnFinishBossCloseAttack;
+	
+public:
 	FORCEINLINE float GetStoppingDistance() const { return StoppingDistance; }
 	void PerformCloseAttack();
 	void GenerateCloseAttack();
-
+	void EndCloseAttack();
 };

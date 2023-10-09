@@ -3,12 +3,14 @@
 
 #include "IGBoss.h"
 
+#include "IGPlayerCharacter.h"
+#include "Engine/DamageEvents.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Indigo/AI/IGBossAIController.h"
 #include "Indigo/Animation/IGBossAnimInstance.h"
-#include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Constant/IGBossSockets.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
+#include "Indigo/Util/IGConstructorHelper.h"
 
 AIGBoss::AIGBoss()
 {
@@ -35,6 +37,7 @@ void AIGBoss::BeginPlay()
 	AnimInstance = CastChecked<UIGBossAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->SetSpeed(0.f);
 	AnimInstance->OnGenerateBossCloseAttack.AddUObject(this, &AIGBoss::GenerateCloseAttack);
+	AnimInstance->OnFinishAttack.AddUObject(this, &AIGBoss::EndCloseAttack);
 	StoppingDistance = 400.f;
 }
 
@@ -74,6 +77,16 @@ void AIGBoss::GenerateCloseAttack()
 
 	if (bHit)
 	{
-		UE_LOG(LogTemp, Log, TEXT("데미지"));
+		AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(Result.GetActor());
+		if (Player)
+		{
+			FDamageEvent DamageEvent;
+			Player->TakeDamage(10.f, DamageEvent, GetInstigatorController(), this);
+		}
 	}
+}
+
+void AIGBoss::EndCloseAttack()
+{
+	OnFinishBossCloseAttack.Broadcast();
 }
