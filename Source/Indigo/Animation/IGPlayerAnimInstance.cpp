@@ -22,6 +22,11 @@ void UIGPlayerAnimInstance::AnimNotify_AttackEnd()
 	OnFinishAttack.Broadcast();
 }
 
+void UIGPlayerAnimInstance::AnimNotify_WalkSound()
+{
+	OnWalkByOneStep.Broadcast();
+}
+
 void UIGPlayerAnimInstance::StartRoll()
 {
 	bIsRolling = true;

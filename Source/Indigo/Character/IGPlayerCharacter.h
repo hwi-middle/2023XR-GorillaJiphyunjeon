@@ -158,8 +158,15 @@ private:
 	void ActivateCrystal2();
 	void ActivateCrystal3();
 
+	
 	//데미지 계산
-	float ComputeDamage(); 
+	float ComputeDamage();
+
+	//사운드 함수
+	void StepSound();
+	
+	//플레이어 피격
+	void OnHitByBossAttack();
 	
 public:
 	FORCEINLINE USpringArmComponent* GetCameraSpringArm() const { return CameraSpringArm; }
@@ -282,7 +289,7 @@ private:
 
 	//사운드
 	UPROPERTY()
-	TObjectPtr<UIGSoundDataAsset> TestSoundDataAsset;
+	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;
 	
 	// 타이머 핸들
 	UPROPERTY()

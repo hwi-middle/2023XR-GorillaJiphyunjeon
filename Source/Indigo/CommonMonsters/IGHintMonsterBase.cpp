@@ -6,6 +6,9 @@
 #include "Indigo/Interactable/IGHintBase.h"
 #include "Indigo/Interactable/IGBlankHint.h"
 #include "Indigo/Interactable/IGMainHint.h"
+#include "Indigo/Util/IGSoundDataAsset.h"
+#include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AIGHintMonsterBase::AIGHintMonsterBase()
@@ -25,6 +28,8 @@ AIGHintMonsterBase::AIGHintMonsterBase(const FString InSectorName)
 	Mesh->SetStaticMesh(MeshRef);
 	RootComponent = Mesh;
 }, EAssertionLevel::Check);
+
+	SoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/SoundCueDataAsset.SoundCueDataAsset'"), nullptr, LOAD_None, nullptr, nullptr);
 	
 
 }
@@ -80,6 +85,9 @@ float AIGHintMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	{
 		DropHint();
 	}
+
+	//피격음!!!!!!!!!!!!!!!
+	UGameplayStatics::PlaySound2D(this, SoundDataAsset->WispDamageArray[FMath::RandRange(0, SoundDataAsset->WispDamageArray.Num() - 1)]);
 	
 	return DamageAmount;
 }

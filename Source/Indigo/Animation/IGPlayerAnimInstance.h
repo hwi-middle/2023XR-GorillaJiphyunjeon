@@ -8,6 +8,7 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnFinishRollDelgate)
 DECLARE_MULTICAST_DELEGATE(FOnFinishAttackDelgate)
+DECLARE_MULTICAST_DELEGATE(FOnWalkByOneStepDelegate)
 
 /**
  * 
@@ -42,10 +43,15 @@ protected:
 	
 	UFUNCTION()
 	void AnimNotify_AttackEnd();
+
+	UFUNCTION()
+	void AnimNotify_WalkSound();
+	
 	
 public:
 	FOnFinishRollDelgate OnFinishRoll;
 	FOnFinishAttackDelgate OnFinishAttack;
+	FOnWalkByOneStepDelegate OnWalkByOneStep;
 
 	FORCEINLINE void SetSpeed(const float InValue) { Speed = InValue; }
 	FORCEINLINE void SetEnforced(const bool InValue) { bIsEnforced = InValue; }

@@ -15,127 +15,172 @@ class INDIGO_API UIGSoundDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
 
-	//BGM
+//UI
 public:
-	UPROPERTY(EditAnywhere, Category = "BGM", DisplayName = "로비 배경음악")
-	TObjectPtr<USoundCue> LobbyBGMSoundCue;
+	UPROPERTY(EditAnywhere, Category = "UI", DisplayName = "UI_클릭")
+	TObjectPtr<USoundCue> SystemClick;
 
-	UPROPERTY(EditAnywhere, Category = "BGM", DisplayName = "튜토리얼 페이즈 배경음악")
-	TObjectPtr<USoundCue> TutorialBGMSoundCue;
+	UPROPERTY(EditAnywhere, Category = "UI", DisplayName = "UI_게임시작")
+	TObjectPtr<USoundCue> SystemGameStart;
 
-	UPROPERTY(EditAnywhere, Category = "BGM", DisplayName = "단서 페이즈 배경음악")
-	TObjectPtr<USoundCue> ProvisoBGMSoundCue;
-	
-	UPROPERTY(EditAnywhere, Category = "BGM", DisplayName = "전투 페이즈 배경음악 리스트")
-	TArray<USoundCue*> BossBattleBGMSoundCueArray;
-	
-	UPROPERTY(EditAnywhere, Category = "BGM", DisplayName = "엔딩 배경음악")
-	TObjectPtr<USoundCue> EndingSoundCue;
+	UPROPERTY(EditAnywhere, Category = "UI", DisplayName = "UI_인게임 창 열람")
+	TObjectPtr<USoundCue> SystemOpen;
 
 	//Player
 public:
-	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어 피격음")
-	TObjectPtr<USoundCue> PlayerHitSoundCue;
+	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어_걷기_흙_리스트")
+	TArray<USoundCue*> PlayerWalkDirtArray;
 
-	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어가 사망할 때 효과음")
-	TObjectPtr<USoundCue> PlayerDeadSoundCue;
+	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어_걷기_돌_리스트")
+	TArray<USoundCue*> PlayerWalk_StoneArray;
 
-	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어가 일반 공격할 때 효과음")
-	TObjectPtr<USoundCue> PlayerAttackSoundCue;
+	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어_걷기_나무_리스트")
+	TArray<USoundCue*> PlayerWalk_WoodArray;
 
-	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어 소나무 결정 반격할 때 효과음")
-	TObjectPtr<USoundCue>  PlayerPineTreeCounterAttackSoundCue;
+	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어_달리기_리스트")
+	TArray<USoundCue*> PlayerRunArray;
 
-	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어 산 결정 반격할 때 효과음")
-	TObjectPtr<USoundCue>  PlayerMountainCounterAttackSoundCue;
+	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어_구르기_리스트")
+	TArray<USoundCue*> PlayerRollArray;
+
+	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어_일반 공격_리스트")
+	TArray<USoundCue*> PlayerAttackArray;
+
+	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어_붓 휘두르는 소리_리스트")
+	TArray<USoundCue*> PlayerSwingArray;
+
+	UPROPERTY(EditAnywhere, Category = "player", DisplayName = "플레이어_게이지 최대")
+	TObjectPtr<USoundCue> PlayerGaugeMax;
+
+	UPROPERTY(EditAnywhere, Category = "player", DisplayName = "플레이어_게이지 활성화")
+    TObjectPtr<USoundCue> PlayerGaugeOn;
+
+	UPROPERTY(EditAnywhere, Category = "player", DisplayName = "플레이어_게이지 부족")
+	TObjectPtr<USoundCue> PlayerGaugeMin;
+
+	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어_강화 공격_리스트")
+	TArray<USoundCue*> PlayerEnforcedAttackArray;
+
+	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어_공격 적중_리스트")
+	TArray<USoundCue*> PlayerAttackHitArray;
+
+	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어_공격 피격_리스트")
+	TArray<USoundCue*> PlayerDamageArray;
+
+	UPROPERTY(EditAnywhere, Category = "player", DisplayName = "플레이어_결정 활성화")
+	TObjectPtr<USoundCue> PlayerCrystalOn;
+
+	UPROPERTY(EditAnywhere, Category = "player", DisplayName = "플레이어_결정 해제")
+	TObjectPtr<USoundCue> PlayerCrystalOff;
 	
-	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어 물결 반격할 때 효과음")
-	TObjectPtr<USoundCue>  PlayerWaveCounterAttackSoundCue;
+	UPROPERTY(EditAnywhere, Category = "player", DisplayName = "플레이어_사망")
+	TObjectPtr<USoundCue> PlayerDeath;
+
 	
-	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어 소나무 결정 활성화 할 때 효과음")
-	TObjectPtr<USoundCue>  PlayerPinTreeCrystalActivitySoundCue;
-
-	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어 산 결정 활성화 할 때 효과음")
-	TObjectPtr<USoundCue>  PlayerMountainCrystalActivitySoundCue;
-
-	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어 물결 결정 활성화 할 때 효과음")
-	TObjectPtr<USoundCue>  PlayerWaveCrystalActivitySoundCue;
-	
-	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어가 강화공격할 때 효과음")
-	TObjectPtr<USoundCue> PlayerEnforcedAttackSoundCue;
-	
-	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어 구르기 효과음")
-	TObjectPtr<USoundCue> PlayerRollingSoundCue;
-
-	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어 발소리 리스트")
-	TArray<USoundCue*> PlayerWalkSoundCueArray;	
-
-	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어 걷기 발소리 간격")
-	float WalkSoundRate;
-
-	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어 달리기 발소리 간격")
-	float SprintSoundRate;
-
-//Boss
+	//Monster(도깨비불)
 public:
-	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스 피격음")
-	TObjectPtr<USoundCue> BossHitSoundCue;
+	UPROPERTY(EditAnywhere, Category = "Monster", DisplayName = "도깨비불_피격_리스트")
+	TArray<USoundCue*> WispDamageArray;
 
-	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스가 사망할 때 효과음")
-	TObjectPtr<USoundCue> BossDeadSoundCue;
+	UPROPERTY(EditAnywhere, Category = "Monster", DisplayName = "도깨비불_사망_리스트")
+	TArray<USoundCue*> WispDeathArray;
 
-	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스 근거리 공격 캐스팅 효과음")
-	TObjectPtr<USoundCue> BossMeleeAttackCastingSoundCue;
 	
-	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스 근거리 공격 시전 효과음")
-	TObjectPtr<USoundCue> BossMeleeAttackSoundCue;
+	//Object
+public:
+	UPROPERTY(EditAnywhere, Category = "Object", DisplayName = "결정_획득")
+	TObjectPtr<USoundCue> CrystalGet;
+
+	UPROPERTY(EditAnywhere, Category = "Object", DisplayName = "장승_파괴_리스트")
+	TArray<USoundCue*> JangseungBrakeArray;
+
+	UPROPERTY(EditAnywhere, Category = "Object", DisplayName = "장독대_파괴_리스트")
+	TArray<USoundCue*> JangdokdaeBrakeArray;
+
+	UPROPERTY(EditAnywhere, Category = "Object", DisplayName = "문_열림")
+	TObjectPtr<USoundCue> DoorOpen;
+
+	UPROPERTY(EditAnywhere, Category = "Object", DisplayName = "포목점_천_리스트")
+	TArray<USoundCue*> ClothWindArray;
+	
+	UPROPERTY(EditAnywhere, Category = "Object", DisplayName = "용광로_불꽃")
+	TObjectPtr<USoundCue> FireBlaze;
+
+	UPROPERTY(EditAnywhere, Category = "Object", DisplayName = "주점_솥뚜껑")
+	TObjectPtr<USoundCue> PotOpen;
+
+
+//보스
+public:
+	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스_등장")
+	TObjectPtr<USoundCue> BossApperance;
+
+	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스_포효")
+	TObjectPtr<USoundCue> BossShouting;
+
+	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스_이동_리스트")
+	TArray<USoundCue*> BossWalkArray;
+	
+	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스_정지")
+	TObjectPtr<USoundCue> Boss_Stop;
 	
 	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스 근거리 공격 산 솟아날때 효과음")
 	TObjectPtr<USoundCue> BossMeleeAttackMountainSoundCue;
 
-	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스 원거리 공격 캐스팅 효과음")
-	TObjectPtr<USoundCue> BossRangedAttackCastingSoundCue;
-	
-	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스 원거리 공격 시전 효과음")
-	TObjectPtr<USoundCue> BossRangedAttackSoundCue;
+	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스_1페이즈_공격_리스트")
+	TArray<USoundCue*> Boss1PhaseAttackArray;
 
-	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스 장판 공격 캐스팅 효과음")
-	TObjectPtr<USoundCue> BossFieldAttackCastingSoundCue;
-	
-	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스 장판 공격 시전 효과음")
-	TObjectPtr<USoundCue> BossFieldAttackSoundCue;
+	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스_2페이즈_공격_리스트")
+	TArray<USoundCue*> Boss2PhaseAttackArray;
 
-	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스 장판이 반경이 늘어나지면서 나는 효과음")
-	TObjectPtr<USoundCue> BossFiledAttackObjectSoundCue;
+	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스_3페이즈_공격_리스트")
+	TArray<USoundCue*> Boss3PhaseAttackArray;
+
+	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스_일반 피격_리스트")
+	TArray<USoundCue*> BossAttackDamageArray;
+
+	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스_강화 피격_리스트")
+	TArray<USoundCue*> BossSpecialEnforcedDamageArray;
 	
-//Wisp(도깨비불)
+	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스_사망")
+	TObjectPtr<USoundCue> BossDeath;
+	
+//BGM
 public:
-	UPROPERTY(EditAnywhere, Category = "Wisp", DisplayName = "도깨비불 피격음")
-	TObjectPtr<USoundCue> WispHitSoundCue;
+	UPROPERTY(EditAnywhere, Category = "BGM", DisplayName = "배경음_게임 타이틀")
+	TObjectPtr<USoundCue> BGMMain;
 
-	UPROPERTY(EditAnywhere, Category = "Wisp", DisplayName = "도깨비불 사망할 때 효과음")
-	TObjectPtr<USoundCue> WispDeadSoundCue;
+	UPROPERTY(EditAnywhere, Category = "BGM", DisplayName = "배경음_튜토리얼")
+	TObjectPtr<USoundCue> BGMTutorial;
 
-	UPROPERTY(EditAnywhere, Category = "Wisp", DisplayName = "도깨비불 스폰할 때 효과음")
-	TObjectPtr<USoundCue> WispSpawnSoundCue;
+	UPROPERTY(EditAnywhere, Category = "BGM", DisplayName = "배경음_마을")
+	TObjectPtr<USoundCue> BGMVillage;
 
-	UPROPERTY(EditAnywhere, Category = "Wisp", DisplayName = "도깨비불 힌트 드랍할 때 효과음")
-	TObjectPtr<USoundCue> WispDropHintSoundCue;
-	
-	
-//Interact(상호작용)
+	UPROPERTY(EditAnywhere, Category = "BGM", DisplayName = "배경음_보스방")
+	TObjectPtr<USoundCue> BGMBoss;
+
+	UPROPERTY(EditAnywhere, Category = "BGM", DisplayName = "배경음_오프닝")
+	TObjectPtr<USoundCue> BGMOpening;
+
+	UPROPERTY(EditAnywhere, Category = "BGM", DisplayName = "배경음_엔딩")
+	TObjectPtr<USoundCue> BGMEnding;
+
+//AMB(환경음)
 public:
-	UPROPERTY(EditAnywhere, Category = "Interact", DisplayName = "힌트 획득할 때 효과음")
-	TObjectPtr<USoundCue> InteractTakeHintSoundCue;
+	UPROPERTY(EditAnywhere, Category = "AMB", DisplayName = "환경음_풀")
+	TObjectPtr<USoundCue> AMBGrass;
 
-	UPROPERTY(EditAnywhere, Category = "Interact", DisplayName = "소나무 결정 획득할 때 효과음")
-	TObjectPtr<USoundCue> InteractTakePineTreeCrystalSoundCue;
+	UPROPERTY(EditAnywhere, Category = "AMB", DisplayName = "환경음_나뭇잎")
+	TObjectPtr<USoundCue> AMBLeaf;
 
-	UPROPERTY(EditAnywhere, Category = "Interact", DisplayName = "산 결정 획득할 때 효과음")
-	TObjectPtr<USoundCue> InteractTakeMountainCrystalSoundCue;
+	UPROPERTY(EditAnywhere, Category = "AMB", DisplayName = "환경음_바람")
+	TObjectPtr<USoundCue> AMBWind;
 
-	UPROPERTY(EditAnywhere, Category = "Interact", DisplayName = "물결 결정 획득할 때 효과음")
-	TObjectPtr<USoundCue> InteractTakeWaveCrystalSoundCue;
+	UPROPERTY(EditAnywhere, Category = "AMB", DisplayName = "환경음_물")
+    TObjectPtr<USoundCue> AMBWater;
+    	
+    UPROPERTY(EditAnywhere, Category = "AMB", DisplayName = "환경음_새소리")
+    TObjectPtr<USoundCue> AMBBird;
 	
 	
 };

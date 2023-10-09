@@ -58,7 +58,6 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	FollowCamera->SetupAttachment(CameraSpringArm, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
-	CharacterDataTable = nullptr;
 	CharacterDataTable = FIGDataTableParser::LoadAndGetDataTableStruct<FIGCharacterDataTable>(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/CharaterDatabase.CharaterDatabase'"), TEXT("Player"));
 
 	Hp = CharacterDataTable->HPValue;
@@ -100,7 +99,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	}, EAssertionLevel::Check);
 
 	
-	TestSoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/SoundCueDataAsset.SoundCueDataAsset'"), nullptr, LOAD_None, nullptr, nullptr);
+	SoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/SoundCueDataAsset.SoundCueDataAsset'"), nullptr, LOAD_None, nullptr, nullptr);
 	
 	
 	WalkSpeed = 500.f;
@@ -164,6 +163,7 @@ void AIGPlayerCharacter::BeginPlay()
 	AnimInstance->SetSpeed(0.f);
 	AnimInstance->OnFinishRoll.AddUObject(this, &AIGPlayerCharacter::FinishRolling);
 	AnimInstance->OnFinishAttack.AddUObject(this, &AIGPlayerCharacter::FinishAttack);
+	AnimInstance->OnWalkByOneStep.AddUObject(this, &AIGPlayerCharacter::StepSound);
 	CurrentState = EPlayerState::Idling;
 
 	HudWidget = CreateWidget<UIGIngameHUDWidget>(GetWorld(), HudWidgetClass);
@@ -402,7 +402,23 @@ void AIGPlayerCharacter::Attack()
 	SpawnedActor->Init(Damage, GetActorForwardVector(), 1000.f, 10.f);
 	SpawnedActor->OnHitProjectile.AddUObject(this, &AIGPlayerCharacter::OnHitProjectile);
 	// ----
-	UGameplayStatics::PlaySound2D(this, TestSoundDataAsset->PlayerAttackSoundCue);
+
+	//일단 임시로 여기에 합니다. 애님노티파이 이식전!
+
+	//TODO: 스윙 사운드
+	UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerSwingArray[FMath::RandRange(0, SoundDataAsset->PlayerSwingArray.Num()-1)]);
+	
+	//TODO: 공격 사운드
+	if(IsEnforced)
+	{
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerEnforcedAttackArray[FMath::RandRange(0, SoundDataAsset->PlayerEnforcedAttackArray.Num()-1)]);		
+	}
+	else
+	{
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerAttackArray[FMath::RandRange(0, SoundDataAsset->PlayerAttackArray.Num()-1)]);
+	}
+
+	
 }
 
 void AIGPlayerCharacter::FinishAttack()
@@ -427,7 +443,6 @@ void AIGPlayerCharacter::StartRolling()
 
 	AddPlayerState(EPlayerState::Rolling);
 	AnimInstance->StartRoll();
-	UGameplayStatics::PlaySound2D(this, TestSoundDataAsset->PlayerRollingSoundCue);
 }
 
 void AIGPlayerCharacter::FinishRolling()
@@ -669,6 +684,20 @@ float AIGPlayerCharacter::ComputeDamage()
 	}	
 	
 	return FMath::RandRange(NormalAttackDamageMin, NormalAttackDamageMax);
+}
+
+void AIGPlayerCharacter::StepSound()
+{
+	//TODO:: 바닥 재질 체크 하는것도 추가해야돼요!
+	
+	UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerWalk_StoneArray[FMath::RandRange(0, SoundDataAsset->PlayerWalk_StoneArray.Num()-1)]);
+}
+
+void AIGPlayerCharacter::OnHitByBossAttack()
+{
+	//TODO::플레이어 피격 받는거 처리 추가해야 되요! 일단 임시적으로 소리만 추가했어요!!!! 끼얏호!!!!!
+	
+	UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerDamageArray[FMath::RandRange(0, SoundDataAsset->PlayerDamageArray.Num()-1)]);
 }
 
 void AIGPlayerCharacter::SetHp_DEBUG(const uint32 Value)

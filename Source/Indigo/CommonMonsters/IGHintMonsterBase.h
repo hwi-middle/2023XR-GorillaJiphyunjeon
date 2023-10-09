@@ -7,7 +7,9 @@
 #include "Indigo/Enemy/IGEnemyBase.h"
 #include "IGHintMonsterBase.generated.h"
 
+
 class AIGHintBase;
+class UIGSoundDataAsset;
 
 UCLASS()
 class INDIGO_API AIGHintMonsterBase : public AIGEnemyBase
@@ -33,4 +35,7 @@ protected:
 private:
 	FString SectorName;
 	TObjectPtr<UStaticMeshComponent> Mesh;
+
+	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;
+	
 };
