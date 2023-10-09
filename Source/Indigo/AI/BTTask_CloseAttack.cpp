@@ -34,7 +34,6 @@ EBTNodeResult::Type UBTTask_CloseAttack::ExecuteTask(UBehaviorTreeComponent& Own
 		[&]()
 		{
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-			UE_LOG(LogTemp, Log, TEXT("ㅎㅇㅎㅇ"));
 		}
 	);
 	AIPawn->PerformCloseAttack();

@@ -8,9 +8,11 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Indigo/AI/IGBossAIController.h"
 #include "Indigo/Animation/IGBossAnimInstance.h"
+#include "Indigo/Battle/IGMountainSpike.h"
 #include "Indigo/Constant/IGBossSockets.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
 #include "Indigo/Util/IGConstructorHelper.h"
+#include "Kismet/GameplayStatics.h"
 
 AIGBoss::AIGBoss()
 {
@@ -53,11 +55,11 @@ void AIGBoss::Tick(float DeltaSeconds)
 void AIGBoss::PerformCloseAttack()
 {
 	AnimInstance->StartCloseAttack();
-
 }
 
 void AIGBoss::GenerateCloseAttack()
 {
+	// 주먹에 의한 피해
 	FHitResult Result;
 	FCollisionQueryParams CollisionParams;
 	float Radius = 100.f;
@@ -84,6 +86,16 @@ void AIGBoss::GenerateCloseAttack()
 			Player->TakeDamage(10.f, DamageEvent, GetInstigatorController(), this);
 		}
 	}
+
+	// 산 생성
+	FVector TargetVector = UGameplayStatics::GetPlayerPawn(GWorld, 0)->GetActorLocation() - GetActorLocation();
+	TargetVector.Normalize();
+	TargetVector *= 500.f;
+	constexpr float Height = 300.f;
+	FVector FinalSpikeLocation = GetActorLocation() + TargetVector;
+	FinalSpikeLocation.Z = -Height;
+	AIGMountainSpike* SpawnedSpike = GWorld->SpawnActor<AIGMountainSpike>(FinalSpikeLocation, FRotator::ZeroRotator);
+	SpawnedSpike->Init(300.f, 0.2f, 1.f);
 }
 
 void AIGBoss::EndCloseAttack()
