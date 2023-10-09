@@ -5,7 +5,7 @@
 
 #include "Engine/DamageEvents.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
-#include "Indigo/Enemy/IGEnemyBase.h"
+#include "Indigo/Character/IGEnemyBase.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Kismet/GameplayStatics.h"
 

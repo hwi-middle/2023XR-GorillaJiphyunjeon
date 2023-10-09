@@ -13,5 +13,7 @@ UCLASS()
 class INDIGO_API UBTTask_CloseAttack : public UBTTaskNode
 {
 	GENERATED_BODY()
-	
+
+protected:
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };

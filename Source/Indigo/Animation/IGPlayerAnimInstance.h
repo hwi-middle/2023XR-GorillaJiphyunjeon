@@ -6,8 +6,8 @@
 #include "Animation/AnimInstance.h"
 #include "IGPlayerAnimInstance.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnFinishRollDelgate)
-DECLARE_MULTICAST_DELEGATE(FOnFinishAttackDelgate)
+DECLARE_MULTICAST_DELEGATE(FOnFinishRollDelegate)
+DECLARE_MULTICAST_DELEGATE(FOnFinishPlayerAttackDelegate)
 
 /**
  * 
@@ -44,8 +44,8 @@ protected:
 	void AnimNotify_AttackEnd();
 	
 public:
-	FOnFinishRollDelgate OnFinishRoll;
-	FOnFinishAttackDelgate OnFinishAttack;
+	FOnFinishRollDelegate OnFinishRoll;
+	FOnFinishPlayerAttackDelegate OnFinishAttack;
 
 	FORCEINLINE void SetSpeed(const float InValue) { Speed = InValue; }
 	FORCEINLINE void SetEnforced(const bool InValue) { bIsEnforced = InValue; }

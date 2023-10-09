@@ -6,6 +6,10 @@
 #include "Animation/AnimInstance.h"
 #include "IGBossAnimInstance.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnGenerateBossCloseAttackDelegate)
+DECLARE_MULTICAST_DELEGATE(FOnFinishBossCloseAttackDelegate)
+
+
 enum EAttackPattern : uint32;
 /**
  * 
@@ -31,6 +35,13 @@ protected:
 	uint8 bShouldPerformCloseAttack : 1;
 	
 public:
+	FOnGenerateBossCloseAttackDelegate OnGenerateBossCloseAttack;
+	FOnFinishBossCloseAttackDelegate OnFinishAttack;
+	
+public:
 	FORCEINLINE void SetSpeed(const float InValue) { Speed = InValue; }
 	FORCEINLINE void StartCloseAttack() { bShouldPerformCloseAttack = true; }
+
+	UFUNCTION()
+	void AnimNotify_GenerateCloseAttack();
 };

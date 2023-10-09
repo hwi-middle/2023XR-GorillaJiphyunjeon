@@ -6,10 +6,9 @@
 #include "DrawDebugHelpers.h"
 #include "IGAI.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Indigo/Character/IGBoss.h"
 #include "Indigo/Character/IGPlayerCharacter.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
-#include "Indigo/Enemy/IGBoss.h"
-#include "Indigo/Enemy/IGEnemyBase.h"
 
 UBTService_DetectPlayer::UBTService_DetectPlayer()
 {
@@ -51,7 +50,7 @@ void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Red, false, 0.f);
 		return;
 	}
-	
+
 	for (const auto& OverlapResult : OverlapResults)
 	{
 		if (AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(OverlapResult.GetActor()))
@@ -60,17 +59,16 @@ void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 			OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, Player);
 			const bool IsCloseEnough = BossToTarget.Length() <= Boss->GetStoppingDistance();
 			OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_CLOSE_ENOUGH, IsCloseEnough);
-			
-			UE_LOG(LogTemp, Log, TEXT("보스와 거리: %f, 정지 거리: %f"), BossToTarget.Length(), Boss->GetStoppingDistance());
+
 			DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Green, false, 0.1f);
-			if(!IsCloseEnough)
+			if (!IsCloseEnough)
 			{
 				DrawDebugLine(World, ControllingPawn->GetActorLocation(), Player->GetActorLocation(), FColor::Green, false, 0.f);
 			}
 			return;
 		}
 	}
-	
+
 	OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, nullptr);
 	OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_CLOSE_ENOUGH, false);
 	DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Red, false, 0.1f);

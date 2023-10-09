@@ -8,19 +8,20 @@
 #include "Indigo/Animation/IGBossAnimInstance.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Constant/IGBossSockets.h"
+#include "Indigo/Constant/IGCollisionChannels.h"
 
 AIGBoss::AIGBoss()
 {
-	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Boss/Mesh/SK_Boss.SK_Boss'"),[&](USkeletalMesh* MeshRef)
+	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Boss/Mesh/SK_Boss.SK_Boss'"), [&](USkeletalMesh* MeshRef)
 	{
 		GetMesh()->SetSkeletalMesh(MeshRef);
 		GetMesh()->SetRelativeRotation(FRotator(0.f, 270.f, 0.f));
 	}, EAssertionLevel::Check);
-	
+
 	const TSubclassOf<UIGBossAnimInstance> BossAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGBossAnimInstance>(
 		TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Boss/Animation/ABP_Boss.ABP_Boss_C"), EAssertionLevel::Check);
 	GetMesh()->SetAnimInstanceClass(BossAnimInstanceClass);
-	
+
 	AIControllerClass = AIGBossAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	GetCharacterMovement()->MaxWalkSpeed = 200.f;
@@ -33,7 +34,8 @@ void AIGBoss::BeginPlay()
 	Super::BeginPlay();
 	AnimInstance = CastChecked<UIGBossAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->SetSpeed(0.f);
-	StoppingDistance = 200.f;
+	AnimInstance->OnGenerateBossCloseAttack.AddUObject(this, &AIGBoss::GenerateCloseAttack);
+	StoppingDistance = 400.f;
 }
 
 void AIGBoss::Tick(float DeltaSeconds)
@@ -41,11 +43,37 @@ void AIGBoss::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	AnimInstance->SetSpeed(GetVelocity().Size2D());
 
-	DrawDebugSphere(GetWorld(), GetMesh()->GetSocketLocation(BOSS_LEFT_HAND), 50.f, 16, FColor::Red, false, 0.f);
-	DrawDebugSphere(GetWorld(), GetMesh()->GetSocketLocation(BOSS_RIGHT_HAND), 50.f, 16, FColor::Red, false, 0.f);
+	DrawDebugSphere(GetWorld(), GetMesh()->GetSocketLocation(BOSS_LEFT_HAND), 100.f, 16, FColor::Red, false, 0.f);
+	DrawDebugSphere(GetWorld(), GetMesh()->GetSocketLocation(BOSS_RIGHT_HAND), 100.f, 16, FColor::Red, false, 0.f);
 }
 
 void AIGBoss::PerformCloseAttack()
 {
-	
+	AnimInstance->StartCloseAttack();
+
+}
+
+void AIGBoss::GenerateCloseAttack()
+{
+	FHitResult Result;
+	FCollisionQueryParams CollisionParams;
+	float Radius = 100.f;
+	CollisionParams.AddIgnoredActor(this);
+
+	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 16, FColor::Green, false, 0.f);
+
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		Result,
+		GetMesh()->GetSocketLocation(BOSS_RIGHT_HAND),
+		GetMesh()->GetSocketLocation(BOSS_RIGHT_HAND),
+		FQuat::Identity,
+		ECC_CHECK_PAWN,
+		FCollisionShape::MakeSphere(Radius),
+		CollisionParams
+	);
+
+	if (bHit)
+	{
+		UE_LOG(LogTemp, Log, TEXT("데미지"));
+	}
 }

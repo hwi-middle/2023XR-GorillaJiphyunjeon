@@ -32,7 +32,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
-	void PerformCloseAttack();
 
 private:
 	UPROPERTY()
@@ -46,4 +45,7 @@ private:
 
 public:
 	FORCEINLINE float GetStoppingDistance() const { return StoppingDistance; }
+	void PerformCloseAttack();
+	void GenerateCloseAttack();
+
 };

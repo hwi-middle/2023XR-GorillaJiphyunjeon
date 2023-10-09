@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Indigo/Enemy/IGEnemyBase.h"
+#include "Indigo/Character/IGEnemyBase.h"
 #include "IGHintMonsterBase.generated.h"
 
 class AIGHintBase;
@@ -32,5 +32,6 @@ protected:
 	
 private:
 	FString SectorName;
+
 	TObjectPtr<UStaticMeshComponent> Mesh;
 };
