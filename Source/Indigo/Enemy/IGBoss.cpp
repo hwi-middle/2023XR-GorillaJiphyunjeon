@@ -24,6 +24,8 @@ AIGBoss::AIGBoss()
 	AIControllerClass = AIGBossAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	GetCharacterMovement()->MaxWalkSpeed = 200.f;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	bUseControllerRotationYaw = false;
 }
 
 void AIGBoss::BeginPlay()
