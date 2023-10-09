@@ -390,7 +390,7 @@ void AIGPlayerCharacter::Attack()
 
 	//데미지 연산뒤 선문게이지 감소
 	const float Damage = ComputeDamage();
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("데미지: [%f]"), Damage));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("데미지: [%f]"), Damage));
 	if (IsEnforced)
 	{
 		SunMoonValue -= SunMoonConsumptionAmountOnAttack;
