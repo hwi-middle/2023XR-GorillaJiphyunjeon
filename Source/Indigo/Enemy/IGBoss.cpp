@@ -33,7 +33,7 @@ void AIGBoss::BeginPlay()
 	Super::BeginPlay();
 	AnimInstance = CastChecked<UIGBossAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->SetSpeed(0.f);
-	StoppingDistance = 500.f;
+	StoppingDistance = 200.f;
 }
 
 void AIGBoss::Tick(float DeltaSeconds)

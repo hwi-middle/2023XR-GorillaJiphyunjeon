@@ -47,6 +47,7 @@ void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	if (!bResult)
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, nullptr);
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_CLOSE_ENOUGH, false);
 		DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Red, false, 0.f);
 		return;
 	}
@@ -55,21 +56,22 @@ void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	{
 		if (AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(OverlapResult.GetActor()))
 		{
-			const float StoppingDistance = Boss->GetStoppingDistance();
-			FVector BossToTarget = Player->GetActorLocation() - Boss->GetActorLocation();
-			const float OriginalMagnitude = BossToTarget.Length();
-			const float DesiredMagnitude = OriginalMagnitude - StoppingDistance;
-			const float ScaleFactor = DesiredMagnitude / OriginalMagnitude;
-			BossToTarget *= ScaleFactor;
-
+			const FVector BossToTarget = Player->GetActorLocation() - Boss->GetActorLocation();
 			OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, Player);
-			OwnerComp.GetBlackboardComponent()->SetValueAsVector(BBKEY_TARGETPOS, ControllingPawn->GetActorLocation() + BossToTarget);
+			const bool IsCloseEnough = BossToTarget.Length() <= Boss->GetStoppingDistance();
+			OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_CLOSE_ENOUGH, IsCloseEnough);
+			
+			UE_LOG(LogTemp, Log, TEXT("보스와 거리: %f, 정지 거리: %f"), BossToTarget.Length(), Boss->GetStoppingDistance());
 			DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Green, false, 0.1f);
-			DrawDebugLine(World, ControllingPawn->GetActorLocation(), ControllingPawn->GetActorLocation() + BossToTarget, FColor::Green, false, 0.f);
+			if(!IsCloseEnough)
+			{
+				DrawDebugLine(World, ControllingPawn->GetActorLocation(), Player->GetActorLocation(), FColor::Green, false, 0.f);
+			}
 			return;
 		}
 	}
 	
 	OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, nullptr);
+	OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_CLOSE_ENOUGH, false);
 	DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Red, false, 0.1f);
 }
