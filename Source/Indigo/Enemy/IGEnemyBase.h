@@ -7,6 +7,8 @@
 #include "Indigo/Interface/IGCharacterStatus.h"
 #include "IGEnemyBase.generated.h"
 
+class UIGSoundDataAsset;
+
 UCLASS()
 class INDIGO_API AIGEnemyBase : public ACharacter, public IIGCharacterStatus
 {
@@ -47,6 +49,8 @@ public:
 
 	FORCEINLINE float GetDetectRange() const { return 500.f; }
 
+	FORCEINLINE void SetHitEnforcedAttack(bool InIsEnforcedAttack){ bIsEnforcedHit = InIsEnforcedAttack; }
+	
 private:
 	UPROPERTY(VisibleAnywhere)
 	float MaxHp;
@@ -71,4 +75,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDead : 1;
+	
+	UPROPERTY(VisibleAnywhere)
+	uint8 bIsEnforcedHit : 1;
+
+	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;
+	
 };

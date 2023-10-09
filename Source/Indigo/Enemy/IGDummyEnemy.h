@@ -6,6 +6,8 @@
 #include "IGEnemyBase.h"
 #include "IGDummyEnemy.generated.h"
 
+
+
 /**
  * 
  */

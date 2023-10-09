@@ -124,9 +124,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스_정지")
 	TObjectPtr<USoundCue> Boss_Stop;
 	
-	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스 근거리 공격 산 솟아날때 효과음")
-	TObjectPtr<USoundCue> BossMeleeAttackMountainSoundCue;
-
 	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스_1페이즈_공격_리스트")
 	TArray<USoundCue*> Boss1PhaseAttackArray;
 
@@ -140,7 +137,7 @@ public:
 	TArray<USoundCue*> BossAttackDamageArray;
 
 	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스_강화 피격_리스트")
-	TArray<USoundCue*> BossSpecialEnforcedDamageArray;
+	TArray<USoundCue*> BossEnforcedDamageArray;
 	
 	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스_사망")
 	TObjectPtr<USoundCue> BossDeath;

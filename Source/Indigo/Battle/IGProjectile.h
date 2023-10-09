@@ -43,8 +43,11 @@ private:
 
 	UPROPERTY()
 	float ElapsedTime;
+
+	UPROPERTY()
+	uint8 bIsEnforced : 1;
 	
 public:
 	 FOnHitProjectile OnHitProjectile;
-	void Init(float InDamage, FVector InTargetDirection, float MaxDistance, float InSpeed);
+	void Init(float InDamage, FVector InTargetDirection, float MaxDistance, float InSpeed, const bool InIsEnforced);
 };

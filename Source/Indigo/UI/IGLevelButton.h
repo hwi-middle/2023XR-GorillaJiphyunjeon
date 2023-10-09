@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "IGLevelButton.generated.h"
 
+class UIGSoundDataAsset;
+
 /**
  * 
  */
@@ -26,5 +28,7 @@ protected:
 private:
 	UFUNCTION(BlueprintCallable)
 	void MoveLevel();
+
+	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;
 	
 };

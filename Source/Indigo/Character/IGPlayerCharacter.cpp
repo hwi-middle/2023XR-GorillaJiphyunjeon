@@ -23,9 +23,6 @@
 #include "Indigo/Util/IGCharacterDataTable.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGDataTableParser.h"
-
-#include "Indigo/Inventory/IGPlayerInventory.h"
-#include "Indigo/Interactable/IGCrystalBase.h"
 #include "Indigo/Util/IGSoundDataAsset.h"
 #include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
@@ -399,13 +396,12 @@ void AIGPlayerCharacter::Attack()
 	// ---- Temporal (Socket 등으로 위치 조정해줘야함)
 	const FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
 	AIGProjectile* SpawnedActor = GetWorld()->SpawnActor<AIGProjectile>(SpawnLocation, FRotator::ZeroRotator);
-	SpawnedActor->Init(Damage, GetActorForwardVector(), 1000.f, 10.f);
+	SpawnedActor->Init(Damage, GetActorForwardVector(), 1000.f, 10.f, IsEnforced);
 	SpawnedActor->OnHitProjectile.AddUObject(this, &AIGPlayerCharacter::OnHitProjectile);
 	// ----
 
 	//일단 임시로 여기에 합니다. 애님노티파이 이식전!
-
-	//TODO: 스윙 사운드
+	//TODO: 스윙 사운드	
 	UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerSwingArray[FMath::RandRange(0, SoundDataAsset->PlayerSwingArray.Num()-1)]);
 	
 	//TODO: 공격 사운드

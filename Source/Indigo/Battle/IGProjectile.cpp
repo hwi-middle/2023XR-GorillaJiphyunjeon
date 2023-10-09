@@ -24,7 +24,7 @@ AIGProjectile::AIGProjectile()
 		}, EAssertionLevel::None);
 }
 
-void AIGProjectile::Init(float InDamage, FVector InTargetDirection, float MaxDistance, float InSpeed)
+void AIGProjectile::Init(float InDamage, FVector InTargetDirection, float MaxDistance, float InSpeed, const bool InIsEnforced)
 {
 	Damage = InDamage;
 	OriginalPosition = GetActorLocation();
@@ -33,6 +33,7 @@ void AIGProjectile::Init(float InDamage, FVector InTargetDirection, float MaxDis
 	const float DistancePerSecond = InSpeed * 100.f;
 	const float DistanceToTarget = (TargetPosition - OriginalPosition).Size2D();
 	Duration = DistanceToTarget / DistancePerSecond;
+	bIsEnforced = InIsEnforced;
 }
 
 // Called when the game starts or when spawned
@@ -83,6 +84,7 @@ void AIGProjectile::Tick(float DeltaTime)
 	if (Enemy)
 	{
 		FDamageEvent DamageEvent;
+		Enemy->SetHitEnforcedAttack(bIsEnforced);
 		Enemy->TakeDamage(Damage, DamageEvent, GetInstigatorController(), this);
 		OnHitProjectile.Broadcast();
 	}

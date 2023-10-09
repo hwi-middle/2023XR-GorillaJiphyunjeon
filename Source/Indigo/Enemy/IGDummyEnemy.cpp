@@ -6,6 +6,7 @@
 #include "Indigo/AI/IGBossAIController.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 
+
 AIGDummyEnemy::AIGDummyEnemy()
 {
 	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Boss/Mesh/SK_Boss.SK_Boss'"),[&](USkeletalMesh* MeshRef)
