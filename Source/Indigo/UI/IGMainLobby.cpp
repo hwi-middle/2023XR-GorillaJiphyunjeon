@@ -4,6 +4,7 @@
 #include "IGMainLobby.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/UI/IGMainLobbyWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 AIGMainLobby::AIGMainLobby()
 {
@@ -23,7 +24,12 @@ AIGMainLobby::~AIGMainLobby()
 
 void AIGMainLobby::BeginPlay()
 {
-	AActor::BeginPlay();
+	Super::BeginPlay();
+	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
+	Controller->bShowMouseCursor = true;
+	Controller->bEnableMouseOverEvents = true;
+	Controller->bEnableClickEvents = true;
+	
 	MainLobbyWidget = CreateWidget<UIGMainLobbyWidget>(GetWorld(), MainLobbyWidgetClass);
 	if(MainLobbyWidget)
 	{

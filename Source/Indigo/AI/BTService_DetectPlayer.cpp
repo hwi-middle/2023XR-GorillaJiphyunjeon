@@ -8,29 +8,30 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Indigo/Character/IGPlayerCharacter.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
+#include "Indigo/Enemy/IGBoss.h"
 #include "Indigo/Enemy/IGEnemyBase.h"
 
 UBTService_DetectPlayer::UBTService_DetectPlayer()
 {
 	NodeName = TEXT("Detect Player");
-	Interval = 0.5f;
+	Interval = 0.1f;
 }
 
 void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	APawn* ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
-	static const FVector Origin = ControllingPawn->GetActorLocation();
 	const UWorld* World = ControllingPawn->GetWorld();
 	ensure(ControllingPawn);
 	ensure(World);
 
-	const AIGEnemyBase* EnemyPawn = Cast<AIGEnemyBase>(ControllingPawn);
-	if (EnemyPawn == nullptr)
+	const AIGBoss* Boss = Cast<AIGBoss>(ControllingPawn);
+	if (Boss == nullptr)
 	{
 		return;
 	}
 
-	const float DetectRadius = EnemyPawn->GetDetectRange();
+	const FVector Origin = Boss->GetOrigin();
+	const float DetectRadius = Boss->GetDetectRange();
 
 	TArray<FOverlapResult> OverlapResults;
 	const FCollisionQueryParams CollisionQueryParam(SCENE_QUERY_STAT(Detect), false, ControllingPawn);
@@ -46,6 +47,7 @@ void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	if (!bResult)
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, nullptr);
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_CLOSE_ENOUGH, false);
 		DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Red, false, 0.f);
 		return;
 	}
@@ -54,14 +56,22 @@ void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	{
 		if (AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(OverlapResult.GetActor()))
 		{
+			const FVector BossToTarget = Player->GetActorLocation() - Boss->GetActorLocation();
 			OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, Player);
-			DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Green, false, 0.f);
-
-			DrawDebugPoint(World, Player->GetActorLocation(), 10.0f, FColor::Green, false, 0.f);
-			DrawDebugLine(World, ControllingPawn->GetActorLocation(), Player->GetActorLocation(), FColor::Green, false, 0.f);
+			const bool IsCloseEnough = BossToTarget.Length() <= Boss->GetStoppingDistance();
+			OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_CLOSE_ENOUGH, IsCloseEnough);
+			
+			UE_LOG(LogTemp, Log, TEXT("보스와 거리: %f, 정지 거리: %f"), BossToTarget.Length(), Boss->GetStoppingDistance());
+			DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Green, false, 0.1f);
+			if(!IsCloseEnough)
+			{
+				DrawDebugLine(World, ControllingPawn->GetActorLocation(), Player->GetActorLocation(), FColor::Green, false, 0.f);
+			}
 			return;
 		}
 	}
-
-	DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Red, false, 0.f);
+	
+	OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, nullptr);
+	OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_CLOSE_ENOUGH, false);
+	DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Red, false, 0.1f);
 }

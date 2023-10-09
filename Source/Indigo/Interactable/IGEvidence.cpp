@@ -37,5 +37,5 @@ void AIGEvidence::Tick(float DeltaTime)
 
 void AIGEvidence::Interact()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%s] 단서 상호작용"), *GetActorLabel()));
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("[%s] 단서 상호작용"), *GetActorLabel()));
 }

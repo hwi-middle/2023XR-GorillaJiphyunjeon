@@ -32,20 +32,23 @@ public:
 public:
 	//인터페이스 함수
 	virtual FORCEINLINE float GetHp() const override { return Hp; }
-	virtual FORCEINLINE void SetHp(const uint32 InValue) override { Hp = InValue; }
+	virtual FORCEINLINE void SetHp(const float InValue) override { Hp = InValue; }
 	virtual FORCEINLINE float GetAttackValue() const override { return AttackValue; }
-	virtual FORCEINLINE void SetAttackValue(const uint32 InValue) override { AttackValue = InValue; }
+	virtual FORCEINLINE void SetAttackValue(const float InValue) override { AttackValue = InValue; }
 	virtual FORCEINLINE float GetAttackRate() const override { return AttackRate; }
-	virtual FORCEINLINE void SetAttackRate(const uint32 InValue) override { AttackRate = InValue; }
+	virtual FORCEINLINE void SetAttackRate(const float InValue) override { AttackRate = InValue; }
 	virtual FORCEINLINE float GetAttackRange() const override { return AttackRange; }
-	virtual FORCEINLINE void SetAttackRange(const uint32 InValue) override { AttackRange = InValue; }
+	virtual FORCEINLINE void SetAttackRange(const float InValue) override { AttackRange = InValue; }
 	virtual FORCEINLINE float GetDefenceValue() const override { return DefenceValue; }
-	virtual FORCEINLINE void SetDefenseValue(const uint32 InValue) override { DefenceValue = InValue; }
+	virtual FORCEINLINE void SetDefenseValue(const float InValue) override { DefenceValue = InValue; }
 	virtual FORCEINLINE float GetStaminaValue() const override { return StaminaValue; }
-	virtual FORCEINLINE void SetStaminaValue(const uint32 InValue) override { StaminaValue = InValue; }
+	virtual FORCEINLINE void SetStaminaValue(const float InValue) override { StaminaValue = InValue; }
 	virtual FORCEINLINE bool IsDead() const override { return bIsDead; }
 
-	FORCEINLINE float GetDetectRange() const { return 500.f; }
+	// Getter/Setter
+	FORCEINLINE float GetDetectRange() const { return 3000.f; }
+	FORCEINLINE FVector GetOrigin() const { return Origin; }
+
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -71,4 +74,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsDead : 1;
+
+	UPROPERTY(VisibleAnywhere)
+	FVector Origin;
 };

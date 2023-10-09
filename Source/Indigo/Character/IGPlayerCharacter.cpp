@@ -17,18 +17,17 @@
 #include "Indigo/Battle/IGProjectile.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
 #include "Indigo/Interactable/IGCrystalBase.h"
+#include "Indigo/Interactable/IGCrystalBase.h"
 #include "Indigo/Interface/Interactable.h"
+#include "Indigo/Inventory/IGPlayerInventory.h"
 #include "Indigo/Inventory/IGPlayerInventory.h"
 #include "Indigo/UI/IGIngameHUDWidget.h"
 #include "Indigo/Util/IGCharacterDataTable.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGDataTableParser.h"
-
-#include "Indigo/Inventory/IGPlayerInventory.h"
-#include "Indigo/Interactable/IGCrystalBase.h"
 #include "Indigo/Util/IGSoundDataAsset.h"
-#include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 AIGPlayerCharacter::AIGPlayerCharacter()
 {
@@ -99,10 +98,10 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 		HudWidgetClass = Class;
 	}, EAssertionLevel::Check);
 
-	
+
 	TestSoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/SoundCueDataAsset.SoundCueDataAsset'"), nullptr, LOAD_None, nullptr, nullptr);
-	
-	
+
+
 	WalkSpeed = 500.f;
 	SprintSpeed = 800.f;
 
@@ -125,8 +124,11 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	StaminaConsumptionAmountOnRoll = 10.f;
 	ActivatedCrystal = ECrystal::None;
 
-	NormalAttackDamage = 3;
-	StrongAttackDamage = 7;
+	NormalAttackDamageMin = 2;
+	NormalAttackDamageMax = 4;
+	StrongAttackDamageMin = 5;
+	StrongAttackDamageMax = 9;
+	
 	StaminaConsumptionAmountOnNormalAttack = 5;
 	StaminaConsumptionAmountOnStrongAttack = 7;
 }
@@ -350,6 +352,15 @@ void AIGPlayerCharacter::Interact()
 		if (Crystal != nullptr)
 		{
 			PlayerInventory->AddCrystal(Crystal);
+
+			// Temporal
+			FString CrystalDebugText;
+			auto CrystalArray = PlayerInventory->GetCrystalArray();
+			for (int i = 0; i < CrystalArray.Num(); i++)
+			{
+				CrystalDebugText.Append(FString::Printf(TEXT("%d. %s\n"), i + 1, *CrystalArray[i]->GetCrystalName()));
+			}
+			HudWidget->UpdateCrystalDebug(CrystalDebugText);
 		}
 	}
 }
@@ -377,7 +388,9 @@ void AIGPlayerCharacter::Attack()
 	AnimInstance->SetEnforced(IsEnforced);
 	AnimInstance->StartAttack();
 
-	float DamageScaleFactor = 1;
+	//데미지 연산뒤 선문게이지 감소
+	const float Damage = ComputeDamage();
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("데미지: [%f]"), Damage));
 	if (IsEnforced)
 	{
 		SunMoonValue -= SunMoonConsumptionAmountOnAttack;
@@ -388,28 +401,12 @@ void AIGPlayerCharacter::Attack()
 			AddPlayerState(EPlayerState::ExhaustedPhase1);
 			EnableExhaustion();
 		}
-
 		HudWidget->UpdateSunMoonGauge(SunMoonValue);
-
-		// 데미지 배율 계산
-		if (SunMoonValue >= SunMoonSection3Threshold)
-		{
-			DamageScaleFactor = SunMoonSection3DamageScaleFactor;
-		}
-		else if (SunMoonValue >= SunMoonSection2Threshold)
-		{
-			DamageScaleFactor = SunMoonSection2DamageScaleFactor;
-		}
-		else
-		{
-			DamageScaleFactor = SunMoonSection1DamageScaleFactor;
-		}
 	}
-
+	
 	// ---- Temporal (Socket 등으로 위치 조정해줘야함)
 	const FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
 	AIGProjectile* SpawnedActor = GetWorld()->SpawnActor<AIGProjectile>(SpawnLocation, FRotator::ZeroRotator);
-	const float Damage = IsEnforced ? StrongAttackDamage * DamageScaleFactor : NormalAttackDamage;
 	SpawnedActor->Init(Damage, GetActorForwardVector(), 1000.f, 10.f);
 	SpawnedActor->OnHitProjectile.AddUObject(this, &AIGPlayerCharacter::OnHitProjectile);
 	// ----
@@ -543,6 +540,12 @@ void AIGPlayerCharacter::ManageStaminaByTime()
 {
 	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::ManageStaminaByTime);
 
+	// 구르기와 이동상태는 중첩될 수 있으나, 스태미너 계산에는 제외
+	if (CheckPlayerState(EPlayerState::Rolling))
+	{
+		return;
+	}
+	
 	const float DeltaTime = GWorld->DeltaTimeSeconds;
 	if (CheckPlayerState(EPlayerState::Idling))
 	{
@@ -609,7 +612,7 @@ void AIGPlayerCharacter::ManageCrystalActivationByTime()
 	constexpr float Duration = 3.f;
 	const float DeltaTime = GWorld->DeltaTimeSeconds;
 	ElapsedCrystalActivationTime += DeltaTime;
-	
+
 	if (ElapsedCrystalActivationTime >= Duration)
 	{
 		ActivatedCrystal = ECrystal::None;
@@ -628,17 +631,16 @@ void AIGPlayerCharacter::ManageCrystalCooldownByTime()
 	constexpr float Duration = 5.f;
 	const float DeltaTime = GWorld->DeltaTimeSeconds;
 	ElapsedCrystalCooldownTime += DeltaTime;
-	
+
 	if (ElapsedCrystalCooldownTime >= Duration)
 	{
 		ElapsedCrystalCooldownTime = 0.f;
 		RemovePlayerState(EPlayerState::CrystalCooldown);
 		return;
 	}
-	
+
 	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::ManageCrystalCooldownByTime);
 }
-
 
 
 void AIGPlayerCharacter::ActivateCrystal1()
@@ -654,6 +656,32 @@ void AIGPlayerCharacter::ActivateCrystal2()
 void AIGPlayerCharacter::ActivateCrystal3()
 {
 	ActivateCrystalByIndex(2);
+}
+
+float AIGPlayerCharacter::ComputeDamage()
+{
+	if (CheckPlayerState(EPlayerState::Enforced))
+	{		
+		float DamageScaleFactor = 1.0f;
+		
+		// 데미지 배율 계산
+		if (SunMoonValue >= SunMoonSection3Threshold)
+		{
+			DamageScaleFactor = SunMoonSection3DamageScaleFactor;
+		}
+		else if (SunMoonValue >= SunMoonSection2Threshold)
+		{
+			DamageScaleFactor = SunMoonSection2DamageScaleFactor;
+		}
+		else
+		{
+			DamageScaleFactor = SunMoonSection1DamageScaleFactor;
+		}
+		
+		return DamageScaleFactor * FMath::RandRange(StrongAttackDamageMin, StrongAttackDamageMax);
+	}	
+	
+	return FMath::RandRange(NormalAttackDamageMin, NormalAttackDamageMax);
 }
 
 void AIGPlayerCharacter::SetHp_DEBUG(const uint32 Value)
