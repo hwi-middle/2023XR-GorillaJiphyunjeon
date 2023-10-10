@@ -10,6 +10,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/LocalPlayer.h"
+#include "Engine/PostProcessVolume.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -83,7 +84,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 		BrushMesh->SetStaticMesh(MeshRef);
 		BrushMesh->SetWorldLocation(GetMesh()->GetSocketLocation(TEXT("RightHand")));
 		BrushMesh->SetupAttachment(GetMesh());
-		
+
 	}, EAssertionLevel::Check);
 
 	PlayerInventory = CreateDefaultSubobject<UIGPlayerInventory>(TEXT("Inventory"));
@@ -113,7 +114,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 
 	TestSoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
 	PlayerDataAsset = FIGConstructorHelper::FindAndGetObject<UIGPlayerDataAsset>(TEXT("/Script/Indigo.IGPlayerDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerData.DA_PlayerData'"));
-	
+
 	WalkSpeed = PlayerDataAsset->WalkSpeed;
 	SprintSpeed = PlayerDataAsset->SprintSpeed;
 
@@ -143,6 +144,8 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 
 	StaminaConsumptionAmountOnNormalAttack = PlayerDataAsset->StaminaConsumptionAmountOnNormalAttack;
 	StaminaConsumptionAmountOnStrongAttack = PlayerDataAsset->StaminaConsumptionAmountOnStrongAttack;
+
+	ElapsedDieSequenceTime = 0.f;
 }
 
 bool AIGPlayerCharacter::CheckPlayerState(const EPlayerState InState) const
@@ -187,6 +190,21 @@ void AIGPlayerCharacter::BeginPlay()
 	}
 
 	ManageStaminaByTime();
+
+	if (!GWorld->PostProcessVolumes.IsEmpty())
+	{
+		PostProcessVolume = Cast<APostProcessVolume>(GetWorld()->PostProcessVolumes[0]);
+		FPostProcessSettings Settings = PostProcessVolume->Settings;
+
+		UMaterial* CustomPostProcessMaterial = LoadObject<UMaterial>(nullptr, TEXT("/Script/Engine.Material'/Game/_GorillaJiphyunjeon/Material/PostProcess/M_Grayscale.M_Grayscale'"));
+		check(CustomPostProcessMaterial);
+		UMaterialInstanceDynamic* MaterialInstanceDynamic = UMaterialInstanceDynamic::Create(CustomPostProcessMaterial, nullptr);
+
+		Settings.WeightedBlendables.Array.Empty();
+		Settings.WeightedBlendables.Array.Add(FWeightedBlendable(1.0f, MaterialInstanceDynamic));
+		PostProcessVolume->Settings = Settings;
+		DynamicMaterialInstance = MaterialInstanceDynamic;
+	}
 }
 
 void AIGPlayerCharacter::Tick(float DeltaTime)
@@ -241,6 +259,10 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 	{
 		DebugMessage.Append(TEXT("결정 활성화 쿨타임\n"));
 	}
+	if (CheckPlayerState(EPlayerState::Dead))
+	{
+		DebugMessage.Append(TEXT("사망\n"));
+	}
 	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, *DebugMessage);
 #endif
 	AnimInstance->SetSpeed(GetVelocity().Size2D());
@@ -275,12 +297,27 @@ float AIGPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 		return 0.f;
 	}
 	Hp -= DamageAmount;
+	if (Hp <= 0)
+	{
+		AnimInstance->Die();
+		HudWidget->UpdateHpGauge(0.f);
+		AddPlayerState(EPlayerState::Dead);
+		bIsDead = true;
+		PlayDieSequence();
+		return DamageAmount;
+	}
+
 	HudWidget->UpdateHpGauge(Hp);
 	return DamageAmount;
 }
 
 void AIGPlayerCharacter::Move(const FInputActionValue& Value)
 {
+	if (CheckPlayerState(EPlayerState::Dead))
+	{
+		return;
+	}
+
 	RemovePlayerState(EPlayerState::Idling);
 	if (!CheckPlayerState(EPlayerState::Running))
 	{
@@ -303,7 +340,7 @@ void AIGPlayerCharacter::Move(const FInputActionValue& Value)
 
 	AddMovementInput(ForwardDirection, MovementVector.Y);
 	AddMovementInput(RightDirection, MovementVector.X);
- 
+
 }
 
 void AIGPlayerCharacter::Look(const FInputActionValue& Value)
@@ -681,6 +718,21 @@ void AIGPlayerCharacter::ActivateCrystal2()
 void AIGPlayerCharacter::ActivateCrystal3()
 {
 	ActivateCrystalByIndex(2);
+}
+
+void AIGPlayerCharacter::PlayDieSequence()
+{
+	constexpr float Duration = 1.f;
+	ElapsedDieSequenceTime += GWorld->GetDeltaSeconds();
+
+	if (ElapsedDieSequenceTime >= Duration)
+	{
+		return;
+	}
+
+	DynamicMaterialInstance->SetScalarParameterValue("Alpha",  FMath::Clamp(ElapsedDieSequenceTime / Duration, 0.f, 1.f));
+	
+	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::PlayDieSequence);
 }
 
 float AIGPlayerCharacter::ComputeDamage()

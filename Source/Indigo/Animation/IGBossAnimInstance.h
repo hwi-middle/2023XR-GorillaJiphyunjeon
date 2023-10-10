@@ -18,6 +18,7 @@ UCLASS()
 class INDIGO_API UIGBossAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
+
 protected:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
@@ -33,6 +34,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
 	uint8 bShouldPerformCloseAttack : 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
+	uint8 bIsDead : 1;
 	
 public:
 	FOnGenerateBossCloseAttackDelegate OnGenerateBossCloseAttack;
@@ -40,6 +44,7 @@ public:
 	
 public:
 	FORCEINLINE void SetSpeed(const float InValue) { Speed = InValue; }
+	FORCEINLINE void Die() { bIsDead = true; }
 	FORCEINLINE void StartCloseAttack() { bShouldPerformCloseAttack = true; }
 
 	UFUNCTION()

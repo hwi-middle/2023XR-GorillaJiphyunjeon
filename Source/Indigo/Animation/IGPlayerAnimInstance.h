@@ -35,6 +35,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
 	uint32 bIsEnforced : 1;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
+	uint8 bIsDead : 1;
 
 protected:
 	UFUNCTION()
@@ -49,6 +52,8 @@ public:
 
 	FORCEINLINE void SetSpeed(const float InValue) { Speed = InValue; }
 	FORCEINLINE void SetEnforced(const bool InValue) { bIsEnforced = InValue; }
+	FORCEINLINE void Die() { bIsDead = true; }
+
 	void StartRoll();
 	void StartAttack();
 };

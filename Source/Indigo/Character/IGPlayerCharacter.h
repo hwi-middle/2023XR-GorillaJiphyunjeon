@@ -7,6 +7,7 @@
 #include "Indigo/Interface/IGCharacterStatus.h"
 #include "IGPlayerCharacter.generated.h"
 
+class APostProcessVolume;
 class UIGPlayerDataAsset;
 class UIGPlayerControlDataAsset;
 enum class ECrystal : uint32;
@@ -44,6 +45,7 @@ enum class EPlayerState : uint32
 	// 탈진 (일월 게이지 획득량 감소)
 	CrystalActivated = 0x100,
 	CrystalCooldown = 0x200,
+	Dead = 0x400,
 	All = 0xff,
 };
 
@@ -166,6 +168,7 @@ private:
 	void ActivateCrystal1();
 	void ActivateCrystal2();
 	void ActivateCrystal3();
+	void PlayDieSequence();
 
 	//데미지 계산
 	float ComputeDamage(); 
@@ -285,20 +288,26 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	float SunMoonAutoConsumptionDelay;
 
-	//인벤토리
+	// 인벤토리
 	UPROPERTY()
 	TObjectPtr<UIGPlayerInventory> PlayerInventory;
 
 	UPROPERTY()
 	ECrystal ActivatedCrystal;
 
-	//사운드
+	// 사운드
 	UPROPERTY()
 	TObjectPtr<UIGSoundDataAsset> TestSoundDataAsset;
-	
-	// 타이머 핸들
+
+	// 사망연출
 	UPROPERTY()
-	FTimerHandle ActivateCrystalTimerHandle;
+	TObjectPtr<APostProcessVolume> PostProcessVolume;
+	
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> DynamicMaterialInstance;
+	
+	UPROPERTY()
+	float ElapsedDieSequenceTime;
 
 private:
 	// 디버그용
