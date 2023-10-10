@@ -39,24 +39,27 @@ void AIGMountainSpike::Tick(float DeltaTime)
 	}
 
 	ElapsedTime += DeltaTime;
+	if (ElapsedTime < GenerationDelay)
+	{
+		return;
+	}
 
 	// UE_LOG(LogTemp, Log, TEXT("DeltaTime: %f, Elapsed: %f, Duration: %f"), DeltaTime, ElapsedTime, Duration);
-	if (ElapsedTime > Duration + DestroyDelay)
+	if (ElapsedTime - GenerationDelay > Duration + DestroyDelay)
 	{
 		Destroy();
 	}
 
-	const float Alpha = FMath::Clamp(ElapsedTime / Duration, 0.f, 1.f);
+	const float Alpha = FMath::Clamp((ElapsedTime - GenerationDelay) / Duration, 0.f, 1.f);
 	SetActorLocation(FMath::Lerp(OriginPos, TargetPos, Alpha));
 }
 
-void AIGMountainSpike::Init(const float InHeight, const float InDuration, const float InDestroyDelay)
+void AIGMountainSpike::Init(const float InHeight, const float InGenerationDelay, const float InDuration, const float InDestroyDelay)
 {
 	OriginPos = GetActorLocation();
 	TargetPos = OriginPos + FVector(0.f, 0.f, InHeight);
-	UE_LOG(LogTemp, Log, TEXT("%f"), TargetPos.Z);
+	GenerationDelay = InGenerationDelay;
 	Duration = InDuration;
 	DestroyDelay = InDestroyDelay;
-
 	bIsInitialized = true;
 }

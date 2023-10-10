@@ -16,6 +16,9 @@ class INDIGO_API UIGBossGimmickDataAsset : public UDataAsset
 public:
 	UPROPERTY(EditAnywhere, Category = "근거리 패턴", DisplayName = "주먹 충돌판정 반지름")
 	float CloseAttack_HandRadius;
+	
+	UPROPERTY(EditAnywhere, Category = "근거리 패턴", DisplayName = "근거리 패턴 가시 개수")
+	uint32 CloseAttack_SpikeNum;
 
 	UPROPERTY(EditAnywhere, Category = "근거리 패턴", DisplayName = "근거리 패턴 피해량")
 	float CloseAttack_Damage;

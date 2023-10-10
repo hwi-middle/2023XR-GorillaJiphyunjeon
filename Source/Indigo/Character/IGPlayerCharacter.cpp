@@ -16,6 +16,7 @@
 #include "Indigo/Animation/IGPlayerAnimInstance.h"
 #include "Indigo/Battle/IGProjectile.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
+#include "Indigo/DataAsset/IGPlayerControlDataAsset.h"
 #include "Indigo/Interactable/IGCrystalBase.h"
 #include "Indigo/Interactable/IGCrystalBase.h"
 #include "Indigo/Interface/Interactable.h"
@@ -77,17 +78,18 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 
 	PlayerInventory = CreateDefaultSubobject<UIGPlayerInventory>(TEXT("Inventory"));
 
-	DefaultMappingContext = FIGConstructorHelper::FindAndGetObject<UInputMappingContext>(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/_GorillaJiphyunjeon/Input/IMC_Default.IMC_Default'"));
-	MoveAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Move.IA_Move'"));
-	LookAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Look.IA_Look'"));
-	RunAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Run.IA_Run'"));
-	InteractAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Interact.IA_Interact'"));
-	RollAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Roll.IA_Roll'"));
-	AttackAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Attack.IA_Attack'"));
-	ToggleSunMoonAction = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_ToggleSunMoon.IA_ToggleSunMoon'"));
-	Crystal1Action = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Crystal1.IA_Crystal1'"));
-	Crystal2Action = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Crystal2.IA_Crystal2'"));
-	Crystal3Action = FIGConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/_GorillaJiphyunjeon/Input/Actions/IA_Crystal3.IA_Crystal3'"));
+	PlayerControlDataAsset = FIGConstructorHelper::FindAndGetObject<UIGPlayerControlDataAsset>(TEXT("/Script/Indigo.IGPlayerControlDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerControlData.DA_PlayerControlData'"));
+	DefaultMappingContext = PlayerControlDataAsset->DefaultMappingContext;
+	MoveAction = PlayerControlDataAsset->MoveAction;
+	LookAction = PlayerControlDataAsset->LookAction;
+	RunAction = PlayerControlDataAsset->RunAction;
+	InteractAction = PlayerControlDataAsset->InteractAction;
+	RollAction = PlayerControlDataAsset->RollAction;
+	AttackAction = PlayerControlDataAsset->AttackAction;
+	ToggleSunMoonAction = PlayerControlDataAsset->ToggleSunMoonAction;
+	Crystal1Action = PlayerControlDataAsset->Crystal1Action;
+	Crystal2Action = PlayerControlDataAsset->Crystal2Action;
+	Crystal3Action = PlayerControlDataAsset->Crystal3Action;
 
 	const TSubclassOf<UIGPlayerAnimInstance> BossAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGPlayerAnimInstance>(
 		TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/ABP_Player.ABP_Player_C"), EAssertionLevel::Check);
@@ -128,7 +130,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	NormalAttackDamageMax = 4;
 	StrongAttackDamageMin = 5;
 	StrongAttackDamageMax = 9;
-	
+
 	StaminaConsumptionAmountOnNormalAttack = 5;
 	StaminaConsumptionAmountOnStrongAttack = 7;
 }
@@ -410,7 +412,7 @@ void AIGPlayerCharacter::Attack()
 		}
 		HudWidget->UpdateSunMoonGauge(SunMoonValue);
 	}
-	
+
 	// ---- Temporal (Socket 등으로 위치 조정해줘야함)
 	const FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
 	AIGProjectile* SpawnedActor = GetWorld()->SpawnActor<AIGProjectile>(SpawnLocation, FRotator::ZeroRotator);
@@ -552,7 +554,7 @@ void AIGPlayerCharacter::ManageStaminaByTime()
 	{
 		return;
 	}
-	
+
 	const float DeltaTime = GWorld->DeltaTimeSeconds;
 	if (CheckPlayerState(EPlayerState::Idling))
 	{
@@ -668,9 +670,9 @@ void AIGPlayerCharacter::ActivateCrystal3()
 float AIGPlayerCharacter::ComputeDamage()
 {
 	if (CheckPlayerState(EPlayerState::Enforced))
-	{		
+	{
 		float DamageScaleFactor = 1.0f;
-		
+
 		// 데미지 배율 계산
 		if (SunMoonValue >= SunMoonSection3Threshold)
 		{
@@ -684,10 +686,10 @@ float AIGPlayerCharacter::ComputeDamage()
 		{
 			DamageScaleFactor = SunMoonSection1DamageScaleFactor;
 		}
-		
+
 		return DamageScaleFactor * FMath::RandRange(StrongAttackDamageMin, StrongAttackDamageMax);
-	}	
-	
+	}
+
 	return FMath::RandRange(NormalAttackDamageMin, NormalAttackDamageMax);
 }
 

@@ -7,6 +7,7 @@
 #include "Indigo/Interface/IGCharacterStatus.h"
 #include "IGPlayerCharacter.generated.h"
 
+class UIGPlayerControlDataAsset;
 enum class ECrystal : uint32;
 class UIGIngameHUDWidget;
 class UIGPlayerAnimInstance;
@@ -99,6 +100,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> FollowCamera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UIGPlayerControlDataAsset> PlayerControlDataAsset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;

@@ -35,6 +35,9 @@ private:
 	
 	UPROPERTY()
 	float Duration;
+
+	UPROPERTY()
+	float GenerationDelay;
 	
 	UPROPERTY()
 	float DestroyDelay;
@@ -46,5 +49,5 @@ private:
 	FVector TargetPos;
 
 public:
-	void Init(const float InHeight, const float InDuration, const float InDestroyDelay);
+	void Init(const float InHeight, const float InGenerationDelay, const float InDuration, const float InDestroyDelay);
 };
