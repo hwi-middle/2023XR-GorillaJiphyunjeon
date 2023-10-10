@@ -165,6 +165,7 @@ void AIGPlayerCharacter::BeginPlay()
 	StaminaConsumptionAmountOnStrongAttack = PlayerDataAsset->StaminaConsumptionAmountOnStrongAttack;
 	DieZLocation = PlayerDataAsset->DieZLocation;
 	ElapsedDieSequenceTime = 0.f;
+	ElapsedFadeSequenceTime = 0.f;
 
 	AnimInstance = CastChecked<UIGPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->SetSpeed(0.f);
@@ -198,13 +199,17 @@ void AIGPlayerCharacter::BeginPlay()
 		FPostProcessSettings Settings = PostProcessVolume->Settings;
 
 		UMaterial* CustomPostProcessMaterial = LoadObject<UMaterial>(nullptr, TEXT("/Script/Engine.Material'/Game/_GorillaJiphyunjeon/Material/PostProcess/M_Grayscale.M_Grayscale'"));
-		check(CustomPostProcessMaterial);
-		UMaterialInstanceDynamic* MaterialInstanceDynamic = UMaterialInstanceDynamic::Create(CustomPostProcessMaterial, nullptr);
+		UMaterialInstanceDynamic* GrayscaleMaterial = UMaterialInstanceDynamic::Create(CustomPostProcessMaterial, nullptr);
 
+		CustomPostProcessMaterial = LoadObject<UMaterial>(nullptr, TEXT("/Script/Engine.Material'/Game/_GorillaJiphyunjeon/Material/PostProcess/M_PPFade.M_PPFade'"));
+		UMaterialInstanceDynamic* FadeMaterial = UMaterialInstanceDynamic::Create(CustomPostProcessMaterial, nullptr);
+		
 		Settings.WeightedBlendables.Array.Empty();
-		Settings.WeightedBlendables.Array.Add(FWeightedBlendable(1.0f, MaterialInstanceDynamic));
+		Settings.WeightedBlendables.Array.Add(FWeightedBlendable(1.0f, GrayscaleMaterial));
+		Settings.WeightedBlendables.Array.Add(FWeightedBlendable(1.0f, FadeMaterial));
 		PostProcessVolume->Settings = Settings;
-		DynamicMaterialInstance = MaterialInstanceDynamic;
+		DMI_Grayscale = GrayscaleMaterial;
+		DMI_Fade = FadeMaterial;
 	}
 }
 
@@ -745,12 +750,29 @@ void AIGPlayerCharacter::PlayDieSequence()
 
 	if (ElapsedDieSequenceTime >= Duration)
 	{
+		PlayFadeOutSequence();
 		return;
 	}
 
-	DynamicMaterialInstance->SetScalarParameterValue("Alpha", FMath::Clamp(ElapsedDieSequenceTime / Duration, 0.f, 1.f));
+	DMI_Grayscale->SetScalarParameterValue("Alpha", FMath::Clamp(ElapsedDieSequenceTime / Duration, 0.f, 1.f));
 
 	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::PlayDieSequence);
+}
+
+void AIGPlayerCharacter::PlayFadeOutSequence()
+{
+	constexpr float Duration = 1.f;
+	ElapsedFadeSequenceTime += GWorld->GetDeltaSeconds();
+
+	if (ElapsedFadeSequenceTime >= Duration)
+	{
+		UGameplayStatics::OpenLevel(this, TEXT("AD_GrayBox"));
+		return;
+	}
+
+	DMI_Fade->SetScalarParameterValue("Alpha", FMath::Clamp(ElapsedFadeSequenceTime / Duration, 0.f, 1.f));
+
+	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::PlayFadeOutSequence);
 }
 
 float AIGPlayerCharacter::ComputeDamage()

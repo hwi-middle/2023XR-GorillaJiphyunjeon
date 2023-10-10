@@ -169,6 +169,7 @@ private:
 	void ActivateCrystal2();
 	void ActivateCrystal3();
 	void PlayDieSequence();
+	void PlayFadeOutSequence();
 
 	//데미지 계산
 	float ComputeDamage(); 
@@ -310,11 +311,17 @@ private:
 	TObjectPtr<APostProcessVolume> PostProcessVolume;
 	
 	UPROPERTY()
-	TObjectPtr<UMaterialInstanceDynamic> DynamicMaterialInstance;
+	TObjectPtr<UMaterialInstanceDynamic> DMI_Grayscale;
+	
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> DMI_Fade;
 	
 	UPROPERTY()
 	float ElapsedDieSequenceTime;
 
+	UPROPERTY()
+	float ElapsedFadeSequenceTime;
+	
 private:
 	// 디버그용
 	UFUNCTION(Exec, Category="Command")
