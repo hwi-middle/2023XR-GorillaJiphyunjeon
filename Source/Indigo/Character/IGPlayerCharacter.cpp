@@ -267,6 +267,10 @@ void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 float AIGPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	if (CheckPlayerState(EPlayerState::Rolling))
+	{
+		return 0.f;
+	}
 	Hp -= DamageAmount;
 	HudWidget->UpdateHpGauge(Hp);
 	return DamageAmount;
