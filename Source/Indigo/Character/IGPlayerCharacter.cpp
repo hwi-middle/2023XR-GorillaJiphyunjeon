@@ -68,7 +68,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	DefenceValue = CharacterDataTable->DefenseValue;
 	StaminaValue = CharacterDataTable->StaminaValue;
 
-	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Mesh/SK_Main.SK_Main'"), [&](USkeletalMesh* SkeletalMesh)
+	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Mesh/SM_Main_Rigging.SM_Main_Rigging'"), [&](USkeletalMesh* SkeletalMesh)
 	{
 		GetMesh()->SetSkeletalMesh(SkeletalMesh);
 		// Temporal
