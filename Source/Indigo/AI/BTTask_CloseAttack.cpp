@@ -16,27 +16,26 @@ EBTNodeResult::Type UBTTask_CloseAttack::ExecuteTask(UBehaviorTreeComponent& Own
 		return EBTNodeResult::Failed;
 	}
 
-	AIGBoss* AIPawn = Cast<AIGBoss>(ControllingPawn);
-	if (AIPawn == nullptr)
+	ControllingBoss = Cast<AIGBoss>(ControllingPawn);
+	if (ControllingBoss == nullptr)
 	{
 		return EBTNodeResult::Failed;
 	}
 
-	// FOnFinishBossCloseAttackDelegate OnAttackFinished;
-	// OnAttackFinished.AddLambda(
-	// 	[&]()
-	// 	{
-	// 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-	// 	}
-	// );
-
-	AIPawn->OnFinishBossCloseAttack.AddLambda(
+	CheckEndDelegateHandle = ControllingBoss->OnFinishBossCloseAttack.AddLambda(
 		[&]()
 		{
+			UE_LOG(LogTemp,Log,TEXT("LambdaCheck"))
+			DeleteLambda();
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		}
 	);
-	AIPawn->PerformCloseAttack();
+	ControllingBoss->PerformCloseAttack();
 	return EBTNodeResult::InProgress;
+}
+
+void UBTTask_CloseAttack::DeleteLambda()
+{
+	Cast<AIGBoss>(ControllingBoss)->OnFinishBossCloseAttack.Remove(CheckEndDelegateHandle);
 }
 

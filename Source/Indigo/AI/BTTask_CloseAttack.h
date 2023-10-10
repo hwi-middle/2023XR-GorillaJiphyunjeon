@@ -6,6 +6,7 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "BTTask_CloseAttack.generated.h"
 
+class AIGBoss;
 /**
  * 
  */
@@ -16,4 +17,13 @@ class INDIGO_API UBTTask_CloseAttack : public UBTTaskNode
 
 protected:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
+private:
+	UPROPERTY()
+	TObjectPtr<AIGBoss> ControllingBoss;
+	
+	FDelegateHandle CheckEndDelegateHandle;
+	
+private:
+	void DeleteLambda();
 };
