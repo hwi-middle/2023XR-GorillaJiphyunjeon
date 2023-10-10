@@ -3,6 +3,9 @@
 
 #include "IGMountainSpike.h"
 
+#include "Engine/DamageEvents.h"
+#include "Indigo/Character/IGPlayerCharacter.h"
+#include "Indigo/Constant/IGCollisionChannels.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 
 // Sets default values
@@ -19,6 +22,7 @@ AIGMountainSpike::AIGMountainSpike()
 
 	ElapsedTime = 0.f;
 	bIsInitialized = false;
+	bHasDamagedPlayer = false;
 }
 
 // Called when the game starts or when spawned
@@ -52,11 +56,47 @@ void AIGMountainSpike::Tick(float DeltaTime)
 
 	const float Alpha = FMath::Clamp((ElapsedTime - GenerationDelay) / Duration, 0.f, 1.f);
 	SetActorLocation(FMath::Lerp(OriginPos, TargetPos, Alpha));
+
+	if (bHasDamagedPlayer)
+	{
+		return;
+	}
+
+	FHitResult Result;
+	FCollisionQueryParams CollisionParams;
+	float DamageRadius = 150.f;
+	CollisionParams.AddIgnoredActor(this);
+	
+	DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 16, FColor::Green, false, 1.f);	
+
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		Result,
+		GetActorLocation(),
+		GetActorLocation(),
+		FQuat::Identity,
+		ECC_CHECK_PAWN,
+		FCollisionShape::MakeSphere(DamageRadius),
+		CollisionParams
+	);
+
+	if (!bHit)
+	{
+		return;
+	}
+
+	AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(Result.GetActor());
+	if(Player)
+	{
+		FDamageEvent DamageEvent;
+		Player->TakeDamage(Damage, DamageEvent, GetInstigatorController(), this);
+		bHasDamagedPlayer = true;
+	}
 }
 
-void AIGMountainSpike::Init(const float InHeight, const float InGenerationDelay, const float InDuration, const float InDestroyDelay)
+void AIGMountainSpike::Init(const float InDamage, const float InHeight, const float InGenerationDelay, const float InDuration, const float InDestroyDelay)
 {
 	OriginPos = GetActorLocation();
+	Damage = InDamage;
 	TargetPos = OriginPos + FVector(0.f, 0.f, InHeight);
 	GenerationDelay = InGenerationDelay;
 	Duration = InDuration;

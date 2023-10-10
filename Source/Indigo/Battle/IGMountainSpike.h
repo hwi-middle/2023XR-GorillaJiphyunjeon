@@ -31,11 +31,17 @@ private:
 	uint32 bIsInitialized : 1;
 
 	UPROPERTY()
+	uint32 bHasDamagedPlayer : 1;
+	
+	UPROPERTY()
 	float ElapsedTime;
 	
 	UPROPERTY()
 	float Duration;
 
+	UPROPERTY()
+	float Damage;
+	
 	UPROPERTY()
 	float GenerationDelay;
 	
@@ -49,5 +55,5 @@ private:
 	FVector TargetPos;
 
 public:
-	void Init(const float InHeight, const float InGenerationDelay, const float InDuration, const float InDestroyDelay);
+	void Init(const float InDamage, const float InHeight, const float InGenerationDelay, const float InDuration, const float InDestroyDelay);
 };
