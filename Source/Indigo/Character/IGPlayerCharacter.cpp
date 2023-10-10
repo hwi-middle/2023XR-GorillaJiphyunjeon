@@ -144,7 +144,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 
 	StaminaConsumptionAmountOnNormalAttack = PlayerDataAsset->StaminaConsumptionAmountOnNormalAttack;
 	StaminaConsumptionAmountOnStrongAttack = PlayerDataAsset->StaminaConsumptionAmountOnStrongAttack;
-
+	DieZLocation = PlayerDataAsset->DieZLocation;
 	ElapsedDieSequenceTime = 0.f;
 }
 
@@ -265,7 +265,22 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, *DebugMessage);
 #endif
+
 	AnimInstance->SetSpeed(GetVelocity().Size2D());
+	if (GetActorLocation().Z <= DieZLocation)
+	{
+		if (!CheckPlayerState(EPlayerState::Dead))
+		{
+			AnimInstance->Die();
+			HudWidget->UpdateHpGauge(0.f);
+			AddPlayerState(EPlayerState::Dead);
+			bIsDead = true;
+			PlayDieSequence();
+		}
+		FVector AdjustedLocation = GetActorLocation();
+		AdjustedLocation.Z = DieZLocation;
+		SetActorLocation(AdjustedLocation);
+	}
 	BrushMesh->SetWorldLocation(GetMesh()->GetSocketLocation(TEXT("RightHand")));
 	BrushMesh->SetWorldRotation(GetMesh()->GetSocketRotation(TEXT("RightHand")));
 }
@@ -730,8 +745,8 @@ void AIGPlayerCharacter::PlayDieSequence()
 		return;
 	}
 
-	DynamicMaterialInstance->SetScalarParameterValue("Alpha",  FMath::Clamp(ElapsedDieSequenceTime / Duration, 0.f, 1.f));
-	
+	DynamicMaterialInstance->SetScalarParameterValue("Alpha", FMath::Clamp(ElapsedDieSequenceTime / Duration, 0.f, 1.f));
+
 	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::PlayDieSequence);
 }
 

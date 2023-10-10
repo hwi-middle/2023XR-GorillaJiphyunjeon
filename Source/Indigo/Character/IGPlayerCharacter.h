@@ -288,6 +288,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	float SunMoonAutoConsumptionDelay;
 
+	UPROPERTY(VisibleAnywhere)
+	float DieZLocation;
+
 	// 인벤토리
 	UPROPERTY()
 	TObjectPtr<UIGPlayerInventory> PlayerInventory;

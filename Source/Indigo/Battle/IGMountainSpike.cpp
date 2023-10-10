@@ -18,6 +18,7 @@ AIGMountainSpike::AIGMountainSpike()
 	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/SampleBossAttack/MountainAttack/Mesh/SM_MountainAttack.SM_MountainAttack'"), [&](UStaticMesh* MeshRef)
 	{
 		Mesh->SetStaticMesh(MeshRef);
+		RootComponent = Mesh;
 	}, EAssertionLevel::Check);
 
 	ElapsedTime = 0.f;

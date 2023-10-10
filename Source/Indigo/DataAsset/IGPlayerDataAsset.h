@@ -94,4 +94,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Misc", DisplayName = "강화 상태에서 정지 시 일월 게이지 자동 소모 딜레이")
 	float SunMoonAutoConsumptionDelay;
+
+	UPROPERTY(EditAnywhere, Category = "Misc", DisplayName = "죽음 기준 높이")
+	float DieZLocation;
 };

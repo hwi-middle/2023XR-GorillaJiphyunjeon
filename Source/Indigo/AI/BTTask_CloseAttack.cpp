@@ -32,7 +32,6 @@ EBTNodeResult::Type UBTTask_CloseAttack::ExecuteTask(UBehaviorTreeComponent& Own
 	CheckEndDelegateHandle = ControllingBoss->OnFinishBossCloseAttack.AddLambda(
 		[&]()
 		{
-			UE_LOG(LogTemp,Log,TEXT("LambdaCheck"))
 			DeleteLambda();
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		}
