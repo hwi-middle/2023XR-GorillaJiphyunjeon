@@ -80,7 +80,20 @@ float AIGBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	HudWidget->UpdateHpGauge(Hp);
+	if (Hp <= 0)
+	{
+		AnimInstance->Die();
+		AnimInstance->OnFinishDead.AddUObject(this, &AIGBoss::FadeOut);
+		HudWidget->UpdateHpGauge(0.f);
+		bIsDead = true;
+		return DamageAmount;
+	}
 	return DamageAmount;
+}
+
+void AIGBoss::FadeOut()
+{
+	Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->PlayFadeOutSequence();
 }
 
 void AIGBoss::EnableHUD()

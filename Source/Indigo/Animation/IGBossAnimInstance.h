@@ -8,6 +8,7 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnGenerateBossCloseAttackDelegate)
 DECLARE_MULTICAST_DELEGATE(FOnFinishBossCloseAttackDelegate)
+DECLARE_MULTICAST_DELEGATE(FOnFinishBossDeadDelegate)
 
 
 enum EAttackPattern : uint32;
@@ -41,6 +42,7 @@ protected:
 public:
 	FOnGenerateBossCloseAttackDelegate OnGenerateBossCloseAttack;
 	FOnFinishBossCloseAttackDelegate OnFinishAttack;
+	FOnFinishBossDeadDelegate OnFinishDead;
 	
 public:
 	FORCEINLINE void SetSpeed(const float InValue) { Speed = InValue; }
@@ -52,4 +54,7 @@ public:
 
 	UFUNCTION()
 	void AnimNotify_EndCloseAttack();
+
+	UFUNCTION()
+	void AnimNotify_BossDead();
 };

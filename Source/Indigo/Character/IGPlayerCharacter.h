@@ -79,7 +79,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	
+
 public:
 	//인터페이스 함수
 	virtual FORCEINLINE float GetHp() const override { return Hp; }
@@ -169,11 +169,13 @@ private:
 	void ActivateCrystal2();
 	void ActivateCrystal3();
 	void PlayDieSequence();
-	void PlayFadeOutSequence();
 
 	//데미지 계산
-	float ComputeDamage(); 
-	
+	float ComputeDamage();
+
+public:
+	void PlayFadeOutSequence();
+
 public:
 	FORCEINLINE USpringArmComponent* GetCameraSpringArm() const { return CameraSpringArm; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
@@ -233,7 +235,7 @@ private:
 	// 증감값
 	UPROPERTY(VisibleAnywhere)
 	float SunMoonRecoveryAmountOnAttackHit;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	float StaminaConsumptionAmountOnNormalAttack;
 
@@ -242,22 +244,22 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	float StaminaConsumptionAmountOnRoll;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	float SunMoonConsumptionAmountOnAttack;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	float StaminaRecoveryAmountPerSecondOnIdle;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	float StaminaRecoveryAmountPerSecondOnWalk;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	float StaminaConsumptionAmountPerSecondOnRunning;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	float SunMoonAutoConsumptionAmount;
-	
+
 	// 기타 필요한 정보
 	UPROPERTY(VisibleAnywhere)
 	float SunMoonSection2Threshold;
@@ -273,7 +275,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	float SunMoonSection3DamageScaleFactor;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	float ExhaustionPhase1Duration;
 
@@ -282,7 +284,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	float ElapsedSunMoonAutoConsumptionTime;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	float ElapsedCrystalActivationTime;
 
@@ -309,19 +311,19 @@ private:
 	// 사망연출
 	UPROPERTY()
 	TObjectPtr<APostProcessVolume> PostProcessVolume;
-	
+
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> DMI_Grayscale;
-	
+
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> DMI_Fade;
-	
+
 	UPROPERTY()
 	float ElapsedDieSequenceTime;
 
 	UPROPERTY()
 	float ElapsedFadeSequenceTime;
-	
+
 private:
 	// 디버그용
 	UFUNCTION(Exec, Category="Command")

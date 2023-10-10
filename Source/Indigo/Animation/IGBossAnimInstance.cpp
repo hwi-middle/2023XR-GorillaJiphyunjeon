@@ -20,3 +20,8 @@ void UIGBossAnimInstance::AnimNotify_EndCloseAttack()
 	OnFinishAttack.Broadcast();
 	bShouldPerformCloseAttack = false;
 }
+
+void UIGBossAnimInstance::AnimNotify_BossDead()
+{
+	OnFinishDead.Broadcast();
+}

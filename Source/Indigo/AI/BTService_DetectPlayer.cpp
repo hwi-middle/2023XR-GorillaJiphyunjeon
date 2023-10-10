@@ -29,6 +29,11 @@ void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		return;
 	}
 
+	if(Boss->IsDead())
+	{
+		return;
+	}
+
 	const FVector Origin = Boss->GetOrigin();
 	const float DetectRadius = Boss->GetDetectRange();
 

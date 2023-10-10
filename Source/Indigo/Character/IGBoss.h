@@ -38,6 +38,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	void FadeOut();
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UIGIngameHUDWidget> HudWidgetClass;
