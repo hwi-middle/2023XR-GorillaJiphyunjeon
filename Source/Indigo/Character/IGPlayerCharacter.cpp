@@ -25,7 +25,7 @@
 #include "Indigo/Util/IGCharacterDataTable.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGDataTableParser.h"
-#include "Indigo/Util/IGSoundDataAsset.h"
+#include "Indigo/DataAsset/IGSoundDataAsset.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 
@@ -99,7 +99,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	}, EAssertionLevel::Check);
 
 
-	TestSoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/SoundCueDataAsset.SoundCueDataAsset'"), nullptr, LOAD_None, nullptr, nullptr);
+	TestSoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
 
 
 	WalkSpeed = 500.f;

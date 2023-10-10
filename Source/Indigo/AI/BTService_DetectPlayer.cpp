@@ -32,18 +32,21 @@ void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	const FVector Origin = Boss->GetOrigin();
 	const float DetectRadius = Boss->GetDetectRange();
 
-	TArray<FOverlapResult> OverlapResults;
-	const FCollisionQueryParams CollisionQueryParam(SCENE_QUERY_STAT(Detect), false, ControllingPawn);
-	bool bResult = World->OverlapMultiByChannel(
-		OverlapResults,
+	FHitResult Result;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(Boss);
+	
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		Result,
+		Origin,
 		Origin,
 		FQuat::Identity,
-		ECC_Pawn,
+		ECC_CHECK_PAWN,
 		FCollisionShape::MakeSphere(DetectRadius),
-		CollisionQueryParam
+		CollisionParams
 	);
 
-	if (!bResult)
+	if (!bHit)
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, nullptr);
 		OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_CLOSE_ENOUGH, false);
@@ -51,24 +54,21 @@ void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		return;
 	}
 
-	for (const auto& OverlapResult : OverlapResults)
+	if (AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(Result.GetActor()))
 	{
-		if (AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(OverlapResult.GetActor()))
+		const FVector BossToTarget = Player->GetActorLocation() - Boss->GetActorLocation();
+		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, Player);
+		const bool IsCloseEnough = BossToTarget.Length() <= Boss->GetStoppingDistance();
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_CLOSE_ENOUGH, IsCloseEnough);
+
+		DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Green, false, 0.1f);
+		if (!IsCloseEnough)
 		{
-			const FVector BossToTarget = Player->GetActorLocation() - Boss->GetActorLocation();
-			OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, Player);
-			const bool IsCloseEnough = BossToTarget.Length() <= Boss->GetStoppingDistance();
-			OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_CLOSE_ENOUGH, IsCloseEnough);
-
-			DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Green, false, 0.1f);
-			if (!IsCloseEnough)
-			{
-				DrawDebugLine(World, ControllingPawn->GetActorLocation(), Player->GetActorLocation(), FColor::Green, false, 0.f);
-			}
-			return;
+			DrawDebugLine(World, ControllingPawn->GetActorLocation(), Player->GetActorLocation(), FColor::Green, false, 0.f);
 		}
+		return;
 	}
-
+	
 	OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, nullptr);
 	OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_CLOSE_ENOUGH, false);
 	DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Red, false, 0.1f);
