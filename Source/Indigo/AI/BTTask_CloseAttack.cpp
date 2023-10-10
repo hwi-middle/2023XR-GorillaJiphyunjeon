@@ -5,21 +5,28 @@
 
 #include "AIController.h"
 #include "Indigo/Character/IGBoss.h"
+#include "Indigo/Character/IGPlayerCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 EBTNodeResult::Type UBTTask_CloseAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
 
 	APawn* ControllingPawn = Cast<APawn>(OwnerComp.GetAIOwner()->GetPawn());
-	if (nullptr == ControllingPawn)
+	if (!ControllingPawn)
 	{
 		return EBTNodeResult::Failed;
 	}
 
 	ControllingBoss = Cast<AIGBoss>(ControllingPawn);
-	if (ControllingBoss == nullptr)
+	if (!ControllingBoss)
 	{
 		return EBTNodeResult::Failed;
+	}
+
+	if(Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->IsDead())
+	{
+		return EBTNodeResult::Aborted;
 	}
 
 	CheckEndDelegateHandle = ControllingBoss->OnFinishBossCloseAttack.AddLambda(
