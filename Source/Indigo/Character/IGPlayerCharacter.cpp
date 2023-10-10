@@ -77,11 +77,13 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 		GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -100.f));
 	}, EAssertionLevel::Check);
 
-	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/DummyBrush/SM_DummyBrush.SM_DummyBrush'"), [&](UStaticMesh* MeshRef)
+	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/Brush/Mesh/SM_Weapon.SM_Weapon'"), [&](UStaticMesh* MeshRef)
 	{
 		BrushMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BrushMesh"));
 		BrushMesh->SetStaticMesh(MeshRef);
 		BrushMesh->SetWorldLocation(GetMesh()->GetSocketLocation(TEXT("RightHand")));
+		BrushMesh->SetupAttachment(GetMesh());
+		
 	}, EAssertionLevel::Check);
 
 	PlayerInventory = CreateDefaultSubobject<UIGPlayerInventory>(TEXT("Inventory"));
