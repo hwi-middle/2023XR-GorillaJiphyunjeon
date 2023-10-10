@@ -400,17 +400,18 @@ void AIGPlayerCharacter::Attack()
 	SpawnedActor->OnHitProjectile.AddUObject(this, &AIGPlayerCharacter::OnHitProjectile);
 	// ----
 
-	//일단 임시로 여기에 합니다. 애님노티파이 이식전!
 	//TODO: 스윙 사운드	
-	UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerSwingArray[FMath::RandRange(0, SoundDataAsset->PlayerSwingArray.Num()-1)]);
+	
 	
 	//TODO: 공격 사운드
 	if(IsEnforced)
 	{
-		UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerEnforcedAttackArray[FMath::RandRange(0, SoundDataAsset->PlayerEnforcedAttackArray.Num()-1)]);		
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerEnforcedSwingArray[FMath::RandRange(0, SoundDataAsset->PlayerEnforcedSwingArray.Num()-1)]);
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerEnforcedAttackArray[FMath::RandRange(0, SoundDataAsset->PlayerEnforcedAttackArray.Num()-1)]);
 	}
 	else
 	{
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerSwingArray[FMath::RandRange(0, SoundDataAsset->PlayerSwingArray.Num()-1)]);
 		UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerAttackArray[FMath::RandRange(0, SoundDataAsset->PlayerAttackArray.Num()-1)]);
 	}
 

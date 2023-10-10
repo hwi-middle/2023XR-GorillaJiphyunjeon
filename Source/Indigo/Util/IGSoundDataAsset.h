@@ -46,8 +46,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어_일반 공격_리스트")
 	TArray<USoundCue*> PlayerAttackArray;
 
-	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어_붓 휘두르는 소리_리스트")
+	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어_일반 공격 붓 휘두르는 소리_리스트")
 	TArray<USoundCue*> PlayerSwingArray;
+	
+	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어_강화 공격 붓 휘두르는 소리_리스트")
+    TArray<USoundCue*> PlayerEnforcedSwingArray;
 
 	UPROPERTY(EditAnywhere, Category = "player", DisplayName = "플레이어_게이지 최대")
 	TObjectPtr<USoundCue> PlayerGaugeMax;
