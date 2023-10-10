@@ -57,6 +57,11 @@ void AIGMountainSpike::Tick(float DeltaTime)
 	const float Alpha = FMath::Clamp((ElapsedTime - GenerationDelay) / Duration, 0.f, 1.f);
 	SetActorLocation(FMath::Lerp(OriginPos, TargetPos, Alpha));
 
+	if (ElapsedTime - GenerationDelay > Duration)
+	{
+		return;
+	}
+	
 	if (bHasDamagedPlayer)
 	{
 		return;
@@ -66,8 +71,8 @@ void AIGMountainSpike::Tick(float DeltaTime)
 	FCollisionQueryParams CollisionParams;
 	float DamageRadius = 150.f;
 	CollisionParams.AddIgnoredActor(this);
-	
-	DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 16, FColor::Green, false, 1.f);	
+
+	DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 16, FColor::Green, false, 1.f);
 
 	bool bHit = GetWorld()->SweepSingleByChannel(
 		Result,
@@ -85,7 +90,7 @@ void AIGMountainSpike::Tick(float DeltaTime)
 	}
 
 	AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(Result.GetActor());
-	if(Player)
+	if (Player)
 	{
 		FDamageEvent DamageEvent;
 		Player->TakeDamage(Damage, DamageEvent, GetInstigatorController(), this);
