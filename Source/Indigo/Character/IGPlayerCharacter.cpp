@@ -77,7 +77,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 		GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -100.f));
 	}, EAssertionLevel::Check);
 
-	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/Brush/Mesh/SM_Weapon.SM_Weapon'"), [&](UStaticMesh* MeshRef)
+	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/PlayerWeapon/Mesh/SM_Weapon.SM_Weapon'"), [&](UStaticMesh* MeshRef)
 	{
 		BrushMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BrushMesh"));
 		BrushMesh->SetStaticMesh(MeshRef);
