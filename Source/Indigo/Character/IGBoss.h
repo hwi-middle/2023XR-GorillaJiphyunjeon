@@ -6,6 +6,7 @@
 #include "IGEnemyBase.h"
 #include "IGBoss.generated.h"
 
+class UIGBossDataAsset;
 class UIGBossGimmickDataAsset;
 DECLARE_MULTICAST_DELEGATE(FOnFinishBossCloseAttackDelegate)
 
@@ -43,8 +44,9 @@ private:
 	UPROPERTY()
 	float StoppingDistance;
 
-	// UPROPERTY()
-	// EAttackPattern CurrentAttackPattern;
+	// 능력치 데이터
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UIGBossDataAsset> BossDataAsset;
 
 	// 기믹 데이터
 	UPROPERTY(VisibleAnywhere)

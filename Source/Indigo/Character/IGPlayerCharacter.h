@@ -7,6 +7,7 @@
 #include "Indigo/Interface/IGCharacterStatus.h"
 #include "IGPlayerCharacter.generated.h"
 
+class UIGPlayerDataAsset;
 class UIGPlayerControlDataAsset;
 enum class ECrystal : uint32;
 class UIGIngameHUDWidget;
@@ -176,6 +177,9 @@ public:
 private:
 	// 플레이어 능력치
 	FIGCharacterDataTable* CharacterDataTable;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UIGPlayerDataAsset> PlayerDataAsset;
 
 	UPROPERTY(VisibleAnywhere)
 	float SunMoonValue;

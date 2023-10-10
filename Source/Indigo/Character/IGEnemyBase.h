@@ -50,7 +50,7 @@ public:
 	FORCEINLINE FVector GetOrigin() const { return Origin; }
 
 
-private:
+protected:
 	UPROPERTY(VisibleAnywhere)
 	float MaxHp;
 

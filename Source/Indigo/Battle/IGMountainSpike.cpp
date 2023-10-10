@@ -48,7 +48,7 @@ void AIGMountainSpike::Tick(float DeltaTime)
 		return;
 	}
 
-	// UE_LOG(LogTemp, Log, TEXT("DeltaTime: %f, Elapsed: %f, Duration: %f"), DeltaTime, ElapsedTime, Duration);
+	// 최종 삭제
 	if (ElapsedTime - GenerationDelay > Duration + DestroyDelay)
 	{
 		Destroy();
@@ -57,6 +57,7 @@ void AIGMountainSpike::Tick(float DeltaTime)
 	const float Alpha = FMath::Clamp((ElapsedTime - GenerationDelay) / Duration, 0.f, 1.f);
 	SetActorLocation(FMath::Lerp(OriginPos, TargetPos, Alpha));
 
+	// 플레이어 타격은 등장 중에만 진행
 	if (ElapsedTime - GenerationDelay > Duration)
 	{
 		return;

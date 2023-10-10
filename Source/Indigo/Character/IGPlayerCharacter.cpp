@@ -17,6 +17,8 @@
 #include "Indigo/Battle/IGProjectile.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
 #include "Indigo/DataAsset/IGPlayerControlDataAsset.h"
+#include "Indigo/DataAsset/IGPlayerDataAsset.h"
+#include "Indigo/DataAsset/IGSoundDataAsset.h"
 #include "Indigo/Interactable/IGCrystalBase.h"
 #include "Indigo/Interactable/IGCrystalBase.h"
 #include "Indigo/Interface/Interactable.h"
@@ -26,7 +28,6 @@
 #include "Indigo/Util/IGCharacterDataTable.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGDataTableParser.h"
-#include "Indigo/DataAsset/IGSoundDataAsset.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 
@@ -109,37 +110,37 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 
 
 	TestSoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
+	PlayerDataAsset = FIGConstructorHelper::FindAndGetObject<UIGPlayerDataAsset>(TEXT("/Script/Indigo.IGPlayerDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerData.DA_PlayerData'"));
+	
+	WalkSpeed = PlayerDataAsset->WalkSpeed;
+	SprintSpeed = PlayerDataAsset->SprintSpeed;
 
-
-	WalkSpeed = 500.f;
-	SprintSpeed = 800.f;
-
-	SunMoonValue = 0;
-	SunMoonRecoveryAmountOnAttackHit = 5;
-	SunMoonSection2Threshold = 30;
-	SunMoonSection3Threshold = 70;
-	SunMoonSection1DamageScaleFactor = 1;
-	SunMoonSection2DamageScaleFactor = 2;
-	SunMoonSection3DamageScaleFactor = 3;
-	SunMoonConsumptionAmountOnAttack = 10;
-	ExhaustionPhase1Duration = 3.f;
-	ExhaustionPhase2Duration = 10.f;
-	SunMoonAutoConsumptionDelay = 5.f;
+	SunMoonValue = 0.f;
+	SunMoonRecoveryAmountOnAttackHit = PlayerDataAsset->SunMoonRecoveryAmountOnAttackHit;
+	SunMoonSection2Threshold = PlayerDataAsset->SunMoonSection2Threshold;
+	SunMoonSection3Threshold = PlayerDataAsset->SunMoonSection3Threshold;
+	SunMoonSection1DamageScaleFactor = PlayerDataAsset->SunMoonSection1DamageScaleFactor;
+	SunMoonSection2DamageScaleFactor = PlayerDataAsset->SunMoonSection2DamageScaleFactor;
+	SunMoonSection3DamageScaleFactor = PlayerDataAsset->SunMoonSection3DamageScaleFactor;
+	SunMoonConsumptionAmountOnAttack = PlayerDataAsset->SunMoonConsumptionAmountOnAttack;
+	ExhaustionPhase1Duration = PlayerDataAsset->ExhaustionPhase1Duration;
+	ExhaustionPhase2Duration = PlayerDataAsset->ExhaustionPhase2Duration;
+	SunMoonAutoConsumptionDelay = PlayerDataAsset->SunMoonAutoConsumptionDelay;
 	ElapsedSunMoonAutoConsumptionTime = 0.f;
-	SunMoonAutoConsumptionAmount = 2;
-	StaminaRecoveryAmountPerSecondOnIdle = 10.f;
-	StaminaRecoveryAmountPerSecondOnWalk = 2.f;
-	StaminaConsumptionAmountPerSecondOnRunning = 2.f;
-	StaminaConsumptionAmountOnRoll = 10.f;
+	SunMoonAutoConsumptionAmount = PlayerDataAsset->SunMoonAutoConsumptionAmount;
+	StaminaRecoveryAmountPerSecondOnIdle = PlayerDataAsset->StaminaRecoveryAmountPerSecondOnIdle;
+	StaminaRecoveryAmountPerSecondOnWalk = PlayerDataAsset->StaminaRecoveryAmountPerSecondOnWalk;
+	StaminaConsumptionAmountPerSecondOnRunning = PlayerDataAsset->StaminaConsumptionAmountPerSecondOnRunning;
+	StaminaConsumptionAmountOnRoll = PlayerDataAsset->StaminaConsumptionAmountOnRoll;
 	ActivatedCrystal = ECrystal::None;
 
-	NormalAttackDamageMin = 2;
-	NormalAttackDamageMax = 4;
-	StrongAttackDamageMin = 5;
-	StrongAttackDamageMax = 9;
+	NormalAttackDamageMin = PlayerDataAsset->NormalAttackDamageMin;
+	NormalAttackDamageMax = PlayerDataAsset->NormalAttackDamageMax;
+	StrongAttackDamageMin = PlayerDataAsset->StrongAttackDamageMin;
+	StrongAttackDamageMax = PlayerDataAsset->StrongAttackDamageMax;
 
-	StaminaConsumptionAmountOnNormalAttack = 5;
-	StaminaConsumptionAmountOnStrongAttack = 7;
+	StaminaConsumptionAmountOnNormalAttack = PlayerDataAsset->StaminaConsumptionAmountOnNormalAttack;
+	StaminaConsumptionAmountOnStrongAttack = PlayerDataAsset->StaminaConsumptionAmountOnStrongAttack;
 }
 
 bool AIGPlayerCharacter::CheckPlayerState(const EPlayerState InState) const
@@ -300,7 +301,7 @@ void AIGPlayerCharacter::Move(const FInputActionValue& Value)
 
 	AddMovementInput(ForwardDirection, MovementVector.Y);
 	AddMovementInput(RightDirection, MovementVector.X);
-
+ 
 }
 
 void AIGPlayerCharacter::Look(const FInputActionValue& Value)

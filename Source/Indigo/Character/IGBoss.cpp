@@ -11,6 +11,7 @@
 #include "Indigo/Battle/IGMountainSpike.h"
 #include "Indigo/Constant/IGBossSockets.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
+#include "Indigo/DataAsset/IGBossDataAsset.h"
 #include "Indigo/DataAsset/IGBossGimmickDataAsset.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Kismet/GameplayStatics.h"
@@ -33,6 +34,7 @@ AIGBoss::AIGBoss()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
 
+	BossDataAsset = FIGConstructorHelper::FindAndGetObject<UIGBossDataAsset>(TEXT("/Script/Indigo.IGBossDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_BossData.DA_BossData'"));
 	GimmickDataAsset = FIGConstructorHelper::FindAndGetObject<UIGBossGimmickDataAsset>(TEXT("/Script/Indigo.IGBossGimmickDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_BossGimmickData.DA_BossGimmickData'"));
 }
 
@@ -43,7 +45,10 @@ void AIGBoss::BeginPlay()
 	AnimInstance->SetSpeed(0.f);
 	AnimInstance->OnGenerateBossCloseAttack.AddUObject(this, &AIGBoss::GenerateCloseAttack);
 	AnimInstance->OnFinishAttack.AddUObject(this, &AIGBoss::EndCloseAttack);
-	StoppingDistance = 400.f;
+	StoppingDistance = BossDataAsset->StoppingDistance;
+	MaxHp = BossDataAsset->MaxHp;
+	Hp = MaxHp;
+	
 	CloseAttack_SpikeNum = GimmickDataAsset->CloseAttack_SpikeNum;
 	CloseAttack_HandRadius = GimmickDataAsset->CloseAttack_HandRadius;
 	CloseAttack_Damage = GimmickDataAsset->CloseAttack_Damage;
