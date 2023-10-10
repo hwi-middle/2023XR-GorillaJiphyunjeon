@@ -141,6 +141,9 @@ private:
 	UPROPERTY()
 	TObjectPtr<UIGPlayerAnimInstance> AnimInstance;
 
+	UPROPERTY()
+	TObjectPtr<UStaticMeshComponent> BrushMesh;
+
 private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);

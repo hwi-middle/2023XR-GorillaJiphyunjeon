@@ -72,10 +72,9 @@ void AIGBoss::GenerateCloseAttack()
 	// 주먹에 의한 피해
 	FHitResult Result;
 	FCollisionQueryParams CollisionParams;
-	float Radius = 100.f;
 	CollisionParams.AddIgnoredActor(this);
 
-	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 16, FColor::Green, false, 0.f);
+	DrawDebugSphere(GetWorld(), GetActorLocation(), CloseAttack_HandRadius, 16, FColor::Green, false, 0.f);
 
 	bool bHit = GetWorld()->SweepSingleByChannel(
 		Result,
@@ -83,7 +82,7 @@ void AIGBoss::GenerateCloseAttack()
 		GetMesh()->GetSocketLocation(BOSS_RIGHT_HAND),
 		FQuat::Identity,
 		ECC_CHECK_PAWN,
-		FCollisionShape::MakeSphere(Radius),
+		FCollisionShape::MakeSphere(CloseAttack_HandRadius),
 		CollisionParams
 	);
 

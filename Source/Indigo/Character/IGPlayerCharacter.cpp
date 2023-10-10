@@ -76,6 +76,13 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 		GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -100.f));
 	}, EAssertionLevel::Check);
 
+	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/DummyBrush/SM_DummyBrush.SM_DummyBrush'"), [&](UStaticMesh* MeshRef)
+	{
+		BrushMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BrushMesh"));
+		BrushMesh->SetStaticMesh(MeshRef);
+		BrushMesh->SetWorldLocation(GetMesh()->GetSocketLocation(TEXT("RightHand")));
+	}, EAssertionLevel::Check);
+
 	PlayerInventory = CreateDefaultSubobject<UIGPlayerInventory>(TEXT("Inventory"));
 
 	PlayerControlDataAsset = FIGConstructorHelper::FindAndGetObject<UIGPlayerControlDataAsset>(TEXT("/Script/Indigo.IGPlayerControlDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerControlData.DA_PlayerControlData'"));
@@ -234,6 +241,8 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, *DebugMessage);
 #endif
 	AnimInstance->SetSpeed(GetVelocity().Size2D());
+	BrushMesh->SetWorldLocation(GetMesh()->GetSocketLocation(TEXT("RightHand")));
+	BrushMesh->SetWorldRotation(GetMesh()->GetSocketRotation(TEXT("RightHand")));
 }
 
 void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
