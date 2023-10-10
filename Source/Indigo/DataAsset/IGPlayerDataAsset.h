@@ -30,6 +30,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Status", DisplayName = "달리기 속도")
 	float SprintSpeed;
 
+	UPROPERTY(EditAnywhere, Category = "Status", DisplayName = "구르기 속도")
+	float RollSpeed;
+
 	UPROPERTY(EditAnywhere, Category = "Status", DisplayName = "일반 공격 최소 데미지")
 	int32 NormalAttackDamageMin;
 

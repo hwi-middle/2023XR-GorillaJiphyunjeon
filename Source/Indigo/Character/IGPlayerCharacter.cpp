@@ -42,15 +42,6 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
-
-	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
-	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
-	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
-	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
-
 	CameraSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraSpringArm"));
 	CameraSpringArm->SetupAttachment(RootComponent);
 	CameraSpringArm->TargetArmLength = 400.0f;
@@ -114,9 +105,37 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 
 	TestSoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
 	PlayerDataAsset = FIGConstructorHelper::FindAndGetObject<UIGPlayerDataAsset>(TEXT("/Script/Indigo.IGPlayerDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerData.DA_PlayerData'"));
+}
 
+bool AIGPlayerCharacter::CheckPlayerState(const EPlayerState InState) const
+{
+	return EnumHasAnyFlags(CurrentState, InState);
+}
+
+void AIGPlayerCharacter::AddPlayerState(const EPlayerState InState)
+{
+	EnumAddFlags(CurrentState, InState);
+}
+
+void AIGPlayerCharacter::RemovePlayerState(const EPlayerState InState)
+{
+	EnumRemoveFlags(CurrentState, InState);
+}
+
+void AIGPlayerCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	if (const APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(DefaultMappingContext, 0);
+		}
+	}
+	
 	WalkSpeed = PlayerDataAsset->WalkSpeed;
 	SprintSpeed = PlayerDataAsset->SprintSpeed;
+	RollSpeed = PlayerDataAsset->RollSpeed;
 
 	SunMoonValue = 0.f;
 	SunMoonRecoveryAmountOnAttackHit = PlayerDataAsset->SunMoonRecoveryAmountOnAttackHit;
@@ -146,33 +165,6 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	StaminaConsumptionAmountOnStrongAttack = PlayerDataAsset->StaminaConsumptionAmountOnStrongAttack;
 	DieZLocation = PlayerDataAsset->DieZLocation;
 	ElapsedDieSequenceTime = 0.f;
-}
-
-bool AIGPlayerCharacter::CheckPlayerState(const EPlayerState InState) const
-{
-	return EnumHasAnyFlags(CurrentState, InState);
-}
-
-void AIGPlayerCharacter::AddPlayerState(const EPlayerState InState)
-{
-	EnumAddFlags(CurrentState, InState);
-}
-
-void AIGPlayerCharacter::RemovePlayerState(const EPlayerState InState)
-{
-	EnumRemoveFlags(CurrentState, InState);
-}
-
-void AIGPlayerCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-	if (const APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
-	}
 
 	AnimInstance = CastChecked<UIGPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->SetSpeed(0.f);
@@ -180,6 +172,15 @@ void AIGPlayerCharacter::BeginPlay()
 	AnimInstance->OnFinishAttack.AddUObject(this, &AIGPlayerCharacter::FinishAttack);
 	CurrentState = EPlayerState::Idling;
 
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
+
+	GetCharacterMovement()->AirControl = 0.35f;
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
+	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
+	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
+	
 	HudWidget = CreateWidget<UIGIngameHUDWidget>(GetWorld(), HudWidgetClass);
 	if (HudWidget)
 	{
@@ -444,7 +445,7 @@ void AIGPlayerCharacter::Interact()
 
 void AIGPlayerCharacter::Attack()
 {
-	if (CheckPlayerState(EPlayerState::Attacking) || CheckPlayerState(EPlayerState::Rolling))
+	if (CheckPlayerState(EPlayerState::Attacking) || CheckPlayerState(EPlayerState::Rolling) || CheckPlayerState(EPlayerState::Dead))
 	{
 		return;
 	}
@@ -509,14 +510,16 @@ void AIGPlayerCharacter::StartRolling()
 
 	StaminaValue -= StaminaConsumptionAmountOnRoll;
 	HudWidget->UpdateStaminaGauge(StaminaValue);
-
+	
 	AddPlayerState(EPlayerState::Rolling);
+	GetCharacterMovement()->MaxWalkSpeed = RollSpeed;
 	AnimInstance->StartRoll();
 	UGameplayStatics::PlaySound2D(this, TestSoundDataAsset->PlayerRollingSoundCue);
 }
 
 void AIGPlayerCharacter::FinishRolling()
 {
+	GetCharacterMovement()->MaxWalkSpeed = CheckPlayerState(EPlayerState::Running) ? SprintSpeed : WalkSpeed;
 	RemovePlayerState(EPlayerState::Rolling);
 }
 

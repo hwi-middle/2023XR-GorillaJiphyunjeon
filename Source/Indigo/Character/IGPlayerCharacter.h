@@ -215,6 +215,9 @@ private:
 	float SprintSpeed;
 
 	UPROPERTY(VisibleAnywhere)
+	float RollSpeed;
+
+	UPROPERTY(VisibleAnywhere)
 	int32 NormalAttackDamageMin;
 
 	UPROPERTY(VisibleAnywhere)
