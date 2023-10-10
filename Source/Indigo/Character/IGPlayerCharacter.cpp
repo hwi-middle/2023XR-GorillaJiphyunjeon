@@ -210,6 +210,7 @@ void AIGPlayerCharacter::BeginPlay()
 		PostProcessVolume->Settings = Settings;
 		DMI_Grayscale = GrayscaleMaterial;
 		DMI_Fade = FadeMaterial;
+		PlayFadeInSequence();
 	}
 }
 
@@ -757,6 +758,22 @@ void AIGPlayerCharacter::PlayDieSequence()
 	DMI_Grayscale->SetScalarParameterValue("Alpha", FMath::Clamp(ElapsedDieSequenceTime / Duration, 0.f, 1.f));
 
 	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::PlayDieSequence);
+}
+
+void AIGPlayerCharacter::PlayFadeInSequence()
+{
+	constexpr float Duration = 1.f;
+	ElapsedFadeSequenceTime += GWorld->GetDeltaSeconds();
+
+	if (ElapsedFadeSequenceTime >= Duration)
+	{
+		ElapsedFadeSequenceTime = 0.f;
+		return;
+	}
+
+	DMI_Fade->SetScalarParameterValue("Alpha", 1 - FMath::Clamp(ElapsedFadeSequenceTime / Duration, 0.f, 1.f));
+
+	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::PlayFadeInSequence);
 }
 
 void AIGPlayerCharacter::PlayFadeOutSequence()

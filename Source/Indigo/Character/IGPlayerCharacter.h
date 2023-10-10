@@ -169,6 +169,7 @@ private:
 	void ActivateCrystal2();
 	void ActivateCrystal3();
 	void PlayDieSequence();
+	void PlayFadeInSequence();
 
 	//데미지 계산
 	float ComputeDamage();
