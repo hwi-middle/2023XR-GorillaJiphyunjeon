@@ -109,7 +109,7 @@ void AIGBoss::GenerateCloseAttack()
 	{
 		constexpr float Height = 300.f;
 		FVector GenerationLocation = GetActorLocation() + TargetVector * CloseAttack_SpikeDistanceGap * (i + 1);
-		GenerationLocation.Z = -Height;
+		GenerationLocation.Z = -Height + 3600.f;
 		AIGMountainSpike* SpawnedSpike = GWorld->SpawnActor<AIGMountainSpike>(GenerationLocation, FRotator::ZeroRotator);
 		SpawnedSpike->Init(CloseAttack_Damage, 300.f, CloseAttack_SpikeTimeGap * i, CloseAttack_SpikeDuration, CloseAttack_SpikeDestroyDelay);
 	}
