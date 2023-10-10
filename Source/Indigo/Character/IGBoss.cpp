@@ -4,6 +4,7 @@
 #include "IGBoss.h"
 
 #include "IGPlayerCharacter.h"
+#include "Blueprint/UserWidget.h"
 #include "Engine/DamageEvents.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Indigo/AI/IGBossAIController.h"
@@ -13,6 +14,7 @@
 #include "Indigo/Constant/IGCollisionChannels.h"
 #include "Indigo/DataAsset/IGBossDataAsset.h"
 #include "Indigo/DataAsset/IGBossGimmickDataAsset.h"
+#include "Indigo/UI/IGIngameHUDWidget.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -36,6 +38,11 @@ AIGBoss::AIGBoss()
 
 	BossDataAsset = FIGConstructorHelper::FindAndGetObject<UIGBossDataAsset>(TEXT("/Script/Indigo.IGBossDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_BossData.DA_BossData'"));
 	GimmickDataAsset = FIGConstructorHelper::FindAndGetObject<UIGBossGimmickDataAsset>(TEXT("/Script/Indigo.IGBossGimmickDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_BossGimmickData.DA_BossGimmickData'"));
+
+	FIGConstructorHelper::FindClassAndInitialize<UIGIngameHUDWidget>(TEXT("/Game/_GorillaJiphyunjeon/UI/Game/WBP_BossHUD.WBP_BossHUD_C"), [&](TSubclassOf<UIGIngameHUDWidget> Class)
+	{
+		HudWidgetClass = Class;
+	}, EAssertionLevel::Check);
 }
 
 void AIGBoss::BeginPlay()
@@ -48,7 +55,7 @@ void AIGBoss::BeginPlay()
 	StoppingDistance = BossDataAsset->StoppingDistance;
 	MaxHp = BossDataAsset->MaxHp;
 	Hp = MaxHp;
-	
+
 	CloseAttack_SpikeNum = GimmickDataAsset->CloseAttack_SpikeNum;
 	CloseAttack_HandRadius = GimmickDataAsset->CloseAttack_HandRadius;
 	CloseAttack_Damage = GimmickDataAsset->CloseAttack_Damage;
@@ -56,6 +63,8 @@ void AIGBoss::BeginPlay()
 	CloseAttack_SpikeDistanceGap = GimmickDataAsset->CloseAttack_SpikeDistanceGap;
 	CloseAttack_SpikeDuration = GimmickDataAsset->CloseAttack_SpikeDuration;
 	CloseAttack_SpikeDestroyDelay = GimmickDataAsset->CloseAttack_SpikeDestroyDelay;
+
+
 }
 
 void AIGBoss::Tick(float DeltaSeconds)
@@ -65,6 +74,39 @@ void AIGBoss::Tick(float DeltaSeconds)
 
 	DrawDebugSphere(GetWorld(), GetMesh()->GetSocketLocation(BOSS_LEFT_HAND), 100.f, 16, FColor::Red, false, 0.f);
 	DrawDebugSphere(GetWorld(), GetMesh()->GetSocketLocation(BOSS_RIGHT_HAND), 100.f, 16, FColor::Red, false, 0.f);
+}
+
+float AIGBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	HudWidget->UpdateHpGauge(Hp);
+	return DamageAmount;
+}
+
+void AIGBoss::EnableHUD()
+{
+	if (HudWidget)
+	{
+		return;
+	}
+
+	HudWidget = CreateWidget<UIGIngameHUDWidget>(GetWorld(), HudWidgetClass);
+	if (HudWidget)
+	{
+		HudWidget->AddToViewport();
+		HudWidget->InitHpGauge(MaxHp, Hp);
+	}
+}
+
+void AIGBoss::DisableHUD()
+{
+	if (!HudWidget)
+	{
+		return;
+	}
+
+	HudWidget->RemoveFromParent();
+	HudWidget = nullptr;
 }
 
 void AIGBoss::PerformCloseAttack()

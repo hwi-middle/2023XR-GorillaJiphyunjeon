@@ -23,7 +23,7 @@ void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	ensure(ControllingPawn);
 	ensure(World);
 
-	const AIGBoss* Boss = Cast<AIGBoss>(ControllingPawn);
+	AIGBoss* Boss = Cast<AIGBoss>(ControllingPawn);
 	if (Boss == nullptr)
 	{
 		return;
@@ -48,6 +48,7 @@ void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 
 	if (!bHit)
 	{
+		Boss->DisableHUD();
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, nullptr);
 		OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_CLOSE_ENOUGH, false);
 		DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Red, false, 0.f);
@@ -56,6 +57,7 @@ void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 
 	if (AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(Result.GetActor()))
 	{
+		Boss->EnableHUD();
 		const FVector BossToTarget = Player->GetActorLocation() - Boss->GetActorLocation();
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, Player);
 		const bool IsCloseEnough = BossToTarget.Length() <= Boss->GetStoppingDistance();
@@ -68,7 +70,8 @@ void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		}
 		return;
 	}
-	
+
+	Boss->DisableHUD();
 	OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, nullptr);
 	OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_CLOSE_ENOUGH, false);
 	DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Red, false, 0.1f);

@@ -6,6 +6,7 @@
 #include "IGEnemyBase.h"
 #include "IGBoss.generated.h"
 
+class UIGIngameHUDWidget;
 class UIGBossDataAsset;
 class UIGBossGimmickDataAsset;
 DECLARE_MULTICAST_DELEGATE(FOnFinishBossCloseAttackDelegate)
@@ -36,7 +37,14 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UIGIngameHUDWidget> HudWidgetClass;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UIGIngameHUDWidget> HudWidget;
+	
 private:
 	UPROPERTY()
 	TObjectPtr<UIGBossAnimInstance> AnimInstance;
@@ -74,11 +82,17 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	float CloseAttack_SpikeDestroyDelay;
 
+	UPROPERTY(VisibleAnywhere)
+	uint32 bIsInRange : 1;
+	
 public:
 	FOnFinishBossCloseAttackDelegate OnFinishBossCloseAttack;
 
 public:
 	FORCEINLINE float GetStoppingDistance() const { return StoppingDistance; }
+
+	void EnableHUD();
+	void DisableHUD();
 	void PerformCloseAttack();
 	void GenerateCloseAttack();
 	void EndCloseAttack();

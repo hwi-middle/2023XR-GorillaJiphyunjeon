@@ -15,7 +15,6 @@ AIGEnemyBase::AIGEnemyBase()
 void AIGEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
-	MaxHp = 1000;
 	Hp = MaxHp;
 	Origin = GetActorLocation();
 }
