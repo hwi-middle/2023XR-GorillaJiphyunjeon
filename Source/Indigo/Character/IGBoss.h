@@ -112,5 +112,6 @@ public:
 	void PerformCloseAttack();
 	void PerformFloorAttack();
 	void GenerateCloseAttack();
+	void GenerateFloorAttack();
 	void EndAttack();
 };

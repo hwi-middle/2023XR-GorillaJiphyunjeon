@@ -7,6 +7,7 @@
 #include "IGBossAnimInstance.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnGenerateBossCloseAttackDelegate)
+DECLARE_MULTICAST_DELEGATE(FOnGenerateBossFloorAttackDelegate)
 DECLARE_MULTICAST_DELEGATE(FOnFinishBossAttackDelegate)
 DECLARE_MULTICAST_DELEGATE(FOnFinishBossDeadDelegate)
 
@@ -44,6 +45,7 @@ protected:
 	
 public:
 	FOnGenerateBossCloseAttackDelegate OnGenerateBossCloseAttack;
+	FOnGenerateBossFloorAttackDelegate OnGenerateBossFloorAttack;
 	FOnFinishBossAttackDelegate OnFinishAttack;
 	FOnFinishBossDeadDelegate OnFinishDead;
 	
@@ -55,6 +57,9 @@ public:
 
 	UFUNCTION()
 	void AnimNotify_GenerateCloseAttack();
+
+	UFUNCTION()
+	void AnimNotify_GenerateFloorAttack();
 
 	UFUNCTION()
 	void AnimNotify_FinishAttack();

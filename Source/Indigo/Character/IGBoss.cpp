@@ -10,6 +10,7 @@
 #include "Indigo/AI/IGBossAIController.h"
 #include "Indigo/Animation/IGBossAnimInstance.h"
 #include "Indigo/Battle/IGMountainSpike.h"
+#include "Indigo/Battle/IGTreeTorus.h"
 #include "Indigo/Constant/IGBossSockets.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
 #include "Indigo/DataAsset/IGBossDataAsset.h"
@@ -56,6 +57,7 @@ void AIGBoss::BeginPlay()
 	AnimInstance = CastChecked<UIGBossAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->SetSpeed(0.f);
 	AnimInstance->OnGenerateBossCloseAttack.AddUObject(this, &AIGBoss::GenerateCloseAttack);
+	AnimInstance->OnGenerateBossFloorAttack.AddUObject(this, &AIGBoss::GenerateFloorAttack);
 	AnimInstance->OnFinishAttack.AddUObject(this, &AIGBoss::EndAttack);
 	StoppingDistance = BossDataAsset->StoppingDistance;
 	MaxHp = BossDataAsset->MaxHp;
@@ -196,6 +198,12 @@ void AIGBoss::GenerateCloseAttack()
 		AIGMountainSpike* SpawnedSpike = GWorld->SpawnActor<AIGMountainSpike>(GenerationLocation, FRotator::ZeroRotator);
 		SpawnedSpike->Init(CloseAttack_Damage, 300.f, CloseAttack_SpikeTimeGap * i, CloseAttack_SpikeDuration, CloseAttack_SpikeDestroyDelay);
 	}
+}
+
+void AIGBoss::GenerateFloorAttack()
+{
+	AIGTreeTorus* SpawnedTorus = GWorld->SpawnActor<AIGTreeTorus>(GetActorLocation(), FRotator::ZeroRotator);
+	SpawnedTorus->Init(10.f, 3.f);
 }
 
 void AIGBoss::EndAttack()
