@@ -20,6 +20,7 @@ class UInputMappingContext;
 class UInputAction;
 class UIGPlayerInventory;
 class UIGSoundDataAsset;
+class UIGShinmyophil;
 struct FInputActionValue;
 struct FIGCharacterDataTable;
 
@@ -180,6 +181,8 @@ public:
 public:
 	FORCEINLINE USpringArmComponent* GetCameraSpringArm() const { return CameraSpringArm; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE UIGShinmyophil* GetShinmyophil() const { return Shinmyophil; }
+	FORCEINLINE EPlayerState GetCurrentState() const { return CurrentState; }
 
 private:
 	// 플레이어 능력치
@@ -302,6 +305,10 @@ private:
 	UPROPERTY()
 	TObjectPtr<UIGPlayerInventory> PlayerInventory;
 
+	//신묘필
+	UPROPERTY()
+	TObjectPtr<UIGShinmyophil> Shinmyophil;
+	
 	UPROPERTY()
 	ECrystal ActivatedCrystal;
 

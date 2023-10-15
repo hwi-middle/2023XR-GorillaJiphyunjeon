@@ -11,11 +11,12 @@ AIGGate::AIGGate()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/SampleSphere/SM_SampleSphere.SM_SampleSphere'"), [&](UStaticMesh* MeshRef)
+	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/BossDoor/Wall_small01.Wall_small01'"), [&](UStaticMesh* MeshRef)
 	{
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetStaticMesh(MeshRef);
 	Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
+	Mesh->SetCollisionProfileName(TEXT("Evidence"));
 	RootComponent = Mesh;
 	}, EAssertionLevel::Check);
 
@@ -56,11 +57,14 @@ void AIGGate::OpenGate()
 {
 	if(bIsOpen == true)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("문은 이미 열렸어")));
 		return;
 	}
 	
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("문이 열렸으니 보스를 잡자")));
 	bIsOpen = true;
+}
+
+void AIGGate::Interact()
+{
+
 }
 

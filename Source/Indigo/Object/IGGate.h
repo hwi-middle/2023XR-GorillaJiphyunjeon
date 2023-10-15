@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Indigo/Interface/Interactable.h"
 #include "IGGate.generated.h"
 
 UCLASS()
-class INDIGO_API AIGGate : public AActor
+class INDIGO_API AIGGate : public AActor, public IInteractable
 {
 	GENERATED_BODY()
 	
@@ -23,13 +24,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	
 	UFUNCTION()
 	void OpenGate();
-
+	
 	FORCEINLINE void SetIsOpen(const bool InValue) {bIsOpen = InValue;}
-
-
 	FORCEINLINE bool GetIsOpen() const {return bIsOpen;}
+
+	virtual void Interact() override;
 	
 private:
 	TObjectPtr<UStaticMeshComponent> Mesh;

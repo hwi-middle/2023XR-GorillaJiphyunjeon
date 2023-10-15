@@ -31,6 +31,7 @@
 #include "Indigo/Util/IGDataTableParser.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
+#include "Indigo/Inventory/IGShinmyophil.h"
 
 AIGPlayerCharacter::AIGPlayerCharacter()
 {
@@ -102,6 +103,8 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 		HudWidgetClass = Class;
 	}, EAssertionLevel::Check);
 
+	Shinmyophil = CreateDefaultSubobject<UIGShinmyophil>(TEXT("Shinmyophil"));
+	
 
 	TestSoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
 	PlayerDataAsset = FIGConstructorHelper::FindAndGetObject<UIGPlayerDataAsset>(TEXT("/Script/Indigo.IGPlayerDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerData.DA_PlayerData'"));
