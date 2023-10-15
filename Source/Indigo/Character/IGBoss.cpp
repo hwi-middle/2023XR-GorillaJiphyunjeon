@@ -68,7 +68,7 @@ void AIGBoss::BeginPlay()
 	CloseAttack_SpikeDistanceGap = GimmickDataAsset->CloseAttack_SpikeDistanceGap;
 	CloseAttack_SpikeDuration = GimmickDataAsset->CloseAttack_SpikeDuration;
 	CloseAttack_SpikeDestroyDelay = GimmickDataAsset->CloseAttack_SpikeDestroyDelay;
-
+	CloseAttack_SpikeGroundOffset = GimmickDataAsset->CloseAttack_SpikeGroundOffset;
 
 }
 
@@ -187,7 +187,7 @@ void AIGBoss::GenerateCloseAttack()
 	{
 		constexpr float Height = 300.f;
 		FVector GenerationLocation = GetActorLocation() + TargetVector * CloseAttack_SpikeDistanceGap * (i + 1);
-		GenerationLocation.Z = -Height + 3600.f;
+		GenerationLocation.Z = -Height + CloseAttack_SpikeGroundOffset;
 		AIGMountainSpike* SpawnedSpike = GWorld->SpawnActor<AIGMountainSpike>(GenerationLocation, FRotator::ZeroRotator);
 		SpawnedSpike->Init(CloseAttack_Damage, 300.f, CloseAttack_SpikeTimeGap * i, CloseAttack_SpikeDuration, CloseAttack_SpikeDestroyDelay);
 	}

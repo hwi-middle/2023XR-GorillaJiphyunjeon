@@ -34,4 +34,7 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "근거리 패턴", DisplayName = "근거리 패턴 가시 파괴 딜레이")
 	float CloseAttack_SpikeDestroyDelay;
+	
+	UPROPERTY(EditAnywhere, Category = "근거리 패턴", DisplayName = "근거리 패턴 가시 생성 Z축 오프셋")
+	float CloseAttack_SpikeGroundOffset;
 };

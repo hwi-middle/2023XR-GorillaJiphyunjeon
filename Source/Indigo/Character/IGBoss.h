@@ -84,6 +84,9 @@ private:
 	float CloseAttack_SpikeDestroyDelay;
 
 	UPROPERTY(VisibleAnywhere)
+	float CloseAttack_SpikeGroundOffset;
+
+	UPROPERTY(VisibleAnywhere)
 	uint32 bIsInRange : 1;
 
 	//보스 첫공격
