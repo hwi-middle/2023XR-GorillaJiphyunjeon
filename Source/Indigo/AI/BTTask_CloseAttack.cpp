@@ -29,7 +29,7 @@ EBTNodeResult::Type UBTTask_CloseAttack::ExecuteTask(UBehaviorTreeComponent& Own
 		return EBTNodeResult::Aborted;
 	}
 
-	CheckEndDelegateHandle = ControllingBoss->OnFinishBossCloseAttack.AddLambda(
+	CheckEndDelegateHandle = ControllingBoss->OnFinishBossAttack.AddLambda(
 		[&]()
 		{
 			DeleteLambda();
@@ -42,6 +42,6 @@ EBTNodeResult::Type UBTTask_CloseAttack::ExecuteTask(UBehaviorTreeComponent& Own
 
 void UBTTask_CloseAttack::DeleteLambda()
 {
-	Cast<AIGBoss>(ControllingBoss)->OnFinishBossCloseAttack.Remove(CheckEndDelegateHandle);
+	Cast<AIGBoss>(ControllingBoss)->OnFinishBossAttack.Remove(CheckEndDelegateHandle);
 }
 

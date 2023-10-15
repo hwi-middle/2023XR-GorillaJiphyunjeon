@@ -56,7 +56,7 @@ void AIGBoss::BeginPlay()
 	AnimInstance = CastChecked<UIGBossAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->SetSpeed(0.f);
 	AnimInstance->OnGenerateBossCloseAttack.AddUObject(this, &AIGBoss::GenerateCloseAttack);
-	AnimInstance->OnFinishAttack.AddUObject(this, &AIGBoss::EndCloseAttack);
+	AnimInstance->OnFinishAttack.AddUObject(this, &AIGBoss::EndAttack);
 	StoppingDistance = BossDataAsset->StoppingDistance;
 	MaxHp = BossDataAsset->MaxHp;
 	Hp = MaxHp;
@@ -150,6 +150,11 @@ void AIGBoss::PerformCloseAttack()
 	}
 }
 
+void AIGBoss::PerformFloorAttack()
+{
+	AnimInstance->StartFloorAttack();
+}
+
 void AIGBoss::GenerateCloseAttack()
 {
 	// 주먹에 의한 피해
@@ -193,7 +198,7 @@ void AIGBoss::GenerateCloseAttack()
 	}
 }
 
-void AIGBoss::EndCloseAttack()
+void AIGBoss::EndAttack()
 {
-	OnFinishBossCloseAttack.Broadcast();
+	OnFinishBossAttack.Broadcast();
 }

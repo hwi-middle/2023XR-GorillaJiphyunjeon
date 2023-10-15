@@ -9,7 +9,7 @@
 class UIGIngameHUDWidget;
 class UIGBossDataAsset;
 class UIGBossGimmickDataAsset;
-DECLARE_MULTICAST_DELEGATE(FOnFinishBossCloseAttackDelegate)
+DECLARE_MULTICAST_DELEGATE(FOnFinishBossAttackDelegate)
 
 class UIGBossAnimInstance;
 class UIGPlayerAnimInstance;
@@ -102,7 +102,7 @@ private:
 	uint8 bIsFirstFloorAttack : 1;
 	
 public:
-	FOnFinishBossCloseAttackDelegate OnFinishBossCloseAttack;
+	FOnFinishBossAttackDelegate OnFinishBossAttack;
 
 public:
 	FORCEINLINE float GetStoppingDistance() const { return StoppingDistance; }
@@ -110,6 +110,7 @@ public:
 	void EnableHUD();
 	void DisableHUD();
 	void PerformCloseAttack();
+	void PerformFloorAttack();
 	void GenerateCloseAttack();
-	void EndCloseAttack();
+	void EndAttack();
 };

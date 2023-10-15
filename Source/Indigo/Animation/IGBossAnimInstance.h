@@ -7,7 +7,7 @@
 #include "IGBossAnimInstance.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnGenerateBossCloseAttackDelegate)
-DECLARE_MULTICAST_DELEGATE(FOnFinishBossCloseAttackDelegate)
+DECLARE_MULTICAST_DELEGATE(FOnFinishBossAttackDelegate)
 DECLARE_MULTICAST_DELEGATE(FOnFinishBossDeadDelegate)
 
 
@@ -37,23 +37,27 @@ protected:
 	uint8 bShouldPerformCloseAttack : 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
+	uint8 bShouldPerformFloorAttack : 1;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
 	uint8 bIsDead : 1;
 	
 public:
 	FOnGenerateBossCloseAttackDelegate OnGenerateBossCloseAttack;
-	FOnFinishBossCloseAttackDelegate OnFinishAttack;
+	FOnFinishBossAttackDelegate OnFinishAttack;
 	FOnFinishBossDeadDelegate OnFinishDead;
 	
 public:
 	FORCEINLINE void SetSpeed(const float InValue) { Speed = InValue; }
 	FORCEINLINE void Die() { bIsDead = true; }
 	FORCEINLINE void StartCloseAttack() { bShouldPerformCloseAttack = true; }
+	FORCEINLINE void StartFloorAttack() { bShouldPerformFloorAttack = true; }
 
 	UFUNCTION()
 	void AnimNotify_GenerateCloseAttack();
 
 	UFUNCTION()
-	void AnimNotify_EndCloseAttack();
+	void AnimNotify_FinishAttack();
 
 	UFUNCTION()
 	void AnimNotify_BossDead();

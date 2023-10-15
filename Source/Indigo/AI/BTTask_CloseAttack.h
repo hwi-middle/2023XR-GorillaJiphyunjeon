@@ -27,3 +27,4 @@ private:
 private:
 	void DeleteLambda();
 };
+	
