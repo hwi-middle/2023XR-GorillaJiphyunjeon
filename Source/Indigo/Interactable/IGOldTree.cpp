@@ -3,7 +3,12 @@
 
 #include "IGOldTree.h"
 #include "Indigo/Util/IGConstructorHelper.h"
+#include "Indigo/PhasePlace/ProvisoPhase/IGProvisoOldTreePlace.h"
+#include "Indigo/Character/IGPlayerCharacter.h"
+#include "Indigo/Inventory/IGPlayerInventory.h"
+#include "Indigo/Inventory/IGShinmyophil.h"
 #include "Indigo/Management/IGBossZoneGateManager.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AIGOldTree::AIGOldTree()
@@ -11,7 +16,7 @@ AIGOldTree::AIGOldTree()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/SampleSphere/SM_SampleSphere.SM_SampleSphere'"), [&](UStaticMesh* MeshRef)
+	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/Tree/SM_tree_04.SM_tree_04'"), [&](UStaticMesh* MeshRef)
 {
 Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 Mesh->SetStaticMesh(MeshRef);
@@ -26,6 +31,9 @@ Mesh->SetCollisionProfileName(TEXT("Evidence"));
 void AIGOldTree::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AIGProvisoOldTreePlace* LocalActor = GetWorld()->SpawnActor<AIGProvisoOldTreePlace>(AIGProvisoOldTreePlace::StaticClass(), GetActorLocation(), GetActorRotation());
+	LocalActor->SetActorScale3D(GetActorScale()*5);
 	
 }
 
@@ -38,7 +46,20 @@ void AIGOldTree::Tick(float DeltaTime)
 
 void AIGOldTree::Interact()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("결정을 다 찾지 못해도 이 나무를 통해 문을 열 수 있어!")));
-	IGBossZoneGateManager::GetInstance()->OpenGate();
+	APawn* PlayerController = UGameplayStatics::GetPlayerPawn(GWorld, 0);
+	AIGPlayerCharacter* IGPlayerCharacter = Cast<AIGPlayerCharacter>(PlayerController);
+
+	if(IGPlayerCharacter == nullptr)
+	{
+		return;
+	}
+
+	if(IGPlayerCharacter->GetInventory()->GetCrystalArray().Num() < 3)
+	{
+		IGPlayerCharacter->GetShinmyophil()->ProvisoNotFindAllProvisoAndInteractToOldTree();
+		IGBossZoneGateManager::GetInstance()->OpenGate();
+	}
+	
+	
 }
 

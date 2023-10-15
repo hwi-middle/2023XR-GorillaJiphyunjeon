@@ -6,7 +6,6 @@
 
 // Sets default values
 AIGMainHint::AIGMainHint()
-	:AIGHintBase(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/ScriptDataTable/MainHintScript.MainHintScript'"))
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;

@@ -182,6 +182,7 @@ public:
 	FORCEINLINE USpringArmComponent* GetCameraSpringArm() const { return CameraSpringArm; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 	FORCEINLINE UIGShinmyophil* GetShinmyophil() const { return Shinmyophil; }
+	FORCEINLINE UIGPlayerInventory* GetInventory() const { return PlayerInventory; }
 	FORCEINLINE EPlayerState GetCurrentState() const { return CurrentState; }
 
 private:

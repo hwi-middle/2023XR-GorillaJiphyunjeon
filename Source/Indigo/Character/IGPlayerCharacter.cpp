@@ -21,9 +21,7 @@
 #include "Indigo/DataAsset/IGPlayerDataAsset.h"
 #include "Indigo/DataAsset/IGSoundDataAsset.h"
 #include "Indigo/Interactable/IGCrystalBase.h"
-#include "Indigo/Interactable/IGCrystalBase.h"
 #include "Indigo/Interface/Interactable.h"
-#include "Indigo/Inventory/IGPlayerInventory.h"
 #include "Indigo/Inventory/IGPlayerInventory.h"
 #include "Indigo/UI/IGIngameHUDWidget.h"
 #include "Indigo/Util/IGCharacterDataTable.h"
@@ -32,6 +30,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 #include "Indigo/Inventory/IGShinmyophil.h"
+#include "Indigo/Interactable/IGHintBase.h"
 
 AIGPlayerCharacter::AIGPlayerCharacter()
 {
@@ -79,7 +78,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 
 	}, EAssertionLevel::Check);
 
-	PlayerInventory = CreateDefaultSubobject<UIGPlayerInventory>(TEXT("Inventory"));
+
 
 	PlayerControlDataAsset = FIGConstructorHelper::FindAndGetObject<UIGPlayerControlDataAsset>(TEXT("/Script/Indigo.IGPlayerControlDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerControlData.DA_PlayerControlData'"));
 	DefaultMappingContext = PlayerControlDataAsset->DefaultMappingContext;
@@ -102,7 +101,8 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	{
 		HudWidgetClass = Class;
 	}, EAssertionLevel::Check);
-
+	
+	PlayerInventory = CreateDefaultSubobject<UIGPlayerInventory>(TEXT("Inventory"));
 	Shinmyophil = CreateDefaultSubobject<UIGShinmyophil>(TEXT("Shinmyophil"));
 	
 
@@ -431,6 +431,7 @@ void AIGPlayerCharacter::Interact()
 
 	IInteractable* Interactable = Cast<IInteractable>(Result.GetActor());
 	AIGCrystalBase* Crystal = Cast<AIGCrystalBase>(Result.GetActor());
+	AIGHintBase* Hint = Cast<AIGHintBase>(Result.GetActor());
 
 	if (Interactable != nullptr)
 	{
@@ -449,6 +450,11 @@ void AIGPlayerCharacter::Interact()
 			}
 			HudWidget->UpdateCrystalDebug(CrystalDebugText);
 		}
+		if(Hint != nullptr)
+		{
+			PlayerInventory->AddHint(Hint);
+		}
+		
 	}
 }
 

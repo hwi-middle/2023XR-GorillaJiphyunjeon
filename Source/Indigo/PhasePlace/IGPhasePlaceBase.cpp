@@ -13,6 +13,7 @@ AIGPhasePlaceBase::AIGPhasePlaceBase()
 	PrimaryActorTick.bCanEverTick = true;
 	BoxCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollider"));
 	PlayerCharacter = nullptr;
+	bIsInCollision = false;
 }
 
 AIGPhasePlaceBase::~AIGPhasePlaceBase()
@@ -57,14 +58,17 @@ void AIGPhasePlaceBase::Tick(float DeltaTime)
 
 	if (!bHit)
 	{
+		bIsInCollision = false;
 		return;
 	}
 
 	PlayerCharacter = Cast<AIGPlayerCharacter>(Result.GetActor());
-	if (PlayerCharacter != nullptr)
+	if (PlayerCharacter == nullptr)
 	{
-		EnterPhasePlace();		
+		return;
 	}
 
+	EnterPhasePlace();		
+	bIsInCollision = true;
 }
 

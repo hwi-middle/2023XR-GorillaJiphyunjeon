@@ -37,26 +37,28 @@ UIGShinmyophil::UIGShinmyophil()
 		}		
 	}
 
-	CurrentPhase = PhaseState::None;
+	IdleTime = 0.0f;
+
+	CurrentPhase = EPhaseState::None;
 	bIsMoveTutorial = false;
 }
 
 void UIGShinmyophil::OnTutorialPhase()
 {
-	CurrentPhase = PhaseState::TutorialPhase;
+	CurrentPhase = EPhaseState::TutorialPhase;
 	TutorialPhaseStart();
 }
 
 void UIGShinmyophil::OnProvisoPhase()
 {
-	CurrentPhase = PhaseState::ProvisoPhase;
+	CurrentPhase = EPhaseState::ProvisoPhase;
 	ProvisoStartProvisoPhase();
 
 }
 
 void UIGShinmyophil::OnBattlePhase()
 {
-	CurrentPhase = PhaseState::BattlePhase;
+	CurrentPhase = EPhaseState::BattlePhase;
 	BattleStartBattlePhase();
 }
 
@@ -276,16 +278,15 @@ void UIGShinmyophil::BeginPlay()
 void UIGShinmyophil::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	APawn* PlayerCharacter = UGameplayStatics::GetPlayerPawn(this, 0);
-	AIGPlayerCharacter* IGPlayerCharacter = Cast<AIGPlayerCharacter>(PlayerCharacter);
+	AIGPlayerCharacter* IGPlayerCharacter = Cast<AIGPlayerCharacter>(GetOwner());
 	
-	if(PlayerCharacter == nullptr)
+	if(IGPlayerCharacter == nullptr)
 	{
 		return;
 	}	
 
 	//튜토리얼 페이즈
-	if(CurrentPhase == PhaseState::TutorialPhase)
+	if(CurrentPhase == EPhaseState::TutorialPhase)
 	{	
 		//이동 했을 때
 		if(EnumHasAnyFlags(IGPlayerCharacter->GetCurrentState(), EPlayerState::Walking) == true && bIsMoveTutorial == false)
@@ -295,7 +296,20 @@ void UIGShinmyophil::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		
 	}
 	
-
+	//조작없이 1분동안 가만히 있을 때
+	if(EnumHasAnyFlags(IGPlayerCharacter->GetCurrentState(), EPlayerState::Idling) == true)
+	{
+		IdleTime += DeltaTime;
+		if(IdleTime > 60.0f)
+		{
+			ProvisoPlayerStay1Minute();
+			IdleTime = 0.0f;
+		}
+	}
+	else
+	{
+		IdleTime = 0.0f;
+	}
 	
 }
 

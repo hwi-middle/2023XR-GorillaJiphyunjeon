@@ -8,20 +8,39 @@
 #include "Indigo/Util/IGScriptDataTable.h"
 #include "IGHintBase.generated.h"
 
-struct FIGScriptDataTable;
+struct FIGTextMasterDataTable;
 
 /**
  * 
  */
+
+UENUM()
+enum class EHintType
+{
+	None = 0,
+	Mountain,
+	Wave,
+	PineTree,
+	Blanc
+};
+
+struct ProvisoText
+{
+	FString Name;
+	FString Script;
+};
+
 UCLASS()
 class INDIGO_API AIGHintBase : public AActor, public IInteractable
 {
 	GENERATED_BODY()
 public:
 	AIGHintBase();
-	AIGHintBase(FString InPath);
 	virtual ~AIGHintBase() override;
+	
+	virtual FORCEINLINE EHintType GetCurrnetHintType() const  {return CurrentHintType;}
 
+	void InitHintType(const EHintType InHintType);
 protected:
 	virtual void Interact() override; 
 
@@ -31,12 +50,17 @@ protected:
 private:
 	UPROPERTY()
 	TObjectPtr<UStaticMeshComponent> Mesh;
-	
-	FIGScriptDataTable* HintScript;
 
 	FString Path;
 	FName Row;
+
+	TArray<FIGTextMasterDataTable*> HintTextTitleArray;
+	TArray<FIGTextMasterDataTable*> HintTextScriptArray;
+	TArray<FIGTextMasterDataTable*> HintTextSummaryArray;
 	
-	UPROPERTY(VisibleAnywhere)
-	FString Script;
+protected:	
+	TArray<ProvisoText*> HintScriptArray;
+	ProvisoText* HintScript;
+	EHintType CurrentHintType;
+	
 };

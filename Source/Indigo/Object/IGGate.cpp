@@ -3,7 +3,11 @@
 
 #include "IGGate.h"
 #include "Indigo/Util/IGConstructorHelper.h"
+#include "Indigo/Character/IGPlayerCharacter.h"
+#include "Indigo/Inventory/IGShinmyophil.h"
+#include "Indigo/PhasePlace/ProvisoPhase/IGBossGatePlace.h"
 #include "Indigo/Management/IGBossZoneGateManager.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AIGGate::AIGGate()
@@ -30,6 +34,9 @@ AIGGate::AIGGate()
 void AIGGate::BeginPlay()
 {
 	Super::BeginPlay();
+
+	BossGatePlace = GetWorld()->SpawnActor<AIGBossGatePlace>(AIGBossGatePlace::StaticClass(), GetActorLocation(), GetActorRotation());
+	BossGatePlace->SetActorScale3D(GetActorScale()*5);
 	
 }
 
@@ -61,10 +68,25 @@ void AIGGate::OpenGate()
 	}
 	
 	bIsOpen = true;
+	BossGatePlace->SetIsOpen(true);
 }
 
 void AIGGate::Interact()
 {
+	APawn* PlayerController = UGameplayStatics::GetPlayerPawn(GWorld, 0);
+	AIGPlayerCharacter* IGPlayerCharacter = Cast<AIGPlayerCharacter>(PlayerController);
+
+	if(IGPlayerCharacter == nullptr)
+	{
+		return;
+	}
+	IGPlayerCharacter->GetShinmyophil()->ProvisoBeforeOpenGateAndInteractToGate();
+	
+	if(bIsOpen == false)
+	{
+		return;
+	}
+	IGPlayerCharacter->GetShinmyophil()->ProvisoOpenGateAndInteractToGate();
 
 }
 

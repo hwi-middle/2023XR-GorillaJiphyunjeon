@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Indigo/Character/IGEnemyBase.h"
+#include "Indigo/Interactable/IGHintBase.h"
 #include "IGHintMonsterBase.generated.h"
 
 class AIGHintBase;
@@ -12,7 +13,6 @@ class AIGHintBase;
 UCLASS()
 class INDIGO_API AIGHintMonsterBase : public AIGEnemyBase
 {
-	
 	GENERATED_BODY()
 
 public:	
@@ -32,6 +32,7 @@ protected:
 	
 private:
 	FString SectorName;
-
-	TObjectPtr<UStaticMeshComponent> Mesh;
+	
+	UPROPERTY(EditAnywhere)
+	EHintType HintType;
 };

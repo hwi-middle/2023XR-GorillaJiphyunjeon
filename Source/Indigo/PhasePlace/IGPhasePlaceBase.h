@@ -26,6 +26,9 @@ protected:
 	
 	UPROPERTY()
 	TObjectPtr<AIGPlayerCharacter> PlayerCharacter;
+
+	uint8 bIsInCollision : 1;
+	
 	
 public:	
 	// Called every frame

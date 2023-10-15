@@ -4,9 +4,8 @@
 
 // Sets default values
 AIGBlankHint::AIGBlankHint()
-	:AIGHintBase(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/ScriptDataTable/BlankHintScript.BlankHintScript'"))
 {
-	
+	InitHintType(EHintType::Blanc);
 }
 
 // Called when the game starts or when spawned

@@ -3,6 +3,7 @@
 
 #include "IGCrystalBase.h"
 #include "Indigo/Management/IGCrystalManager.h"
+#include "Indigo/PhasePlace/ProvisoPhase/IGProvisoWispPlace.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGDataTableParser.h"
 
@@ -39,6 +40,9 @@ void AIGCrystalBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	AIGProvisoWispPlace* LocalActor = GetWorld()->SpawnActor<AIGProvisoWispPlace>(AIGProvisoWispPlace::StaticClass(), GetActorLocation(), GetActorRotation());
+	LocalActor->SetActorScale3D(GetActorScale() * 5);
+	
 }
 
 // Called every frame
@@ -63,4 +67,6 @@ void AIGCrystalBase::Take()
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("[%s]의 결정 습득"), *CrystalScript->Name));
 
 	bIsTaken = true;
+
+	Destroy();
 }

@@ -9,7 +9,7 @@
 struct FIGScriptMasterDataTable;
 
 UENUM()
-enum class PhaseState : uint8
+enum class EPhaseState : uint8
 {
 	None = 0,
 	TutorialPhase,
@@ -113,7 +113,7 @@ public:
 	//플레이어 체력이 3 이하인 경우
 	void BattlePlayerHealthUnder3();
 	
-	FORCEINLINE PhaseState GetCurrentPhaseState() const {return CurrentPhase;}
+	FORCEINLINE EPhaseState GetCurrentPhaseState() const {return CurrentPhase;}
 
 
 protected:
@@ -131,8 +131,10 @@ private:
 	TArray<FIGScriptMasterDataTable*> ProvisoScriptsArray;
 	TArray<FIGScriptMasterDataTable*> BattleScriptsArray;
 	
-	PhaseState CurrentPhase;
+	EPhaseState CurrentPhase;
 
 	uint8 bIsMoveTutorial : 1;
+	
+	float IdleTime;
 		
 };

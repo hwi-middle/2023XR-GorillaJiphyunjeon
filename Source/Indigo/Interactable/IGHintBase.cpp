@@ -3,16 +3,13 @@
 
 #include "IGHintBase.h"
 #include "Indigo/Util/IGConstructorHelper.h"
+#include "Indigo/Util/IGTextMasterDataTable.h"
 #include "Indigo/Util/IGDataTableParser.h"
-#include "Indigo/Util/IGScriptDataTable.h"
 
 AIGHintBase::AIGHintBase()
 {
-}
-
-AIGHintBase::AIGHintBase(FString InPath)
-	:Path(InPath)
-{
+Path = TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/TextMasterDataTable/Text_Master.Text_Master'");
+	
 	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/SampleSphere/SM_SampleSphere.SM_SampleSphere'"), [&](UStaticMesh* MeshRef)
 {
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
@@ -26,22 +23,65 @@ AIGHintBase::AIGHintBase(FString InPath)
 	FIGDataTableParser::LoadAndInitializeDataTable(*Path,
 		[&](const UDataTable* ScriptDataTable)
 		{
-			TArray<FIGScriptDataTable*> ScriptArray;
+			TArray<FIGTextMasterDataTable*> ScriptArray;
 			ScriptDataTable->GetAllRows(TEXT(""), ScriptArray);
-			
-			HintScript = ScriptDataTable->FindRow<FIGScriptDataTable>(FName(*(FString::FormatAsNumber(ScriptNum))),TEXT(""));
 
-			ScriptNum++;
-			if (ScriptArray.Num() < ScriptNum)
+
+			for(int32 i = 0;  i < ScriptArray.Num(); i++)
 			{
-				ScriptNum = 1;
+				if(ScriptArray[i]->TextMain == 1 && ScriptArray[i]->TextSub == 1)
+				{
+					HintTextTitleArray.AddUnique(ScriptArray[i]);
+				}
+				if(ScriptArray[i]->TextMain == 1 && ScriptArray[i]->TextSub == 2)
+				{
+					HintTextScriptArray.AddUnique(ScriptArray[i]);
+				}
+				if(ScriptArray[i]->TextMain == 1 && ScriptArray[i]->TextSub == 3)
+				{
+					HintTextSummaryArray.AddUnique(ScriptArray[i]);
+				}
+			}
+
+			for(int32 i = 0; i < HintTextTitleArray.Num(); i++)
+			{
+				ProvisoText* HintTextScript = new ProvisoText();
+				HintTextScript->Name = HintTextTitleArray[i]->Text;
+				HintTextScript->Script = HintTextScriptArray[i]->Text;
+				HintScriptArray.AddUnique(HintTextScript);
 			}
 			
 		});
+
+	
+	
 }
 
 AIGHintBase::~AIGHintBase()
 {
+}
+
+void AIGHintBase::InitHintType(const EHintType InHintType)
+{
+	CurrentHintType = InHintType;
+
+	//Temporal
+	if(CurrentHintType == EHintType::Mountain)
+	{
+		HintScript = HintScriptArray[FMath::RandRange(0,1)];
+	}
+	if(CurrentHintType == EHintType::Wave)
+	{
+		HintScript = HintScriptArray[FMath::RandRange(2, 3)];		
+	}
+	if(CurrentHintType == EHintType::PineTree)
+	{
+		HintScript = HintScriptArray[FMath::RandRange(4,5)];				
+	}	
+	if(CurrentHintType == EHintType::Blanc)
+	{
+		HintScript = HintScriptArray[FMath::RandRange(6,8)];				
+	}	
 }
 
 

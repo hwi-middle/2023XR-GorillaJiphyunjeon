@@ -8,6 +8,7 @@
 #include "IGPlayerInventory.generated.h"
 
 class AIGCrystalBase;
+class AIGHintBase;
 
 UCLASS()
 class INDIGO_API UIGPlayerInventory : public UActorComponent
@@ -25,12 +26,19 @@ public:
 	void AddCrystal(AIGCrystalBase* InCrystal);
 	void ShowOwnedCrystals();
 
-	void AddHint(IIGHintInterface* InHint);
+	void AddHint(AIGHintBase* InHint);
 
 	FORCEINLINE TArray<AIGCrystalBase*> GetCrystalArray() { return CrystalArray; }
-	FORCEINLINE TArray<IIGHintInterface*> GetHintArray() { return HintArray; }
+	FORCEINLINE TArray<AIGHintBase*> GetHintArray() { return HintArray; }
 
 private:
 	TArray<AIGCrystalBase*> CrystalArray;
-	TArray<IIGHintInterface*> HintArray;
+	TArray<AIGHintBase*> HintArray;
+	uint8 bIsGetFirstCrystal : 1;
+	uint8 bIsGetFirstHint : 1;
+	uint8 bIsGetFirstBlancHint : 1;
+	uint8 bIsGet2HintBySameProviso : 1;
+
+	float CantFindProvisoTime;
+	
 };

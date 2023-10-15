@@ -2,12 +2,24 @@
 
 
 #include "IGPlayerInventory.h"
+
+#include "IGShinmyophil.h"
 #include "Indigo/Interactable/IGCrystalBase.h"
 #include "Indigo/Management/IGCrystalManager.h"
+#include "Indigo/Character/IGPlayerCharacter.h"
+#include "Indigo/Interactable/IGBlankHint.h"
+#include "Indigo/Interactable/IGMainHint.h"
 
 
 UIGPlayerInventory::UIGPlayerInventory()
-{}
+{
+	PrimaryComponentTick.bCanEverTick = true;
+	bIsGetFirstCrystal = false;
+	bIsGetFirstBlancHint = false;
+	bIsGetFirstHint = false;
+	bIsGet2HintBySameProviso =false;
+	CantFindProvisoTime = 0.0f;
+}
 
 UIGPlayerInventory::~UIGPlayerInventory()
 {}
@@ -21,7 +33,20 @@ void UIGPlayerInventory::BeginPlay()
 void UIGPlayerInventory::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	AIGPlayerCharacter* PlayerCharacter = Cast<AIGPlayerCharacter>(GetOwner());
+	if(PlayerCharacter == nullptr)
+	{
+		return;
+	}
+	if(PlayerCharacter->GetShinmyophil()->GetCurrentPhaseState() == EPhaseState::ProvisoPhase)
+	{	
+		CantFindProvisoTime+=DeltaTime;
+	}
+	if(CantFindProvisoTime >= 180.0f)
+	{
+		PlayerCharacter->GetShinmyophil()->ProvisoNotFindAllProvisoAndSkip3Minute();
+		CantFindProvisoTime = 0.0f;
+	}
 
 }
 
@@ -31,9 +56,15 @@ void UIGPlayerInventory::AddCrystal(AIGCrystalBase* InCrystal)
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("현재 결정 갯수: [%d]"), CrystalArray.Num()));
 	ShowOwnedCrystals();
 
+	if(bIsGetFirstCrystal == false)
+	{
+		Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGetFirstProviso();
+		bIsGetFirstCrystal = true;
+	}
+	
 	if (CrystalArray.Num() >= 3)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("결정을 다 찾았어!")));
+		Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGetAllProviso();
 		IGCrystalManager::GetInstance()->OnFoundAllCrystals();
 	}
 }
@@ -46,8 +77,36 @@ void UIGPlayerInventory::ShowOwnedCrystals()
 	}
 }
 
-void UIGPlayerInventory::AddHint(IIGHintInterface* InHint)
+void UIGPlayerInventory::AddHint(AIGHintBase* InHint)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%d]"), HintArray.Num()));
 	HintArray.AddUnique(InHint);
+	if(bIsGetFirstHint == false && Cast<AIGMainHint>(InHint) != nullptr)
+	{ 
+		Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGetFirstHint();
+		bIsGetFirstHint = true;
+	}
+	if(bIsGetFirstBlancHint == false && Cast<AIGBlankHint>(InHint) != nullptr)
+	{
+		Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGetFirstBlancHint();
+		bIsGetFirstBlancHint = true;
+	}
+	for(int i =0; i < HintArray.Num(); i++)
+	{
+		int32 SameTypeCount = 0;
+		if(HintArray[i]->GetCurrnetHintType() == InHint->GetCurrnetHintType())
+		{
+			SameTypeCount++;
+			if(SameTypeCount == 2)
+			{
+				Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGet2HintToSameProviso();
+			}
+		}
+	}
+
+	if(HintArray.Num() >= 6)
+	{
+		Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGetHint6All();
+	}
+	
 }

@@ -7,6 +7,8 @@
 #include "Indigo/Interface/Interactable.h"
 #include "IGGate.generated.h"
 
+class AIGBossGatePlace;
+
 UCLASS()
 class INDIGO_API AIGGate : public AActor, public IInteractable
 {
@@ -37,6 +39,7 @@ private:
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	uint8 bIsOpen : 1;
 	FVector OffSet;
-	float PerSecond; 
+	float PerSecond;
+	AIGBossGatePlace*  BossGatePlace;
 	
 };
