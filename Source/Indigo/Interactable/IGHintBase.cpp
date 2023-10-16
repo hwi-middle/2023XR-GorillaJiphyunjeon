@@ -19,7 +19,6 @@ Path = TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/TextMa
 	Mesh->SetCollisionProfileName(TEXT("Evidence"));
 }, EAssertionLevel::Check);
 
-	static uint8 ScriptNum = 1;
 	FIGDataTableParser::LoadAndInitializeDataTable(*Path,
 		[&](const UDataTable* ScriptDataTable)
 		{
@@ -36,10 +35,6 @@ Path = TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/TextMa
 				if(ScriptArray[i]->TextMain == 1 && ScriptArray[i]->TextSub == 2)
 				{
 					HintTextScriptArray.AddUnique(ScriptArray[i]);
-				}
-				if(ScriptArray[i]->TextMain == 1 && ScriptArray[i]->TextSub == 3)
-				{
-					HintTextSummaryArray.AddUnique(ScriptArray[i]);
 				}
 			}
 

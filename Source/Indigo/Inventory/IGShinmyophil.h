@@ -7,6 +7,7 @@
 #include "IGShinmyophil.generated.h"
 
 struct FIGScriptMasterDataTable;
+struct FIGTextMasterDataTable;
 
 UENUM()
 enum class EPhaseState : uint8
@@ -17,6 +18,14 @@ enum class EPhaseState : uint8
 	BattlePhase,
 };
 
+UCLASS()
+class UQuest : public UObject
+{
+	GENERATED_BODY()
+public:
+	FString QuestTitle;	
+	TArray<FString> QuestSummaryArray;	
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class INDIGO_API UIGShinmyophil : public UActorComponent
@@ -31,7 +40,7 @@ public:
 	void OnProvisoPhase();
 	void OnBattlePhase();
 
-	void PrintRelayScript(const TArray<FIGScriptMasterDataTable*> InScriptArray, const int32 InSubNum)const;
+	void PrintRelayScript(const TArray<FIGScriptMasterDataTable*> InScriptArray, const int32 InSubNum);
 
 	//튜토리얼 페이즈
 	//튜토리얼 페이즈 시작
@@ -124,17 +133,26 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	FORCEINLINE TArray<FIGTextMasterDataTable*> GetQuestTitleArray() const {return QuestTitleArray;}
+	FORCEINLINE TArray<FIGTextMasterDataTable*> GetQuestSummaryArray() const {return QuestSummaryArray;};
+	FORCEINLINE TArray<UQuest*> GetQuestArray() const {return QuestArray;};
 private:
 	UDataTable* DataTable;
 	
 	TArray<FIGScriptMasterDataTable*> TutorialScriptsArray;
 	TArray<FIGScriptMasterDataTable*> ProvisoScriptsArray;
 	TArray<FIGScriptMasterDataTable*> BattleScriptsArray;
+
+	TArray<FIGTextMasterDataTable*> QuestTitleArray;
+	TArray<FIGTextMasterDataTable*> QuestSummaryArray;
+	TArray<UQuest*> QuestArray;
 	
 	EPhaseState CurrentPhase;
 
 	uint8 bIsMoveTutorial : 1;
 	
 	float IdleTime;
+
+	TArray<FString> ScriptLogArray;
 		
 };

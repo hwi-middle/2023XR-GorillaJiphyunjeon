@@ -56,7 +56,6 @@ private:
 
 	TArray<FIGTextMasterDataTable*> HintTextTitleArray;
 	TArray<FIGTextMasterDataTable*> HintTextScriptArray;
-	TArray<FIGTextMasterDataTable*> HintTextSummaryArray;
 	
 protected:	
 	TArray<ProvisoText*> HintScriptArray;

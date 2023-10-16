@@ -8,6 +8,11 @@
 
 class UTextBlock;
 class UIGGauge;
+class UIGQuestList;
+class UIGQuest;
+class UQuest;
+class UIGShinmyophilText;
+
 /**
  * 
  */
@@ -19,11 +24,13 @@ public:
 	void InitHpGauge(float InMaxValue, float InInitialValue) const;
 	void InitStaminaGauge(float InMaxValue, float InInitialValue) const;
 	void InitSunMoonGauge(float InMaxValue, float InInitialValue) const;
+	void InitQuestList(UQuest* InQuest) const;
 	
 	void UpdateHpGauge(float InValue) const;
 	void UpdateStaminaGauge(const float InValue) const;
 	void UpdateSunMoonGauge(float InValue) const;
 	void UpdateCrystalDebug(const FString& Str) const;
+	void UpdateShinmyophilText(const FString& Str) const;
 
 protected:
 	virtual void NativeConstruct() override;
@@ -40,4 +47,10 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UTextBlock> CrystalTextBlock;
+
+	UPROPERTY()
+	TObjectPtr<UIGQuestList> ShinmyophilQuestList;
+	
+	UPROPERTY()
+	TObjectPtr<UIGShinmyophilText> ShinmyophilText;
 };

@@ -27,7 +27,7 @@ void AIGTutorialEnemyJangseung::BeginPlay()
 {
 	Super::BeginPlay();
 	AIGTutorialJangseungPlace* LocalActor = GetWorld()->SpawnActor<AIGTutorialJangseungPlace>(AIGTutorialJangseungPlace::StaticClass(), GetActorLocation(), GetActorRotation());
-	LocalActor->Setsize(GetActorScale() * 2);	
+	LocalActor->Setsize(GetActorScale() * 5);	
 }
 
 void AIGTutorialEnemyJangseung::Tick(float DeltaTime)

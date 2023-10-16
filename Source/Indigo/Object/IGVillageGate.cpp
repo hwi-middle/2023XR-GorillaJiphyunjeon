@@ -24,7 +24,12 @@ AIGVillageGate::AIGVillageGate()
     
     	OffSet = FVector(0.0f, 0.0f, 100.0f);
     	bIsOpen = false;
-    	PerSecond = 0.0f;
+    	ElapsedTime = 0.0f;
+		RotationTime = 2.0f;
+
+	StartRotation = GetActorRotation();
+	TargetRotation = StartRotation + FRotator(0.0f, 90.0f, 0.0f);
+
 
 }
 
@@ -71,10 +76,21 @@ void AIGVillageGate::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);	
 		
-	if(bIsOpen &&  PerSecond < 2 )
+	if(bIsOpen == false)
 	{
-		PerSecond += DeltaTime;		
-		AddActorLocalOffset(OffSet*DeltaTime);		
+		return;
+	}
+		
+	if(ElapsedTime < RotationTime )
+	{		
+		ElapsedTime += DeltaTime;
+		float Alpha = ElapsedTime / RotationTime;
+		FRotator InterpolatedRotation = FMath::Lerp(StartRotation, TargetRotation, Alpha);
+		SetActorRotation(InterpolatedRotation);
+	}
+	else
+	{
+		SetActorRotation(TargetRotation);
 	}
 
 }

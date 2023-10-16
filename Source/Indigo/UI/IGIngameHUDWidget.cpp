@@ -3,6 +3,9 @@
 
 #include "IGIngameHUDWidget.h"
 #include "IGGauge.h"
+#include "QuestUI/IGQuestList.h"
+#include "Indigo/Inventory/IGShinmyophil.h"
+#include "Indigo/UI/Shinmyophil/IGShinmyophilText.h"
 #include "Components/TextBlock.h"
 
 void UIGIngameHUDWidget::InitHpGauge(float InMaxValue, float InInitialValue) const
@@ -18,6 +21,11 @@ void UIGIngameHUDWidget::InitStaminaGauge(float InMaxValue, float InInitialValue
 void UIGIngameHUDWidget::InitSunMoonGauge(float InMaxValue, float InInitialValue) const
 {
 	SunMoonGauge->Init(InMaxValue, InInitialValue);
+}
+
+void UIGIngameHUDWidget::InitQuestList(UQuest* InQuest) const
+{
+	ShinmyophilQuestList->InitQuest(InQuest);
 }
 
 void UIGIngameHUDWidget::UpdateHpGauge(const float InValue) const
@@ -40,6 +48,11 @@ void UIGIngameHUDWidget::UpdateCrystalDebug(const FString& Str) const
 	CrystalTextBlock->SetText(FText::FromString(Str));	
 }
 
+void UIGIngameHUDWidget::UpdateShinmyophilText(const FString& Str) const
+{
+	ShinmyophilText->SetText(Str);
+}
+
 void UIGIngameHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -48,4 +61,6 @@ void UIGIngameHUDWidget::NativeConstruct()
 	StaminaGauge = Cast<UIGGauge>(GetWidgetFromName(TEXT("StaminaGaugeBar")));
 	SunMoonGauge = Cast<UIGGauge>(GetWidgetFromName(TEXT("SunMoonGaugeBar")));
 	CrystalTextBlock = Cast<UTextBlock>(GetWidgetFromName(TEXT("CrystalDebug")));
+	ShinmyophilQuestList = Cast<UIGQuestList>(GetWidgetFromName(TEXT("Quest_List")));
+	ShinmyophilText = Cast<UIGShinmyophilText>(GetWidgetFromName(TEXT("IGShinmyophilText")));
 }

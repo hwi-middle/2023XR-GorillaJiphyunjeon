@@ -36,6 +36,9 @@ private:
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	uint8 bIsOpen : 1;
 	FVector OffSet;
-	float PerSecond; 
+	float ElapsedTime; 
+	float RotationTime;
+	FRotator TargetRotation;
+	FRotator StartRotation;
 
 };

@@ -21,6 +21,7 @@ class UInputAction;
 class UIGPlayerInventory;
 class UIGSoundDataAsset;
 class UIGShinmyophil;
+class UQuest;
 struct FInputActionValue;
 struct FIGCharacterDataTable;
 
@@ -80,7 +81,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-
+	
+	//신묘필 대사 갱신
+	void UpdateShinmyophileScript(const FString InText);
 public:
 	//인터페이스 함수
 	virtual FORCEINLINE float GetHp() const override { return Hp; }
@@ -174,6 +177,8 @@ private:
 
 	//데미지 계산
 	float ComputeDamage();
+
+
 
 public:
 	void PlayFadeOutSequence();

@@ -31,6 +31,7 @@
 #include "Sound/SoundCue.h"
 #include "Indigo/Inventory/IGShinmyophil.h"
 #include "Indigo/Interactable/IGHintBase.h"
+#include "Indigo/UI/QuestUI/IGQuest.h"
 
 AIGPlayerCharacter::AIGPlayerCharacter()
 {
@@ -192,6 +193,13 @@ void AIGPlayerCharacter::BeginPlay()
 		HudWidget->InitHpGauge(100.f, Hp);
 		HudWidget->InitStaminaGauge(100.f, StaminaValue);
 		HudWidget->InitSunMoonGauge(100.f, 0.f);
+	
+
+		for(int i= 0; i < Shinmyophil->GetQuestArray().Num(); i++)
+		{
+			HudWidget->InitQuestList(Shinmyophil->GetQuestArray()[i]);			
+		}
+		
 	}
 
 	ManageStaminaByTime();
@@ -825,6 +833,11 @@ float AIGPlayerCharacter::ComputeDamage()
 	}
 
 	return FMath::RandRange(NormalAttackDamageMin, NormalAttackDamageMax);
+}
+
+void AIGPlayerCharacter::UpdateShinmyophileScript(const FString InText)
+{
+	HudWidget->UpdateShinmyophilText(InText);
 }
 
 void AIGPlayerCharacter::SetHp_DEBUG(const uint32 Value)

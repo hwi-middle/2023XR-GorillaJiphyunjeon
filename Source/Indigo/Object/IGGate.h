@@ -39,7 +39,10 @@ private:
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	uint8 bIsOpen : 1;
 	FVector OffSet;
-	float PerSecond;
-	AIGBossGatePlace*  BossGatePlace;
+	float ElapsedTime; 
+	float RotationTime;
+	FRotator TargetRotation;
+	FRotator StartRotation;
+	AIGBossGatePlace* BossGatePlace;
 	
 };

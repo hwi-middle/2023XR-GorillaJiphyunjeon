@@ -8,6 +8,7 @@
 #include "Indigo/Character/IGPlayerCharacter.h"
 #include "Indigo/Util/IGDataTableParser.h"
 #include "Indigo/Util/IGScriptMasterDataTable.h"
+#include "Indigo/Util/IGTextMasterDataTable.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
@@ -37,10 +38,46 @@ UIGShinmyophil::UIGShinmyophil()
 		}		
 	}
 
+	FIGDataTableParser::LoadAndInitializeDataTable(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/TextMasterDataTable/Text_Master.Text_Master'"),
+	[&](const UDataTable* ScriptDataTable)
+	{
+		TArray<FIGTextMasterDataTable*> ScriptArray;
+		ScriptDataTable->GetAllRows(TEXT(""), ScriptArray);
+
+
+		for(int32 i = 0;  i < ScriptArray.Num(); i++)
+		{
+			if(ScriptArray[i]->TextMain == 1 && ScriptArray[i]->TextSub == 3)
+			{
+				QuestSummaryArray.AddUnique(ScriptArray[i]);
+			}
+			if(ScriptArray[i]->TextMain == 2 && ScriptArray[i]->TextSub == 3)
+			{
+				QuestTitleArray.AddUnique(ScriptArray[i]);
+			}
+		}
+
+		int Count = 0;
+		for(int32 i = 0;  i < QuestTitleArray.Num(); i++)
+		{			
+			UQuest* QuestTemp = NewObject<UQuest>();
+			QuestTemp->QuestTitle = QuestTitleArray[i]->Text;
+			for(int32 j = 0; j < 2; j++)
+			{
+				QuestTemp->QuestSummaryArray.Add(QuestSummaryArray[Count]->Text);
+			}
+			
+			QuestArray.AddUnique(QuestTemp);
+			
+			Count++;
+		}
+	});
+
 	IdleTime = 0.0f;
 
 	CurrentPhase = EPhaseState::None;
 	bIsMoveTutorial = false;
+
 }
 
 void UIGShinmyophil::OnTutorialPhase()
@@ -62,12 +99,16 @@ void UIGShinmyophil::OnBattlePhase()
 	BattleStartBattlePhase();
 }
 
-void UIGShinmyophil::PrintRelayScript(const TArray<FIGScriptMasterDataTable*> InScriptArray, const int32 InSubNum) const
+void UIGShinmyophil::PrintRelayScript(const TArray<FIGScriptMasterDataTable*> InScriptArray, const int32 InSubNum) 
 {
+	AIGPlayerCharacter* IGPlayerCharacter = Cast<AIGPlayerCharacter>(GetOwner());
+	
 	for(int32 Index = 0; Index < InScriptArray.Num(); Index++)
 	{
 		if(InScriptArray[Index]->ScriptSub == InSubNum)
 		{
+			ScriptLogArray.AddUnique(InScriptArray[Index]->ScriptText);
+			IGPlayerCharacter->UpdateShinmyophileScript(InScriptArray[Index]->ScriptText);
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%s]"), *InScriptArray[Index]->ScriptText));			
 		}
 		else if(InScriptArray[Index]->ScriptSub > InSubNum)

@@ -27,7 +27,11 @@ AIGGate::AIGGate()
 	IGBossZoneGateManager::GetInstance()->FOpenGateDelegate.BindUFunction(this, TEXT("OpenGate"));
 	OffSet = FVector(0.0f, 0.0f, 100.0f);
 	bIsOpen = false;
-	PerSecond = 0.0f;
+	ElapsedTime = 0.0f;
+	RotationTime = 2.0f;
+
+	StartRotation = GetActorRotation();
+	TargetRotation = StartRotation + FRotator(0.0f, 90.0f, 0.0f);
 }
 
 // Called when the game starts or when spawned
@@ -51,11 +55,21 @@ void AIGGate::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-		
-	if(bIsOpen &&  PerSecond < 2 )
+	if(bIsOpen == false)
 	{
-		PerSecond += DeltaTime;		
-		AddActorLocalOffset(OffSet*DeltaTime);		
+		return;
+	}
+		
+	if(ElapsedTime < RotationTime )
+	{		
+		ElapsedTime += DeltaTime;
+		float Alpha = ElapsedTime / RotationTime;
+		FRotator InterpolatedRotation = FMath::Lerp(StartRotation, TargetRotation, Alpha);
+		SetActorRelativeRotation(InterpolatedRotation);
+	}
+	else
+	{
+		SetActorRelativeRotation(TargetRotation);
 	}
 	
 }
