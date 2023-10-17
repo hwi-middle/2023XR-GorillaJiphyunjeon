@@ -2,7 +2,6 @@
 
 
 #include "IGMainHint.h"
-#include "IGHintBase.h"
 
 // Sets default values
 AIGMainHint::AIGMainHint()

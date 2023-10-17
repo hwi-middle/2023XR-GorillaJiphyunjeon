@@ -95,11 +95,11 @@ float AIGHintMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	AActor* DamageCauser)
 {
 	SetHp(GetHp() - DamageAmount);
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("[도깨비불 체력] %f"), GetHp()));
 	if(GetHp() <= 0)
 	{
 		DropHint();
 	}	
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("[도깨비불 체력] %f"), GetHp()));
 
 	return DamageAmount;
 }

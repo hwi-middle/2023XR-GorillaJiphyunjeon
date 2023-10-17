@@ -7,8 +7,6 @@
 #include "IGHintBase.h"
 #include "IGBlankHint.generated.h"
 
-struct FIGScriptDataTable;
-
 UCLASS()
 class INDIGO_API AIGBlankHint : public AIGHintBase
 {

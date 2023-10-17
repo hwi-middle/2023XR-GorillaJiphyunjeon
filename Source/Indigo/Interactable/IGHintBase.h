@@ -21,10 +21,10 @@ UENUM()
 enum class EHintType : uint8
 {
 	None = 0,
-	Mountain,
-	Wave,
-	PineTree,
-	Blanc
+	Mountain = 1,
+	Wave = 2,
+	PineTree = 3,
+	Blanc = 4
 };
 
 struct ProvisoText

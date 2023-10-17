@@ -1,6 +1,5 @@
 // Copyright GorillaJiphyunjeon. All Rights Reserved.
 #include "IGBlankHint.h"
-#include "IGHintBase.h"
 
 // Sets default values
 AIGBlankHint::AIGBlankHint()

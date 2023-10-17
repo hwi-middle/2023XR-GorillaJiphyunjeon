@@ -7,8 +7,6 @@
 #include "GameFramework/Actor.h"
 #include "IGMainHint.generated.h"
 
-struct FIGScriptDataTable;
-
 UCLASS()
 class INDIGO_API AIGMainHint : public AIGHintBase
 {

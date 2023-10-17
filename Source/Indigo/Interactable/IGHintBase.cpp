@@ -174,7 +174,6 @@ void AIGHintBase::InitHintType(const EHintType InHintType)
 		}
 	}
 
-
 	TArray<AActor*> DropHintArray;
 	UGameplayStatics::GetAllActorsOfClass(GWorld, AIGHintBase::StaticClass(), DropHintArray);
 	for(AActor* Hint : DropHintArray)
@@ -189,7 +188,10 @@ void AIGHintBase::InitHintType(const EHintType InHintType)
 		}	
 	}
 
-
+	if(HintScript->Name == TEXT(""))
+	{
+		Destroy();
+	}
 	
 }
 
