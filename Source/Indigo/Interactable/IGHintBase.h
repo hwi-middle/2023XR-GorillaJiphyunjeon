@@ -10,12 +10,15 @@
 
 struct FIGTextMasterDataTable;
 
+class AIGPlayerCharacter;
+class UIGPlayerInventory;
+
 /**
  * 
  */
 
 UENUM()
-enum class EHintType
+enum class EHintType : uint8
 {
 	None = 0,
 	Mountain,
@@ -28,6 +31,7 @@ struct ProvisoText
 {
 	FString Name;
 	FString Script;
+	EHintType HintType;
 };
 
 UCLASS()
@@ -37,15 +41,20 @@ class INDIGO_API AIGHintBase : public AActor, public IInteractable
 public:
 	AIGHintBase();
 	virtual ~AIGHintBase() override;
+
+	virtual void BeginPlay() override;
 	
-	virtual FORCEINLINE EHintType GetCurrnetHintType() const  {return CurrentHintType;}
-
 	void InitHintType(const EHintType InHintType);
-protected:
-	virtual void Interact() override; 
-
+	
+	
+	virtual FORCEINLINE ProvisoText* GetHint() const {return HintScript;}
 	virtual FORCEINLINE FString GetHintName() const {return (HintScript == nullptr) ? TEXT("") : HintScript->Name;}
 	virtual FORCEINLINE FString GetHintScript() const  {return (HintScript == nullptr) ? TEXT("") : HintScript->Script;}
+
+	
+protected:
+	virtual void Interact() override; 
+	virtual void Tick(float DeltaSeconds) override;
 	
 private:
 	UPROPERTY()
@@ -59,7 +68,11 @@ private:
 	
 protected:	
 	TArray<ProvisoText*> HintScriptArray;
-	ProvisoText* HintScript;
-	EHintType CurrentHintType;
+
+	TArray<ProvisoText*> MountainHintScriptArray;
+	TArray<ProvisoText*> WaveHintScriptArray;
+	TArray<ProvisoText*> PineTreeHintScriptArray;
+	TArray<ProvisoText*> BlankHintScriptArray;
 	
+	ProvisoText* HintScript;	
 };

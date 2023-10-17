@@ -330,6 +330,7 @@ float AIGPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 		return 0.f;
 	}
 	Hp -= DamageAmount;
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("Player HP: [%f]"), Hp));
 	if (Hp <= 0)
 	{
 		AnimInstance->Die();
@@ -460,7 +461,7 @@ void AIGPlayerCharacter::Interact()
 		}
 		if(Hint != nullptr)
 		{
-			PlayerInventory->AddHint(Hint);
+			PlayerInventory->AddHint(Hint->GetHint());
 		}
 		
 	}

@@ -3,7 +3,7 @@
 
 #include "IGCrystalBase.h"
 #include "Indigo/Management/IGCrystalManager.h"
-#include "Indigo/PhasePlace/ProvisoPhase/IGProvisoWispPlace.h"
+#include "Indigo/PhasePlace/ProvisoPhase/IGProvisoCloseToCrystalPlace.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGDataTableParser.h"
 
@@ -25,8 +25,8 @@ AIGCrystalBase::AIGCrystalBase(FString InPath, FName InName)
 		Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 		Mesh->SetStaticMesh(MeshRef);
 		Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
-		RootComponent = Mesh;
 		Mesh->SetCollisionProfileName(TEXT("Evidence"));
+		RootComponent = Mesh;
 	}, EAssertionLevel::Check);
 
 	FIGDataTableParser::LoadAndInitializeDataTable(*InPath, [&](const UDataTable* ScriptDataTable)
@@ -40,8 +40,8 @@ void AIGCrystalBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AIGProvisoWispPlace* LocalActor = GetWorld()->SpawnActor<AIGProvisoWispPlace>(AIGProvisoWispPlace::StaticClass(), GetActorLocation(), GetActorRotation());
-	LocalActor->SetActorScale3D(GetActorScale() * 5);
+	CloseToCrystalPlace = GetWorld()->SpawnActor<AIGProvisoCloseToCrystalPlace>(AIGProvisoCloseToCrystalPlace::StaticClass(), GetActorLocation(), GetActorRotation());
+	CloseToCrystalPlace->SetActorScale3D(GetActorScale() * 5);
 	
 }
 
@@ -56,6 +56,13 @@ void AIGCrystalBase::Interact()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%s]"), *CrystalScript->Script));
 	Take();
+
+	if(CloseToCrystalPlace != nullptr)
+	{
+		CloseToCrystalPlace->Destroy();
+	}
+	
+	Destroy();
 }
 
 void AIGCrystalBase::Take()

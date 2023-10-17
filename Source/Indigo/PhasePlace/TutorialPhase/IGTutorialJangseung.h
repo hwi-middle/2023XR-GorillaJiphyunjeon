@@ -7,6 +7,7 @@
 #include "IGTutorialJangseung.generated.h"
 
 class AIGGate;
+class AIGTutorialJangseungPlace;
 
 UCLASS()
 class INDIGO_API AIGTutorialEnemyJangseung : public AIGEnemyBase
@@ -30,5 +31,6 @@ private:
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	int32 DamageCount;
 	APawn* PlayerCharacter;
+	AIGTutorialJangseungPlace* JangseungPlace;
 	
 };

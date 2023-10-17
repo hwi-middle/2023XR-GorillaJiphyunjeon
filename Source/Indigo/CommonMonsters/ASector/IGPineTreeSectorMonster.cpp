@@ -1,11 +1,10 @@
 // Copyright GorillaJiphyunjeon. All Rights Reserved.
 
 
-#include "IGASectorMonster.h"
+#include "IGPineTreeSectorMonster.h"
 
 // Sets default values
-AIGASectorMonster::AIGASectorMonster()
-	:AIGHintMonsterBase("소나무")
+AIGPineTreeSectorMonster::AIGPineTreeSectorMonster()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -13,14 +12,14 @@ AIGASectorMonster::AIGASectorMonster()
 }
 
 // Called when the game starts or when spawned
-void AIGASectorMonster::BeginPlay()
+void AIGPineTreeSectorMonster::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	SetHintType(EHintType::PineTree);
 }
 
 // Called every frame
-void AIGASectorMonster::Tick(float DeltaTime)
+void AIGPineTreeSectorMonster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 

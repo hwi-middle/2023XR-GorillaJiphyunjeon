@@ -8,7 +8,10 @@
 #include "Indigo/Interactable/IGHintBase.h"
 #include "IGHintMonsterBase.generated.h"
 
-class AIGHintBase;
+class AIGProvisoWispPlace;
+
+
+enum class EHintType : uint8;
 
 UCLASS()
 class INDIGO_API AIGHintMonsterBase : public AIGEnemyBase
@@ -18,7 +21,6 @@ class INDIGO_API AIGHintMonsterBase : public AIGEnemyBase
 public:	
 	// Sets default values for this actor's properties
 	AIGHintMonsterBase();
-	AIGHintMonsterBase(const FString InSectorName);
 	
 	virtual void DropHint(); 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
@@ -29,10 +31,13 @@ protected:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	FORCEINLINE	void SetHintType(const EHintType InHintType) {HintType = InHintType;}
 	
 private:
-	FString SectorName;
+	AIGProvisoWispPlace* WispPlace;
 	
 	UPROPERTY(EditAnywhere)
 	EHintType HintType;
+
+	float RespawnTime;
 };

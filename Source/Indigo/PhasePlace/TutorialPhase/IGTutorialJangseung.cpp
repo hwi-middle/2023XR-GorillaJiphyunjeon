@@ -26,8 +26,8 @@ AIGTutorialEnemyJangseung::AIGTutorialEnemyJangseung()
 void AIGTutorialEnemyJangseung::BeginPlay()
 {
 	Super::BeginPlay();
-	AIGTutorialJangseungPlace* LocalActor = GetWorld()->SpawnActor<AIGTutorialJangseungPlace>(AIGTutorialJangseungPlace::StaticClass(), GetActorLocation(), GetActorRotation());
-	LocalActor->Setsize(GetActorScale() * 5);	
+	JangseungPlace = GetWorld()->SpawnActor<AIGTutorialJangseungPlace>(AIGTutorialJangseungPlace::StaticClass(), GetActorLocation(), GetActorRotation());
+	JangseungPlace->Setsize(GetActorScale() * 5);	
 }
 
 void AIGTutorialEnemyJangseung::Tick(float DeltaTime)
@@ -52,7 +52,11 @@ float AIGTutorialEnemyJangseung::TakeDamage(float DamageAmount, FDamageEvent con
 		else if(DamageCount >= 3 && EnumHasAnyFlags(IGPlayerCharacter->GetCurrentState(), EPlayerState::Enforced) == true)
 		{
 			IGPlayerCharacter->GetShinmyophil()->TutorialEnforceAttackToJangseung();
-			OpenGate();				
+			OpenGate();
+			if(JangseungPlace != nullptr)
+			{
+				JangseungPlace->Destroy();
+			}
 			Destroy();
 		}
 	}

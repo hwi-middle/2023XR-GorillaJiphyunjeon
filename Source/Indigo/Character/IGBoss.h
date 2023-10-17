@@ -85,6 +85,26 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	uint32 bIsInRange : 1;
+
+	//보스 첫공격
+	UPROPERTY(VisibleAnywhere)
+	uint8 bIsFirstAttack : 1;
+
+	//보스 페이즈2 진입
+	UPROPERTY(VisibleAnywhere)
+	uint8 bIsInPhase2 : 1;
+
+	//보스 첫 원거리 공격 시전
+	UPROPERTY(VisibleAnywhere)
+	uint8 bIsFirstRangeAttack : 1;
+
+	//보스 페이즈3 진입
+	UPROPERTY(VisibleAnywhere)
+	uint8 bIsInPhase3 : 1;
+
+	//첫 장판기 시전
+	UPROPERTY(VisibleAnywhere)
+	uint8 bIsFirstFloorAttack : 1;
 	
 public:
 	FOnFinishBossCloseAttackDelegate OnFinishBossCloseAttack;

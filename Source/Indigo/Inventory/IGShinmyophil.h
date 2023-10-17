@@ -150,6 +150,7 @@ private:
 	EPhaseState CurrentPhase;
 
 	uint8 bIsMoveTutorial : 1;
+	uint8 bIsHpUnder3 : 1;
 	
 	float IdleTime;
 

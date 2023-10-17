@@ -14,6 +14,7 @@
 #include "Indigo/Constant/IGCollisionChannels.h"
 #include "Indigo/DataAsset/IGBossDataAsset.h"
 #include "Indigo/DataAsset/IGBossGimmickDataAsset.h"
+#include "Indigo/Inventory/IGShinmyophil.h"
 #include "Indigo/UI/IGIngameHUDWidget.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Kismet/GameplayStatics.h"
@@ -43,6 +44,12 @@ AIGBoss::AIGBoss()
 	{
 		HudWidgetClass = Class;
 	}, EAssertionLevel::Check);
+
+	bIsFirstAttack = false;
+	bIsInPhase2 = false;
+	bIsFirstRangeAttack = false;
+	bIsInPhase3 = false;
+	bIsFirstFloorAttack =false;
 }
 
 void AIGBoss::BeginPlay()
@@ -74,18 +81,33 @@ void AIGBoss::Tick(float DeltaSeconds)
 
 	DrawDebugSphere(GetWorld(), GetMesh()->GetSocketLocation(BOSS_LEFT_HAND), 100.f, 16, FColor::Red, false, 0.f);
 	DrawDebugSphere(GetWorld(), GetMesh()->GetSocketLocation(BOSS_RIGHT_HAND), 100.f, 16, FColor::Red, false, 0.f);
+
+	if(Hp < 70 && bIsInPhase2 == false)
+	{
+		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleBoss2Phase();
+		bIsInPhase2 = true;
+	}
+	if(Hp < 30 && bIsInPhase3 == false)
+	{
+		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleBoss3Phase();
+		bIsInPhase3 = true;
+	}
+
+	
 }
 
 float AIGBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	HudWidget->UpdateHpGauge(Hp);
-	if (Hp <= 0)
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("Boss HP: [%f]"), Hp));
+	if (Hp <= 0 && bIsDead == false)
 	{
 		AnimInstance->Die();
 		AnimInstance->OnFinishDead.AddUObject(this, &AIGBoss::FadeOut);
 		HudWidget->UpdateHpGauge(0.f);
 		bIsDead = true;
+		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleBossDead();
 		return DamageAmount;
 	}
 	return DamageAmount;
@@ -125,6 +147,11 @@ void AIGBoss::DisableHUD()
 void AIGBoss::PerformCloseAttack()
 {
 	AnimInstance->StartCloseAttack();
+	if(bIsFirstAttack == false)
+	{
+		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleBossFirstAttack();
+		bIsFirstAttack = true;
+	}
 }
 
 void AIGBoss::GenerateCloseAttack()

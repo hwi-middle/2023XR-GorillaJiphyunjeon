@@ -77,36 +77,47 @@ void UIGPlayerInventory::ShowOwnedCrystals()
 	}
 }
 
-void UIGPlayerInventory::AddHint(AIGHintBase* InHint)
+void UIGPlayerInventory::AddHint(ProvisoText* InHint)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%d]"), HintArray.Num()));
+	for(const ProvisoText* Hint : HintArray)
+	{
+		if(Hint->Name == InHint->Name)
+		{
+			return;
+		}		
+	}
+	
 	HintArray.AddUnique(InHint);
-	if(bIsGetFirstHint == false && Cast<AIGMainHint>(InHint) != nullptr)
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("Hints Name: [%s]"), *InHint->Name));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("힌트 갯수: [%d]"), HintArray.Num()));
+
+	if(bIsGetFirstHint == false && InHint->HintType != EHintType::Blanc)
 	{ 
 		Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGetFirstHint();
 		bIsGetFirstHint = true;
 	}
-	if(bIsGetFirstBlancHint == false && Cast<AIGBlankHint>(InHint) != nullptr)
+	if(bIsGetFirstBlancHint == false && InHint->HintType == EHintType::Blanc)
 	{
 		Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGetFirstBlancHint();
 		bIsGetFirstBlancHint = true;
 	}
-	for(int i =0; i < HintArray.Num(); i++)
+	
+	int32 MainHintCount = 0;
+	for(const ProvisoText* Hint : HintArray)
 	{
-		int32 SameTypeCount = 0;
-		if(HintArray[i]->GetCurrnetHintType() == InHint->GetCurrnetHintType())
+		if(Hint->HintType != EHintType::Blanc)
 		{
-			SameTypeCount++;
-			if(SameTypeCount == 2)
-			{
-				Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGet2HintToSameProviso();
-			}
+			MainHintCount++;
 		}
-	}
 
-	if(HintArray.Num() >= 6)
+		if(Hint->HintType == InHint->HintType && InHint->HintType != EHintType::Blanc && Hint->Name != InHint->Name)
+		{
+			Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGet2HintToSameProviso();
+		}
+	}	
+	if(MainHintCount >= 6)
 	{
 		Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGetHint6All();
-	}
-	
+	}	
 }
+

@@ -5,6 +5,9 @@
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGTextMasterDataTable.h"
 #include "Indigo/Util/IGDataTableParser.h"
+#include "Indigo/Character/IGPlayerCharacter.h"
+#include "Indigo/Inventory/IGPlayerInventory.h"
+#include "Kismet/GameplayStatics.h"
 
 AIGHintBase::AIGHintBase()
 {
@@ -43,44 +46,164 @@ Path = TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/TextMa
 				ProvisoText* HintTextScript = new ProvisoText();
 				HintTextScript->Name = HintTextTitleArray[i]->Text;
 				HintTextScript->Script = HintTextScriptArray[i]->Text;
-				HintScriptArray.AddUnique(HintTextScript);
-			}
-			
-		});
 
-	
-	
+				if(i < 2)
+				{
+					MountainHintScriptArray.AddUnique(HintTextScript);
+				}
+				else if(i > 1 && i < 4)
+				{
+					WaveHintScriptArray.AddUnique(HintTextScript);
+				}
+				else if(i > 3 && i < 6)
+				{
+					PineTreeHintScriptArray.AddUnique(HintTextScript);
+				}
+				else if(i > 6)
+				{
+					BlankHintScriptArray.AddUnique(HintTextScript);
+				}
+				HintScriptArray.AddUnique(HintTextScript);
+				
+			}			
+		});
 }
 
 AIGHintBase::~AIGHintBase()
 {
 }
 
+void AIGHintBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	
+}
+
 void AIGHintBase::InitHintType(const EHintType InHintType)
 {
-	CurrentHintType = InHintType;
 
-	//Temporal
-	if(CurrentHintType == EHintType::Mountain)
+	
+	
+	HintScript = new ProvisoText();
+	HintScript->HintType = InHintType;
+
+	if((HintScript->HintType == EHintType::Mountain && MountainHintScriptArray.Num() <= 0) ||
+		(HintScript->HintType == EHintType::Wave && WaveHintScriptArray.Num() <= 0) ||
+		(HintScript->HintType == EHintType::PineTree && PineTreeHintScriptArray.Num() <= 0))
 	{
-		HintScript = HintScriptArray[FMath::RandRange(0,1)];
+		HintScript->HintType = EHintType::Blanc;
 	}
-	if(CurrentHintType == EHintType::Wave)
+	if( InHintType == EHintType::Blanc && BlankHintScriptArray.Num() <= 0)
 	{
-		HintScript = HintScriptArray[FMath::RandRange(2, 3)];		
+		Destroy();
+		return;
 	}
-	if(CurrentHintType == EHintType::PineTree)
+	
+	const AIGPlayerCharacter* PlayerCharacter = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0));
+	if(HintScript->HintType == EHintType::Mountain && MountainHintScriptArray.Num() > 0)
 	{
-		HintScript = HintScriptArray[FMath::RandRange(4,5)];				
-	}	
-	if(CurrentHintType == EHintType::Blanc)
+		const int32 RandomNumber = FMath::RandRange(0,MountainHintScriptArray.Num()-1);
+		HintScript = MountainHintScriptArray[RandomNumber];
+
+		if(PlayerCharacter != nullptr && PlayerCharacter->GetInventory()->GetHintArray().Num() > 0)
+		{
+			for(const ProvisoText* Hint : PlayerCharacter->GetInventory()->GetHintArray())
+			{
+				if(Hint->Name == HintScript->Name)
+				{
+					MountainHintScriptArray.RemoveAt(RandomNumber);
+					InitHintType(InHintType);
+					break;
+				}
+			}
+		}		
+	}
+	if(HintScript->HintType == EHintType::Wave && WaveHintScriptArray.Num() > 0)
 	{
-		HintScript = HintScriptArray[FMath::RandRange(6,8)];				
+		const int32 RandomNumber = FMath::RandRange(0,WaveHintScriptArray.Num()-1);
+		HintScript = WaveHintScriptArray[RandomNumber];
+
+		if(PlayerCharacter != nullptr && PlayerCharacter->GetInventory()->GetHintArray().Num() > 0)
+		{
+			for(const ProvisoText* Hint : PlayerCharacter->GetInventory()->GetHintArray())
+			{
+				if(Hint->Name == HintScript->Name)
+				{
+					WaveHintScriptArray.RemoveAt(RandomNumber);
+					InitHintType(InHintType);
+					break;
+				}
+			}
+		}
+	}
+	if(HintScript->HintType == EHintType::PineTree && PineTreeHintScriptArray.Num() > 0)
+	{
+		const int32 RandomNumber = FMath::RandRange(0,PineTreeHintScriptArray.Num()-1);
+		HintScript = PineTreeHintScriptArray[RandomNumber];
+
+		if(PlayerCharacter != nullptr && PlayerCharacter->GetInventory()->GetHintArray().Num() > 0)
+		{
+			for(const ProvisoText* Hint : PlayerCharacter->GetInventory()->GetHintArray())
+			{
+				if(Hint->Name == HintScript->Name)
+				{
+					PineTreeHintScriptArray.RemoveAt(RandomNumber);
+					InitHintType(InHintType);
+					break;
+				}
+			}
+		}
 	}	
+	if(HintScript->HintType == EHintType::Blanc && BlankHintScriptArray.Num() > 0)
+	{
+		const int32 RandomNumber = FMath::RandRange(0,BlankHintScriptArray.Num()-1);
+		HintScript = BlankHintScriptArray[RandomNumber];
+
+		if(PlayerCharacter != nullptr && PlayerCharacter->GetInventory()->GetHintArray().Num() > 0)
+		{
+			for(const ProvisoText* Hint : PlayerCharacter->GetInventory()->GetHintArray())
+			{
+				if(Hint->Name == HintScript->Name)
+				{
+					BlankHintScriptArray.RemoveAt(RandomNumber);
+					InitHintType(InHintType);
+					break;
+				}
+			}
+		}
+	}
+
+
+	TArray<AActor*> DropHintArray;
+	UGameplayStatics::GetAllActorsOfClass(GWorld, AIGHintBase::StaticClass(), DropHintArray);
+	for(AActor* Hint : DropHintArray)
+	{
+		if(Cast<AIGHintBase>(Hint) != nullptr && DropHintArray.Num() > 0)
+		{
+			if(Cast<AIGHintBase>(Hint)->GetHintName() == GetHintName() && Cast<AIGHintBase>(Hint) != this)
+			{
+				Destroy();
+				return;
+			}
+		}	
+	}
+
+
+	
 }
 
 
 void AIGHintBase::Interact()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("[%s]"), *HintScript->Script));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("[Name:  %s]"), *HintScript->Name));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("[Desc: %s]"), *HintScript->Script));
+	Destroy();
+}
+
+void AIGHintBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	
+	
 }

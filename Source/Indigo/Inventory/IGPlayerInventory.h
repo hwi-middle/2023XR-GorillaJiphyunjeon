@@ -9,6 +9,9 @@
 
 class AIGCrystalBase;
 class AIGHintBase;
+enum class EHintType : uint8;
+
+struct ProvisoText;
 
 UCLASS()
 class INDIGO_API UIGPlayerInventory : public UActorComponent
@@ -26,19 +29,22 @@ public:
 	void AddCrystal(AIGCrystalBase* InCrystal);
 	void ShowOwnedCrystals();
 
-	void AddHint(AIGHintBase* InHint);
+	void AddHint(ProvisoText* InHint);
 
 	FORCEINLINE TArray<AIGCrystalBase*> GetCrystalArray() { return CrystalArray; }
-	FORCEINLINE TArray<AIGHintBase*> GetHintArray() { return HintArray; }
+	FORCEINLINE TArray<ProvisoText*> GetHintArray() { return HintArray; }
 
 private:
 	TArray<AIGCrystalBase*> CrystalArray;
-	TArray<AIGHintBase*> HintArray;
+	TArray<ProvisoText*> HintArray;
+	
 	uint8 bIsGetFirstCrystal : 1;
 	uint8 bIsGetFirstHint : 1;
 	uint8 bIsGetFirstBlancHint : 1;
 	uint8 bIsGet2HintBySameProviso : 1;
 
-	float CantFindProvisoTime;
+	//각 단서찾는거 클리어
 	
+	
+	float CantFindProvisoTime;	
 };

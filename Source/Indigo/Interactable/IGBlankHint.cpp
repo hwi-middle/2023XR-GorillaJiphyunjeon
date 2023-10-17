@@ -5,7 +5,6 @@
 // Sets default values
 AIGBlankHint::AIGBlankHint()
 {
-	InitHintType(EHintType::Blanc);
 }
 
 // Called when the game starts or when spawned
@@ -19,7 +18,7 @@ void AIGBlankHint::BeginPlay()
 void AIGBlankHint::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 }
 
 void AIGBlankHint::Interact()

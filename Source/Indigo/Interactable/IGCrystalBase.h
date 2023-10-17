@@ -9,6 +9,7 @@
 #include "IGCrystalBase.generated.h"
 
 struct FIGScriptDataTable;
+class AIGProvisoCloseToCrystalPlace;
 
 UENUM()
 enum class ECrystal : uint32
@@ -49,6 +50,8 @@ protected:
 	TObjectPtr<UStaticMeshComponent> Mesh;
 
 	FIGScriptDataTable* CrystalScript;
+
+	AIGProvisoCloseToCrystalPlace* CloseToCrystalPlace;
 
 	UPROPERTY()
 	uint8 bIsTaken : 1;

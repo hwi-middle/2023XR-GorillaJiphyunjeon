@@ -65,11 +65,11 @@ UIGShinmyophil::UIGShinmyophil()
 			for(int32 j = 0; j < 2; j++)
 			{
 				QuestTemp->QuestSummaryArray.Add(QuestSummaryArray[Count]->Text);
+				Count++;
 			}
 			
 			QuestArray.AddUnique(QuestTemp);
 			
-			Count++;
 		}
 	});
 
@@ -77,7 +77,7 @@ UIGShinmyophil::UIGShinmyophil()
 
 	CurrentPhase = EPhaseState::None;
 	bIsMoveTutorial = false;
-
+	bIsHpUnder3 = false;
 }
 
 void UIGShinmyophil::OnTutorialPhase()
@@ -116,6 +116,8 @@ void UIGShinmyophil::PrintRelayScript(const TArray<FIGScriptMasterDataTable*> In
 			return;
 		}
 	}
+
+
 }
 
 void UIGShinmyophil::TutorialPhaseStart()
@@ -335,6 +337,22 @@ void UIGShinmyophil::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 			TutorialPlayerMove();
 		}
 		
+	}
+
+	//배틀 페이즈
+	if(CurrentPhase == EPhaseState::BattlePhase)
+	{
+		//체력 3이하일때
+		if(IGPlayerCharacter->GetHp() <= 3 && bIsHpUnder3 == false)
+		{
+			BattlePlayerHealthUnder3();
+			bIsHpUnder3 = true;
+		}
+		else if(IGPlayerCharacter->GetHp() > 3 && bIsHpUnder3 == true)
+		{
+			//혹시 회복될떄
+			bIsHpUnder3 = false;
+		}
 	}
 	
 	//조작없이 1분동안 가만히 있을 때
