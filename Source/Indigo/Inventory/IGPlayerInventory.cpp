@@ -81,15 +81,10 @@ void UIGPlayerInventory::AddHint(ProvisoText* InHint)
 {
 	for(const ProvisoText* Hint : HintArray)
 	{
-		if(Hint->Name == InHint->Name && InHint->Name == "")
+		if(Hint->HintType == InHint->HintType && InHint->HintType != EHintType::Blanc)
 		{
-			return;
-		}		
-	}
-	if(InHint->HintType == EHintType::Blanc)
-	{
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("BlankHint")));
-		
+			Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGet2HintToSameProviso();					
+		}	
 	}
 	
 	HintArray.AddUnique(InHint);
@@ -114,18 +109,7 @@ void UIGPlayerInventory::AddHint(ProvisoText* InHint)
 		{
 			MainHintCount++;
 		}
-	}
-	for(int i =0; i < HintArray.Num(); i++)
-	{
-		for(int j = i+1; j < HintArray.Num(); j++)
-		{
-			if(HintArray[i]->HintType == HintArray[j]->HintType && HintArray[i]->HintType != EHintType::Blanc && HintArray[i]->Name != HintArray[j]->Name)
-			{
-				Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGet2HintToSameProviso();			
-			}
-		}
-	}
-	
+	}	
 	
 	if(MainHintCount >= 6)
 	{

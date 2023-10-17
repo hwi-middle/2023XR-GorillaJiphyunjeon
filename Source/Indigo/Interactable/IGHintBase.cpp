@@ -33,11 +33,11 @@ Path = TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/TextMa
 			{
 				if(ScriptArray[i]->TextMain == 1 && ScriptArray[i]->TextSub == 1)
 				{
-					HintTextTitleArray.AddUnique(ScriptArray[i]);
+					HintTextTitleArray.Add(ScriptArray[i]);
 				}
 				if(ScriptArray[i]->TextMain == 1 && ScriptArray[i]->TextSub == 2)
 				{
-					HintTextScriptArray.AddUnique(ScriptArray[i]);
+					HintTextScriptArray.Add(ScriptArray[i]);
 				}
 			}
 
@@ -49,18 +49,22 @@ Path = TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/TextMa
 
 				if(i < 2)
 				{
+				    HintTextScript->HintType = EHintType::Mountain;
 					MountainHintScriptArray.AddUnique(HintTextScript);
 				}
-				else if(i > 1 && i < 4)
+				if(i > 1 && i < 4)
 				{
+				    HintTextScript->HintType = EHintType::Wave;
 					WaveHintScriptArray.AddUnique(HintTextScript);
 				}
-				else if(i > 3 && i < 6)
+				if(i > 3 && i < 6)
 				{
+				    HintTextScript->HintType = EHintType::PineTree;
 					PineTreeHintScriptArray.AddUnique(HintTextScript);
 				}
-				else if(i > 6)
+				if(i > 5)
 				{
+				    HintTextScript->HintType = EHintType::Blanc;
 					BlankHintScriptArray.AddUnique(HintTextScript);
 				}
 				HintScriptArray.AddUnique(HintTextScript);
@@ -105,7 +109,7 @@ void AIGHintBase::InitHintType(const EHintType InHintType)
 	{
 		const int32 RandomNumber = FMath::RandRange(0,MountainHintScriptArray.Num()-1);
 		HintScript = MountainHintScriptArray[RandomNumber];
-
+		
 		if(PlayerCharacter != nullptr && PlayerCharacter->GetInventory()->GetHintArray().Num() > 0)
 		{
 			for(const ProvisoText* Hint : PlayerCharacter->GetInventory()->GetHintArray())
@@ -159,7 +163,7 @@ void AIGHintBase::InitHintType(const EHintType InHintType)
 	{
 		const int32 RandomNumber = FMath::RandRange(0,BlankHintScriptArray.Num()-1);
 		HintScript = BlankHintScriptArray[RandomNumber];
-
+		
 		if(PlayerCharacter != nullptr && PlayerCharacter->GetInventory()->GetHintArray().Num() > 0)
 		{
 			for(const ProvisoText* Hint : PlayerCharacter->GetInventory()->GetHintArray())
