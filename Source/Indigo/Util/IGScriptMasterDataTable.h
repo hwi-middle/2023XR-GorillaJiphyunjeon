@@ -12,15 +12,6 @@ struct INDIGO_API FIGScriptMasterDataTable : public FTableRowBase
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Script")
-	int32 ScriptMain;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Script")
-	int32 ScriptSub;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Script")
-	int32 ScriptDetail;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Script")
 	FString ScriptCode;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Script")

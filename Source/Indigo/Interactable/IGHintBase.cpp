@@ -31,11 +31,15 @@ Path = TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/TextMa
 
 			for(int32 i = 0;  i < ScriptArray.Num(); i++)
 			{
-				if(ScriptArray[i]->TextMain == 1 && ScriptArray[i]->TextSub == 1)
+
+				TArray<FString> TextCodeArray;
+				ScriptArray[i]->TextCode.ParseIntoArray(TextCodeArray, TEXT("_"), true);//0 string이라 제외, 1 main, 2 sub, 3 detail 
+				
+				if(FCString::Atof(*TextCodeArray[1]) == 1 && FCString::Atof(*TextCodeArray[2]) == 1)
 				{
 					HintTextTitleArray.Add(ScriptArray[i]);
 				}
-				if(ScriptArray[i]->TextMain == 1 && ScriptArray[i]->TextSub == 2)
+				if(FCString::Atof(*TextCodeArray[1]) == 1 && FCString::Atof(*TextCodeArray[2]) == 2)
 				{
 					HintTextScriptArray.Add(ScriptArray[i]);
 				}

@@ -22,17 +22,22 @@ UIGShinmyophil::UIGShinmyophil()
 
 	TArray<FIGScriptMasterDataTable*> Scripts;	
 	DataTable->GetAllRows(TEXT(""), Scripts);
+
+
 	for(int32 i =0; i < Scripts.Num(); i++)
 	{
-		if(Scripts[i]->ScriptMain == 0)
+		TArray<FString> ScriptCodeArray;
+		Scripts[i]->ScriptCode.ParseIntoArray(ScriptCodeArray, TEXT("_"), true);//0 string이라 제외, 1 main, 2 sub, 3 detail 
+		
+		if(FCString::Atof(*ScriptCodeArray[1]) == 0)
 		{
 			TutorialScriptsArray.AddUnique(Scripts[i]);
 		}
-		else if(Scripts[i]->ScriptMain == 1)
+		else if(FCString::Atof(*ScriptCodeArray[1]) == 1)
 		{
 			ProvisoScriptsArray.AddUnique(Scripts[i]);
 		}
-		else if(Scripts[i]->ScriptMain == 2)
+		else if(FCString::Atof(*ScriptCodeArray[1])== 2)
 		{
 			BattleScriptsArray.AddUnique(Scripts[i]);
 		}		
@@ -44,14 +49,16 @@ UIGShinmyophil::UIGShinmyophil()
 		TArray<FIGTextMasterDataTable*> ScriptArray;
 		ScriptDataTable->GetAllRows(TEXT(""), ScriptArray);
 
-
 		for(int32 i = 0;  i < ScriptArray.Num(); i++)
 		{
-			if(ScriptArray[i]->TextMain == 1 && ScriptArray[i]->TextSub == 3)
+			TArray<FString> TextCodeArray;
+			Scripts[i]->ScriptCode.ParseIntoArray(TextCodeArray, TEXT("_"), true);//0 string이라 제외, 1 main, 2 sub, 3 detail 
+			
+			if(FCString::Atof(*TextCodeArray[1]) == 1 && FCString::Atof(*TextCodeArray[2]) == 3)
 			{
 				QuestSummaryArray.AddUnique(ScriptArray[i]);
 			}
-			if(ScriptArray[i]->TextMain == 2 && ScriptArray[i]->TextSub == 3)
+			if(FCString::Atof(*TextCodeArray[1]) == 2 && FCString::Atof(*TextCodeArray[2]) == 3)
 			{
 				QuestTitleArray.AddUnique(ScriptArray[i]);
 			}
@@ -105,13 +112,17 @@ void UIGShinmyophil::PrintRelayScript(const TArray<FIGScriptMasterDataTable*> In
 	
 	for(int32 Index = 0; Index < InScriptArray.Num(); Index++)
 	{
-		if(InScriptArray[Index]->ScriptSub == InSubNum)
+
+		TArray<FString> TextCodeArray;
+		InScriptArray[Index]->ScriptCode.ParseIntoArray(TextCodeArray, TEXT("_"), true);//0 string이라 제외, 1 main, 2 sub, 3 detail 
+		
+		if(FCString::Atof(*TextCodeArray[2]) == InSubNum)
 		{
 			ScriptLogArray.AddUnique(InScriptArray[Index]->ScriptText);
 			IGPlayerCharacter->UpdateShinmyophileScript(InScriptArray[Index]->ScriptText);
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%s]"), *InScriptArray[Index]->ScriptText));			
 		}
-		else if(InScriptArray[Index]->ScriptSub > InSubNum)
+		else if(FCString::Atof(*TextCodeArray[2])  > InSubNum)
 		{
 			return;
 		}
