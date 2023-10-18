@@ -32,41 +32,44 @@ void UIGShinmyophil::BeginPlay()
 {
 	Super::BeginPlay();
 
-	DataTable = FIGDataTableParser::LoadAndGetDataTable(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/ScriptMasterDataTable/Script_Master.Script_Master'"));
-
-	TArray<FIGScriptMasterDataTable*> Scripts;
-	DataTable->GetAllRows(TEXT(""), Scripts);
-
-
-	for (int32 i = 0; i < Scripts.Num(); i++)
-	{
-		TArray<FString> ScriptCodeArray;
-		Scripts[i]->ScriptCode.ParseIntoArray(ScriptCodeArray, TEXT("_"), true);//0 string이라 제외, 1 main, 2 sub, 3 detail 
-
-		if (FCString::Atof(*ScriptCodeArray[1]) == 0)
-		{
-			TutorialScriptsArray.AddUnique(Scripts[i]);
-		}
-		else if (FCString::Atof(*ScriptCodeArray[1]) == 1)
-		{
-			ProvisoScriptsArray.AddUnique(Scripts[i]);
-		}
-		else if (FCString::Atof(*ScriptCodeArray[1]) == 2)
-		{
-			BattleScriptsArray.AddUnique(Scripts[i]);
-		}
-	}
-
-	FIGDataTableParser::LoadAndInitializeDataTable(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/TextMasterDataTable/Text_Master.Text_Master'"),
+	FIGDataTableParser::LoadAndInitializeDataTable(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/ScriptMasterDataTable/Script_Master.Script_Master'"),
 		[&](const UDataTable* ScriptDataTable)
 		{
+			TArray<FIGScriptMasterDataTable*> Scripts;
+			ScriptDataTable->GetAllRows(TEXT(""), Scripts);
+			
+			for (int32 i = 0; i < Scripts.Num(); i++)
+			{
+				TArray<FString> ScriptCodeArray;
+				Scripts[i]->ScriptCode.ParseIntoArray(ScriptCodeArray, TEXT("_"), true);//0 string이라 제외, 1 main, 2 sub, 3 detail 
+			
+				if (FCString::Atof(*ScriptCodeArray[1]) == 0)
+				{
+					TutorialScriptsArray.AddUnique(Scripts[i]);
+				}
+				else if (FCString::Atof(*ScriptCodeArray[1]) == 1)
+				{
+					ProvisoScriptsArray.AddUnique(Scripts[i]);
+				}
+				else if (FCString::Atof(*ScriptCodeArray[1]) == 2)
+				{
+					BattleScriptsArray.AddUnique(Scripts[i]);
+				}
+			}
+		});
+
+
+
+	FIGDataTableParser::LoadAndInitializeDataTable(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/TextMasterDataTable/Text_Master.Text_Master'"),
+		[&](const UDataTable* TextDataTable)
+		{
 			TArray<FIGTextMasterDataTable*> ScriptArray;
-			ScriptDataTable->GetAllRows(TEXT(""), ScriptArray);
+			TextDataTable->GetAllRows(TEXT(""), ScriptArray);
 
 			for (int32 i = 0; i < ScriptArray.Num(); i++)
 			{
 				TArray<FString> TextCodeArray;
-				Scripts[i]->ScriptCode.ParseIntoArray(TextCodeArray, TEXT("_"), true);//0 string이라 제외, 1 main, 2 sub, 3 detail 
+				ScriptArray[i]->TextCode.ParseIntoArray(TextCodeArray, TEXT("_"), true);//0 string이라 제외, 1 main, 2 sub, 3 detail 
 
 				if (FCString::Atof(*TextCodeArray[1]) == 1 && FCString::Atof(*TextCodeArray[2]) == 3)
 				{
@@ -128,7 +131,7 @@ void UIGShinmyophil::PrintRelayScript(const TArray<FIGScriptMasterDataTable*> In
 		if(FCString::Atof(*TextCodeArray[2]) == InSubNum)
 		{
 			ScriptLogArray.AddUnique(InScriptArray[Index]->ScriptText);
-			IGPlayerCharacter->UpdateShinmyophileScript(InScriptArray[Index]->ScriptText);
+			IGPlayerCharacter->UpdateShinmyophilScript(InScriptArray[Index]->ScriptText);
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%s]"), *InScriptArray[Index]->ScriptText));			
 		}
 		else if(FCString::Atof(*TextCodeArray[2])  > InSubNum)
@@ -221,7 +224,7 @@ void UIGShinmyophil::ProvisoReadFirstHint()
 	PrintRelayScript(ProvisoScriptsArray, 6);
 }
 
-void UIGShinmyophil::ProvisoGetFirstBlancHint()
+void UIGShinmyophil::ProvisoGetFirstBlankHint()
 {
 	PrintRelayScript(ProvisoScriptsArray, 7);
 }

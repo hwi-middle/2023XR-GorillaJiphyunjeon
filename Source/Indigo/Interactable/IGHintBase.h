@@ -24,10 +24,10 @@ enum class EHintType : uint8
 	Mountain = 1,
 	Wave = 2,
 	PineTree = 3,
-	Blanc = 4
+	Blank = 4
 };
 
-struct ProvisoText
+struct ProvisoText 
 {
 	FString Name;
 	FString Script;
@@ -60,15 +60,13 @@ private:
 	UPROPERTY()
 	TObjectPtr<UStaticMeshComponent> Mesh;
 
-	FString Path;
+	UPROPERTY()
 	FName Row;
 
 	TArray<FIGTextMasterDataTable*> HintTextTitleArray;
 	TArray<FIGTextMasterDataTable*> HintTextScriptArray;
 	
 protected:	
-	TArray<ProvisoText*> HintScriptArray;
-
 	TArray<ProvisoText*> MountainHintScriptArray;
 	TArray<ProvisoText*> WaveHintScriptArray;
 	TArray<ProvisoText*> PineTreeHintScriptArray;

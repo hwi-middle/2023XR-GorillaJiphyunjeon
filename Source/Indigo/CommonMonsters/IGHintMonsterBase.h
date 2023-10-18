@@ -34,10 +34,11 @@ protected:
 	FORCEINLINE	void SetHintType(const EHintType InHintType) {HintType = InHintType;}
 	
 private:
-	AIGProvisoWispPlace* WispPlace;
+	TObjectPtr<AIGProvisoWispPlace> WispPlace;
 	
 	UPROPERTY(EditAnywhere)
 	EHintType HintType;
 
+	UPROPERTY(EditAnywhere)
 	float RespawnTime;
 };

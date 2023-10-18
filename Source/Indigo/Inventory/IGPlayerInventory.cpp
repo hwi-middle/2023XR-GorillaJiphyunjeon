@@ -15,7 +15,7 @@ UIGPlayerInventory::UIGPlayerInventory()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	bIsGetFirstCrystal = false;
-	bIsGetFirstBlancHint = false;
+	bIsGetFirstBlankHint = false;
 	bIsGetFirstHint = false;
 	bIsGet2HintBySameProviso =false;
 	CantFindProvisoTime = 0.0f;
@@ -81,7 +81,7 @@ void UIGPlayerInventory::AddHint(ProvisoText* InHint)
 {
 	for(const ProvisoText* Hint : HintArray)
 	{
-		if(Hint->HintType == InHint->HintType && InHint->HintType != EHintType::Blanc)
+		if(Hint->HintType == InHint->HintType && InHint->HintType != EHintType::Blank)
 		{
 			Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGet2HintToSameProviso();					
 		}	
@@ -91,21 +91,21 @@ void UIGPlayerInventory::AddHint(ProvisoText* InHint)
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("Hints Name: [%s]"), *InHint->Name));
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("힌트 갯수: [%d]"), HintArray.Num()));
 
-	if(bIsGetFirstHint == false && InHint->HintType != EHintType::Blanc)
+	if(bIsGetFirstHint == false && InHint->HintType != EHintType::Blank)
 	{ 
 		Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGetFirstHint();
 		bIsGetFirstHint = true;
 	}
-	if(bIsGetFirstBlancHint == false && InHint->HintType == EHintType::Blanc)
+	if(bIsGetFirstBlankHint == false && InHint->HintType == EHintType::Blank)
 	{
-		Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGetFirstBlancHint();
-		bIsGetFirstBlancHint = true;
+		Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGetFirstBlankHint();
+		bIsGetFirstBlankHint = true;
 	}
 	
 	int32 MainHintCount = 0;
 	for(const ProvisoText* Hint : HintArray)
 	{
-		if(Hint->HintType != EHintType::Blanc)
+		if(Hint->HintType != EHintType::Blank)
 		{
 			MainHintCount++;
 		}

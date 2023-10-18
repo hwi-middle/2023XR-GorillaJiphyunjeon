@@ -49,13 +49,14 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UStaticMeshComponent> Mesh;
 
-	FIGScriptDataTable* CrystalScript;
-
-	AIGProvisoCloseToCrystalPlace* CloseToCrystalPlace;
+	UPROPERTY()
+	TObjectPtr<AIGProvisoCloseToCrystalPlace> CloseToCrystalPlace;
 
 	UPROPERTY()
 	uint8 bIsTaken : 1;
 
 	UPROPERTY()
 	ECrystal CrystalType;
+	
+	FIGScriptDataTable* CrystalScript;
 };

@@ -35,16 +35,20 @@ public:
 	FORCEINLINE TArray<ProvisoText*> GetHintArray() { return HintArray; }
 
 private:
+	UPROPERTY()
 	TArray<AIGCrystalBase*> CrystalArray;
+	
 	TArray<ProvisoText*> HintArray;
 	
+	UPROPERTY()
 	uint8 bIsGetFirstCrystal : 1;
+	UPROPERTY()
 	uint8 bIsGetFirstHint : 1;
-	uint8 bIsGetFirstBlancHint : 1;
+	UPROPERTY()
+	uint8 bIsGetFirstBlankHint : 1;
+	UPROPERTY()
 	uint8 bIsGet2HintBySameProviso : 1;
-
-	//각 단서찾는거 클리어
 	
-	
+	UPROPERTY()
 	float CantFindProvisoTime;	
 };

@@ -25,5 +25,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void Interact(void) override;
 private:
+	UPROPERTY()
 	TObjectPtr<UStaticMeshComponent> Mesh;
 };

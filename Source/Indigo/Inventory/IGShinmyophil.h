@@ -78,7 +78,7 @@ public:
 	//첫 힌트 열람 시
 	void ProvisoReadFirstHint();
 	//첫 꽝 힌트 획득 시
-	void ProvisoGetFirstBlancHint();
+	void ProvisoGetFirstBlankHint();
 	//같은 단서에 대한 힌트를 2개 모았을 경우
 	void ProvisoGet2HintToSameProviso();
 	//힌트를 6개 모두 모았을 경우
@@ -137,23 +137,27 @@ public:
 	FORCEINLINE TArray<FIGTextMasterDataTable*> GetQuestSummaryArray() const {return QuestSummaryArray;};
 	FORCEINLINE TArray<UQuest*> GetQuestArray() const {return QuestArray;};
 private:
-	UDataTable* DataTable;
 	
+	UPROPERTY()
+	EPhaseState CurrentPhase;
+
+	UPROPERTY()
+	uint8 bIsMoveTutorial : 1;
+
+	UPROPERTY()
+	uint8 bIsHpUnder3 : 1;
+	
+	UPROPERTY()
+	float IdleTime;
+
+	UPROPERTY()
+	TArray<FString> ScriptLogArray;
+		
 	TArray<FIGScriptMasterDataTable*> TutorialScriptsArray;
 	TArray<FIGScriptMasterDataTable*> ProvisoScriptsArray;
 	TArray<FIGScriptMasterDataTable*> BattleScriptsArray;
-
 	TArray<FIGTextMasterDataTable*> QuestTitleArray;
 	TArray<FIGTextMasterDataTable*> QuestSummaryArray;
-	TArray<UQuest*> QuestArray;
-	
-	EPhaseState CurrentPhase;
-
-	uint8 bIsMoveTutorial : 1;
-	uint8 bIsHpUnder3 : 1;
-	
-	float IdleTime;
-
-	TArray<FString> ScriptLogArray;
+	TArray<TObjectPtr<UQuest>> QuestArray;
 		
 };

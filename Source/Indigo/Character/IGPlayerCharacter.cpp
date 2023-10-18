@@ -442,28 +442,29 @@ void AIGPlayerCharacter::Interact()
 	AIGCrystalBase* Crystal = Cast<AIGCrystalBase>(Result.GetActor());
 	AIGHintBase* Hint = Cast<AIGHintBase>(Result.GetActor());
 
-	if (Interactable != nullptr)
+	if (Interactable == nullptr)
 	{
-		Interactable->Interact();
+		return;
+	}
+	
+	Interactable->Interact();
 
-		if (Crystal != nullptr)
-		{
-			PlayerInventory->AddCrystal(Crystal);
+	if (Crystal != nullptr)
+	{
+		PlayerInventory->AddCrystal(Crystal);
 
-			// Temporal
-			FString CrystalDebugText;
-			auto CrystalArray = PlayerInventory->GetCrystalArray();
-			for (int i = 0; i < CrystalArray.Num(); i++)
-			{
-				CrystalDebugText.Append(FString::Printf(TEXT("%d. %s\n"), i + 1, *CrystalArray[i]->GetCrystalName()));
-			}
-			HudWidget->UpdateCrystalDebug(CrystalDebugText);
-		}
-		if(Hint != nullptr)
+		// Temporal
+		FString CrystalDebugText;
+		auto CrystalArray = PlayerInventory->GetCrystalArray();
+		for (int i = 0; i < CrystalArray.Num(); i++)
 		{
-			PlayerInventory->AddHint(Hint->GetHint());
+			CrystalDebugText.Append(FString::Printf(TEXT("%d. %s\n"), i + 1, *CrystalArray[i]->GetCrystalName()));
 		}
-		
+		HudWidget->UpdateCrystalDebug(CrystalDebugText);
+	}
+	else if(Hint != nullptr)
+	{
+		PlayerInventory->AddHint(Hint->GetHint());
 	}
 }
 
@@ -836,7 +837,7 @@ float AIGPlayerCharacter::ComputeDamage()
 	return FMath::RandRange(NormalAttackDamageMin, NormalAttackDamageMax);
 }
 
-void AIGPlayerCharacter::UpdateShinmyophileScript(const FString InText)
+void AIGPlayerCharacter::UpdateShinmyophilScript(const FString InText)
 {
 	HudWidget->UpdateShinmyophilText(InText);
 }
