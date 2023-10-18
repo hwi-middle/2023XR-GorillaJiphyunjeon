@@ -156,8 +156,8 @@ void AIGBoss::GenerateCloseAttack()
 		}
 	}
 
-	// 산 생성
-	FVector TargetVector = UGameplayStatics::GetPlayerPawn(GWorld, 0)->GetActorLocation() - GetActorLocation();
+	// 산 생성 -> 보스 Front방향으로 변경!
+	FVector TargetVector = GetActorForwardVector();
 	TargetVector.Normalize();
 
 	for (uint32 i = 0; i < CloseAttack_SpikeNum; i++)
