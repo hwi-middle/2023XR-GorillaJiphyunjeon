@@ -15,11 +15,5 @@ public:
 	FString ScriptCode;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Script")
-	FString ScriptNext;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Script")
-	FString ScriptTrigger;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Script")
 	FString ScriptText;
 };

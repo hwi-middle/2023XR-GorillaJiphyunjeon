@@ -22,59 +22,7 @@ Path = TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/TextMa
 	Mesh->SetCollisionProfileName(TEXT("Evidence"));
 }, EAssertionLevel::Check);
 
-	FIGDataTableParser::LoadAndInitializeDataTable(*Path,
-		[&](const UDataTable* ScriptDataTable)
-		{
-			TArray<FIGTextMasterDataTable*> ScriptArray;
-			ScriptDataTable->GetAllRows(TEXT(""), ScriptArray);
 
-
-			for(int32 i = 0;  i < ScriptArray.Num(); i++)
-			{
-
-				TArray<FString> TextCodeArray;
-				ScriptArray[i]->TextCode.ParseIntoArray(TextCodeArray, TEXT("_"), true);//0 string이라 제외, 1 main, 2 sub, 3 detail 
-				
-				if(FCString::Atof(*TextCodeArray[1]) == 1 && FCString::Atof(*TextCodeArray[2]) == 1)
-				{
-					HintTextTitleArray.Add(ScriptArray[i]);
-				}
-				if(FCString::Atof(*TextCodeArray[1]) == 1 && FCString::Atof(*TextCodeArray[2]) == 2)
-				{
-					HintTextScriptArray.Add(ScriptArray[i]);
-				}
-			}
-
-			for(int32 i = 0; i < HintTextTitleArray.Num(); i++)
-			{
-				ProvisoText* HintTextScript = new ProvisoText();
-				HintTextScript->Name = HintTextTitleArray[i]->Text;
-				HintTextScript->Script = HintTextScriptArray[i]->Text;
-
-				if(i < 2)
-				{
-				    HintTextScript->HintType = EHintType::Mountain;
-					MountainHintScriptArray.AddUnique(HintTextScript);
-				}
-				if(i > 1 && i < 4)
-				{
-				    HintTextScript->HintType = EHintType::Wave;
-					WaveHintScriptArray.AddUnique(HintTextScript);
-				}
-				if(i > 3 && i < 6)
-				{
-				    HintTextScript->HintType = EHintType::PineTree;
-					PineTreeHintScriptArray.AddUnique(HintTextScript);
-				}
-				if(i > 5)
-				{
-				    HintTextScript->HintType = EHintType::Blanc;
-					BlankHintScriptArray.AddUnique(HintTextScript);
-				}
-				HintScriptArray.AddUnique(HintTextScript);
-				
-			}			
-		});
 }
 
 AIGHintBase::~AIGHintBase()
@@ -85,6 +33,59 @@ void AIGHintBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	FIGDataTableParser::LoadAndInitializeDataTable(*Path,
+		[&](const UDataTable* ScriptDataTable)
+		{
+			TArray<FIGTextMasterDataTable*> ScriptArray;
+			ScriptDataTable->GetAllRows(TEXT(""), ScriptArray);
+
+
+			for (int32 i = 0; i < ScriptArray.Num(); i++)
+			{
+
+				TArray<FString> TextCodeArray;
+				ScriptArray[i]->TextCode.ParseIntoArray(TextCodeArray, TEXT("_"), true);//0 string이라 제외, 1 main, 2 sub, 3 detail 
+
+				if (FCString::Atof(*TextCodeArray[1]) == 1 && FCString::Atof(*TextCodeArray[2]) == 1)
+				{
+					HintTextTitleArray.Add(ScriptArray[i]);
+				}
+				if (FCString::Atof(*TextCodeArray[1]) == 1 && FCString::Atof(*TextCodeArray[2]) == 2)
+				{
+					HintTextScriptArray.Add(ScriptArray[i]);
+				}
+			}
+
+			for (int32 i = 0; i < HintTextTitleArray.Num(); i++)
+			{
+				ProvisoText* HintTextScript = new ProvisoText();
+				HintTextScript->Name = HintTextTitleArray[i]->Text;
+				HintTextScript->Script = HintTextScriptArray[i]->Text;
+
+				if (i < 2)
+				{
+					HintTextScript->HintType = EHintType::Mountain;
+					MountainHintScriptArray.AddUnique(HintTextScript);
+				}
+				if (i > 1 && i < 4)
+				{
+					HintTextScript->HintType = EHintType::Wave;
+					WaveHintScriptArray.AddUnique(HintTextScript);
+				}
+				if (i > 3 && i < 6)
+				{
+					HintTextScript->HintType = EHintType::PineTree;
+					PineTreeHintScriptArray.AddUnique(HintTextScript);
+				}
+				if (i > 5)
+				{
+					HintTextScript->HintType = EHintType::Blanc;
+					BlankHintScriptArray.AddUnique(HintTextScript);
+				}
+				HintScriptArray.AddUnique(HintTextScript);
+
+			}
+		});
 	
 }
 

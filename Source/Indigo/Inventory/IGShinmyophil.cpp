@@ -18,73 +18,82 @@ UIGShinmyophil::UIGShinmyophil()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	DataTable = FIGDataTableParser::LoadAndGetDataTable(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/ScriptMasterDataTable/Script_Master.Script_Master'"));
 
-	TArray<FIGScriptMasterDataTable*> Scripts;	
-	DataTable->GetAllRows(TEXT(""), Scripts);
-
-
-	for(int32 i =0; i < Scripts.Num(); i++)
-	{
-		TArray<FString> ScriptCodeArray;
-		Scripts[i]->ScriptCode.ParseIntoArray(ScriptCodeArray, TEXT("_"), true);//0 string이라 제외, 1 main, 2 sub, 3 detail 
-		
-		if(FCString::Atof(*ScriptCodeArray[1]) == 0)
-		{
-			TutorialScriptsArray.AddUnique(Scripts[i]);
-		}
-		else if(FCString::Atof(*ScriptCodeArray[1]) == 1)
-		{
-			ProvisoScriptsArray.AddUnique(Scripts[i]);
-		}
-		else if(FCString::Atof(*ScriptCodeArray[1])== 2)
-		{
-			BattleScriptsArray.AddUnique(Scripts[i]);
-		}		
-	}
-
-	FIGDataTableParser::LoadAndInitializeDataTable(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/TextMasterDataTable/Text_Master.Text_Master'"),
-	[&](const UDataTable* ScriptDataTable)
-	{
-		TArray<FIGTextMasterDataTable*> ScriptArray;
-		ScriptDataTable->GetAllRows(TEXT(""), ScriptArray);
-
-		for(int32 i = 0;  i < ScriptArray.Num(); i++)
-		{
-			TArray<FString> TextCodeArray;
-			Scripts[i]->ScriptCode.ParseIntoArray(TextCodeArray, TEXT("_"), true);//0 string이라 제외, 1 main, 2 sub, 3 detail 
-			
-			if(FCString::Atof(*TextCodeArray[1]) == 1 && FCString::Atof(*TextCodeArray[2]) == 3)
-			{
-				QuestSummaryArray.AddUnique(ScriptArray[i]);
-			}
-			if(FCString::Atof(*TextCodeArray[1]) == 2 && FCString::Atof(*TextCodeArray[2]) == 3)
-			{
-				QuestTitleArray.AddUnique(ScriptArray[i]);
-			}
-		}
-
-		int Count = 0;
-		for(int32 i = 0;  i < QuestTitleArray.Num(); i++)
-		{			
-			UQuest* QuestTemp = NewObject<UQuest>();
-			QuestTemp->QuestTitle = QuestTitleArray[i]->Text;
-			for(int32 j = 0; j < 2; j++)
-			{
-				QuestTemp->QuestSummaryArray.Add(QuestSummaryArray[Count]->Text);
-				Count++;
-			}
-			
-			QuestArray.AddUnique(QuestTemp);
-			
-		}
-	});
 
 	IdleTime = 0.0f;
 
 	CurrentPhase = EPhaseState::None;
 	bIsMoveTutorial = false;
 	bIsHpUnder3 = false;
+}
+
+// Called when the game starts
+void UIGShinmyophil::BeginPlay()
+{
+	Super::BeginPlay();
+
+	DataTable = FIGDataTableParser::LoadAndGetDataTable(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/ScriptMasterDataTable/Script_Master.Script_Master'"));
+
+	TArray<FIGScriptMasterDataTable*> Scripts;
+	DataTable->GetAllRows(TEXT(""), Scripts);
+
+
+	for (int32 i = 0; i < Scripts.Num(); i++)
+	{
+		TArray<FString> ScriptCodeArray;
+		Scripts[i]->ScriptCode.ParseIntoArray(ScriptCodeArray, TEXT("_"), true);//0 string이라 제외, 1 main, 2 sub, 3 detail 
+
+		if (FCString::Atof(*ScriptCodeArray[1]) == 0)
+		{
+			TutorialScriptsArray.AddUnique(Scripts[i]);
+		}
+		else if (FCString::Atof(*ScriptCodeArray[1]) == 1)
+		{
+			ProvisoScriptsArray.AddUnique(Scripts[i]);
+		}
+		else if (FCString::Atof(*ScriptCodeArray[1]) == 2)
+		{
+			BattleScriptsArray.AddUnique(Scripts[i]);
+		}
+	}
+
+	FIGDataTableParser::LoadAndInitializeDataTable(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/TextMasterDataTable/Text_Master.Text_Master'"),
+		[&](const UDataTable* ScriptDataTable)
+		{
+			TArray<FIGTextMasterDataTable*> ScriptArray;
+			ScriptDataTable->GetAllRows(TEXT(""), ScriptArray);
+
+			for (int32 i = 0; i < ScriptArray.Num(); i++)
+			{
+				TArray<FString> TextCodeArray;
+				Scripts[i]->ScriptCode.ParseIntoArray(TextCodeArray, TEXT("_"), true);//0 string이라 제외, 1 main, 2 sub, 3 detail 
+
+				if (FCString::Atof(*TextCodeArray[1]) == 1 && FCString::Atof(*TextCodeArray[2]) == 3)
+				{
+					QuestSummaryArray.AddUnique(ScriptArray[i]);
+				}
+				if (FCString::Atof(*TextCodeArray[1]) == 2 && FCString::Atof(*TextCodeArray[2]) == 3)
+				{
+					QuestTitleArray.AddUnique(ScriptArray[i]);
+				}
+			}
+
+			int Count = 0;
+			for (int32 i = 0; i < QuestTitleArray.Num(); i++)
+			{
+				UQuest* QuestTemp = NewObject<UQuest>();
+				QuestTemp->QuestTitle = QuestTitleArray[i]->Text;
+				for (int32 j = 0; j < 2; j++)
+				{
+					QuestTemp->QuestSummaryArray.Add(QuestSummaryArray[Count]->Text);
+					Count++;
+				}
+
+				QuestArray.AddUnique(QuestTemp);
+
+			}
+		});
+
 }
 
 void UIGShinmyophil::OnTutorialPhase()
@@ -318,14 +327,7 @@ void UIGShinmyophil::BattlePlayerHealthUnder3()
 }
 
 
-// Called when the game starts
-void UIGShinmyophil::BeginPlay()
-{
-	Super::BeginPlay();
 
-	// ...
-	
-}
 
 
 // Called every frame
