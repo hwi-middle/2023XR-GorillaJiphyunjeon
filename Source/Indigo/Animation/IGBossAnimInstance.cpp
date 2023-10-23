@@ -30,6 +30,7 @@ void UIGBossAnimInstance::AnimNotify_FinishAttack()
 	OnFinishAttack.Broadcast();
 	bShouldPerformCloseAttack = false;
 	bShouldPerformFloorAttack = false;
+	bShouldPerformFarAttack = false;
 }
 
 void UIGBossAnimInstance::AnimNotify_BossDead()

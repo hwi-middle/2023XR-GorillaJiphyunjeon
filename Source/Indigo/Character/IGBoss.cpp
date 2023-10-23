@@ -58,6 +58,7 @@ void AIGBoss::BeginPlay()
 {
 	Super::BeginPlay();
 
+	CurrentGimmick = EAttackPattern::None;
 	PlayerActor = UGameplayStatics::GetPlayerPawn(GWorld, 0);
 	
 	AnimInstance = CastChecked<UIGBossAnimInstance>(GetMesh()->GetAnimInstance());
@@ -151,6 +152,7 @@ void AIGBoss::DisableHUD()
 
 void AIGBoss::PerformCloseAttack()
 {
+	CurrentGimmick = EAttackPattern::Close;
 	AnimInstance->StartCloseAttack();
 	if(!bIsFirstAttack)
 	{
@@ -161,11 +163,13 @@ void AIGBoss::PerformCloseAttack()
 
 void AIGBoss::PerformFloorAttack()
 {
+	CurrentGimmick = EAttackPattern::Floor;
 	AnimInstance->StartFloorAttack();
 }
 
 void AIGBoss::PerformFarAttack()
 {
+	CurrentGimmick = EAttackPattern::Far;
 	AnimInstance->StartFarAttack();
 }
 
@@ -236,5 +240,6 @@ void AIGBoss::GenerateFarAttack()
 
 void AIGBoss::EndAttack()
 {
+	CurrentGimmick = EAttackPattern::None;
 	OnFinishBossAttack.Broadcast();
 }

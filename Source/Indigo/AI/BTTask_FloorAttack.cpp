@@ -4,6 +4,8 @@
 #include "BTTask_FloorAttack.h"
 
 #include "AIController.h"
+#include "IGAI.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Indigo/Character/IGBoss.h"
 #include "Indigo/Character/IGPlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
@@ -12,6 +14,11 @@ EBTNodeResult::Type UBTTask_FloorAttack::ExecuteTask(UBehaviorTreeComponent& Own
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
 
+	if (OwnerComp.GetBlackboardComponent()->GetValueAsEnum(BBKEY_ATTACK_PATTERN) != EAttackPattern::Floor)
+	{
+		return EBTNodeResult::Failed;
+	}
+	
 	APawn* ControllingPawn = Cast<APawn>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!ControllingPawn)
 	{

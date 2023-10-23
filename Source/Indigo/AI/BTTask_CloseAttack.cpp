@@ -3,6 +3,8 @@
 
 #include "BTTask_CloseAttack.h"
 #include "AIController.h"
+#include "IGAI.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Indigo/Character/IGBoss.h"
 #include "Indigo/Character/IGPlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
@@ -11,6 +13,11 @@ EBTNodeResult::Type UBTTask_CloseAttack::ExecuteTask(UBehaviorTreeComponent& Own
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
 
+	if (OwnerComp.GetBlackboardComponent()->GetValueAsEnum(BBKEY_ATTACK_PATTERN) != EAttackPattern::Close)
+	{
+		return EBTNodeResult::Failed;
+	}
+	
 	APawn* ControllingPawn = Cast<APawn>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!ControllingPawn)
 	{

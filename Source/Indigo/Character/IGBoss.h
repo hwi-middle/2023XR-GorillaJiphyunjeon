@@ -45,7 +45,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UIGIngameHUDWidget> HudWidget;
-	
+
 private:
 	UPROPERTY()
 	TObjectPtr<UIGBossAnimInstance> AnimInstance;
@@ -61,13 +61,16 @@ private:
 	TObjectPtr<UIGBossDataAsset> BossDataAsset;
 
 	// 기믹 데이터
+	UPROPERTY()
+	TEnumAsByte<EAttackPattern> CurrentGimmick;
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UIGBossGimmickDataAsset> GimmickDataAsset;
 
 	// 근거리 패턴
 	UPROPERTY(VisibleAnywhere)
 	uint32 CloseAttack_SpikeNum;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	float CloseAttack_HandRadius;
 
@@ -109,6 +112,7 @@ public:
 
 public:
 	FORCEINLINE float GetStoppingDistance() const { return StoppingDistance; }
+	FORCEINLINE EAttackPattern GetCurrentGimmick() const { return CurrentGimmick; }
 
 	void EnableHUD();
 	void DisableHUD();
