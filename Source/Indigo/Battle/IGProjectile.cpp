@@ -6,13 +6,14 @@
 #include "Engine/DamageEvents.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
 #include "Indigo/Character/IGEnemyBase.h"
+#include "Indigo/Character/IGPlayerCharacter.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AIGProjectile::AIGProjectile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(
 		TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/SampleSphere/SM_SampleSphere.SM_SampleSphere'"), [&](UStaticMesh* MeshRef)
@@ -47,7 +48,7 @@ void AIGProjectile::BeginPlay()
 void AIGProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 	ElapsedTime += DeltaTime;
 	if (ElapsedTime > Duration)
 	{
@@ -56,21 +57,20 @@ void AIGProjectile::Tick(float DeltaTime)
 
 	float Alpha = ElapsedTime / Duration;
 	SetActorLocation(FMath::Lerp(OriginalPosition, TargetPosition, Alpha));
-	
+
 	FHitResult Result;
 	FCollisionQueryParams CollisionParams;
 	float Radius = 50.f;
 	CollisionParams.AddIgnoredActor(this);
-	CollisionParams.AddIgnoredActor(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-	
-	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 16, FColor::Green, false, 0.f);	
+
+	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 16, FColor::Green, false, 0.f);
 
 	bool bHit = GetWorld()->SweepSingleByChannel(
 		Result,
 		GetActorLocation(),
 		GetActorLocation(),
 		FQuat::Identity,
-		ECC_PROJECTILE,
+		ECC_CHECK_PAWN,
 		FCollisionShape::MakeSphere(Radius),
 		CollisionParams
 	);
@@ -80,13 +80,42 @@ void AIGProjectile::Tick(float DeltaTime)
 		return;
 	}
 
-	auto Enemy = Cast<AIGEnemyBase>(Result.GetActor());
-	if (Enemy)
+	UE_LOG(LogTemp, Log, TEXT("투사체 충돌 검출: %s"), *Result.GetActor()->GetName());
+
+	switch (ProjectileType)
 	{
-		FDamageEvent DamageEvent;
-		Enemy->TakeDamage(Damage, DamageEvent, GetInstigatorController(), this);
-		OnHitProjectile.Broadcast();
+	case SpawnedByPlayer:
+		{
+			auto Enemy = Cast<AIGEnemyBase>(Result.GetActor());
+			if (!Enemy)
+			{
+				return;
+			}
+			UE_LOG(LogTemp, Log, TEXT("적에 닿음"));
+
+			FDamageEvent DamageEvent;
+			Enemy->TakeDamage(Damage, DamageEvent, GetInstigatorController(), this);
+			break;
+		}
+	case SpawnedByEnemy:
+		{
+			auto Player = Cast<AIGPlayerCharacter>(Result.GetActor());
+			if (!Player)
+			{
+				return;
+			}
+			UE_LOG(LogTemp, Log, TEXT("플레이어에 닿음"));
+
+			FDamageEvent DamageEvent;
+			Player->TakeDamage(Damage, DamageEvent, GetInstigatorController(), this);
+			break;
+		}
+	default:
+		checkNoEntry();
+		break;
 	}
 
+	UE_LOG(LogTemp, Log, TEXT("투사체 파괴"));
+	OnHitProjectile.Broadcast();
 	Destroy();
 }

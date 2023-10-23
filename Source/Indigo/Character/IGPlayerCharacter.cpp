@@ -325,6 +325,7 @@ void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 float AIGPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	UE_LOG(LogTemp, Log, TEXT("플레이어 TakeDamage"));
 	if (CheckPlayerState(EPlayerState::Rolling))
 	{
 		return 0.f;

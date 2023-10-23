@@ -10,6 +10,7 @@
 #include "Indigo/AI/IGBossAIController.h"
 #include "Indigo/Animation/IGBossAnimInstance.h"
 #include "Indigo/Battle/IGMountainSpike.h"
+#include "Indigo/Battle/IGProjectile.h"
 #include "Indigo/Battle/IGTreeTorus.h"
 #include "Indigo/Constant/IGBossSockets.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
@@ -202,7 +203,15 @@ void AIGBoss::GenerateCloseAttack()
 
 void AIGBoss::GenerateFloorAttack()
 {
-	
+	const uint32 ProjectileCount = 30;
+	float Angle = 0.f;
+	for (uint32 i = 0; i < ProjectileCount; ++i)
+	{
+		AIGProjectile* SpawnedProjectile = GWorld->SpawnActor<AIGProjectile>(GetActorLocation(), FRotator(0.f, Angle, 0.f));
+		SpawnedProjectile->Init(10.f, SpawnedProjectile->GetActorForwardVector(), 10000.f, 10.f, EProjectileType::SpawnedByEnemy);
+		Angle += 360.f / ProjectileCount;
+	}
+
 
 	
 	// AIGTreeTorus* SpawnedTorus = GWorld->SpawnActor<AIGTreeTorus>(GetActorLocation(), FRotator::ZeroRotator);
