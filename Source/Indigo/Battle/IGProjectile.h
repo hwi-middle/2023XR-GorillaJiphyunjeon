@@ -8,6 +8,13 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnHitProjectile)
 
+UENUM()
+enum EProjectileType
+{
+	SpawnedByPlayer,
+	SpawnedByEnemy
+};
+
 UCLASS()
 class INDIGO_API AIGProjectile : public AActor
 {
@@ -28,6 +35,9 @@ public:
 private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UStaticMeshComponent> Mesh;
+
+	UPROPERTY()
+	TEnumAsByte<EProjectileType> ProjectileType;
 	
 	UPROPERTY()
 	float Damage;
@@ -46,5 +56,5 @@ private:
 	
 public:
 	 FOnHitProjectile OnHitProjectile;
-	void Init(float InDamage, FVector InTargetDirection, float MaxDistance, float InSpeed);
+	void Init(float InDamage, const FVector& InTargetDirection, float MaxDistance, float InSpeed, EProjectileType InType);
 };

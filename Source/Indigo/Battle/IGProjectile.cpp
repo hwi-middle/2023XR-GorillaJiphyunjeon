@@ -24,7 +24,7 @@ AIGProjectile::AIGProjectile()
 		}, EAssertionLevel::None);
 }
 
-void AIGProjectile::Init(float InDamage, FVector InTargetDirection, float MaxDistance, float InSpeed)
+void AIGProjectile::Init(const float InDamage, const FVector& InTargetDirection, const float MaxDistance, const float InSpeed, const EProjectileType InType)
 {
 	Damage = InDamage;
 	OriginalPosition = GetActorLocation();
@@ -33,6 +33,7 @@ void AIGProjectile::Init(float InDamage, FVector InTargetDirection, float MaxDis
 	const float DistancePerSecond = InSpeed * 100.f;
 	const float DistanceToTarget = (TargetPosition - OriginalPosition).Size2D();
 	Duration = DistanceToTarget / DistancePerSecond;
+	ProjectileType = InType;
 }
 
 // Called when the game starts or when spawned

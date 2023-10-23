@@ -202,8 +202,11 @@ void AIGBoss::GenerateCloseAttack()
 
 void AIGBoss::GenerateFloorAttack()
 {
-	AIGTreeTorus* SpawnedTorus = GWorld->SpawnActor<AIGTreeTorus>(GetActorLocation(), FRotator::ZeroRotator);
-	SpawnedTorus->Init(10.f, 3.f);
+	
+
+	
+	// AIGTreeTorus* SpawnedTorus = GWorld->SpawnActor<AIGTreeTorus>(GetActorLocation(), FRotator::ZeroRotator);
+	// SpawnedTorus->Init(10.f, 3.f);
 }
 
 void AIGBoss::EndAttack()

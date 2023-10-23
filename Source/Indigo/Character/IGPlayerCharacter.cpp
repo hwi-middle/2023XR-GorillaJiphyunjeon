@@ -510,7 +510,7 @@ void AIGPlayerCharacter::Attack()
 	// ---- Temporal (Socket 등으로 위치 조정해줘야함)
 	const FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
 	AIGProjectile* SpawnedActor = GetWorld()->SpawnActor<AIGProjectile>(SpawnLocation, FRotator::ZeroRotator);
-	SpawnedActor->Init(Damage, GetActorForwardVector(), 1000.f, 10.f);
+	SpawnedActor->Init(Damage, GetActorForwardVector(), 1000.f, 10.f, EProjectileType::SpawnedByPlayer);
 	SpawnedActor->OnHitProjectile.AddUObject(this, &AIGPlayerCharacter::OnHitProjectile);
 	// ----
 	UGameplayStatics::PlaySound2D(this, TestSoundDataAsset->PlayerAttackSoundCue);
