@@ -9,6 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Indigo/AI/IGBossAIController.h"
 #include "Indigo/Animation/IGBossAnimInstance.h"
+#include "Indigo/Battle/IGFollowProjectile.h"
 #include "Indigo/Battle/IGMountainSpike.h"
 #include "Indigo/Battle/IGProjectileBase.h"
 #include "Indigo/Battle/IGStraightProjectile.h"
@@ -56,10 +57,14 @@ AIGBoss::AIGBoss()
 void AIGBoss::BeginPlay()
 {
 	Super::BeginPlay();
+
+	PlayerActor = UGameplayStatics::GetPlayerPawn(GWorld, 0);
+	
 	AnimInstance = CastChecked<UIGBossAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->SetSpeed(0.f);
 	AnimInstance->OnGenerateBossCloseAttack.AddUObject(this, &AIGBoss::GenerateCloseAttack);
 	AnimInstance->OnGenerateBossFloorAttack.AddUObject(this, &AIGBoss::GenerateFloorAttack);
+	AnimInstance->OnGenerateBossFarAttack.AddUObject(this, &AIGBoss::GenerateFarAttack);
 	AnimInstance->OnFinishAttack.AddUObject(this, &AIGBoss::EndAttack);
 	StoppingDistance = BossDataAsset->StoppingDistance;
 	MaxHp = BossDataAsset->MaxHp;
@@ -159,6 +164,11 @@ void AIGBoss::PerformFloorAttack()
 	AnimInstance->StartFloorAttack();
 }
 
+void AIGBoss::PerformFarAttack()
+{
+	AnimInstance->StartFarAttack();
+}
+
 void AIGBoss::GenerateCloseAttack()
 {
 	// 주먹에 의한 피해
@@ -216,6 +226,12 @@ void AIGBoss::GenerateFloorAttack()
 
 	// AIGTreeTorus* SpawnedTorus = GWorld->SpawnActor<AIGTreeTorus>(GetActorLocation(), FRotator::ZeroRotator);
 	// SpawnedTorus->Init(10.f, 3.f);
+}
+
+void AIGBoss::GenerateFarAttack()
+{
+	AIGFollowProjectile* SpawnedProjectile = GWorld->SpawnActor<AIGFollowProjectile>(GetMesh()->GetSocketLocation(TEXT("LeftHand")), FRotator::ZeroRotator);
+	SpawnedProjectile->Init(10.f, PlayerActor, 10000.f, 6.f, 3.f, EProjectileSpawnType::SpawnedByEnemy);
 }
 
 void AIGBoss::EndAttack()

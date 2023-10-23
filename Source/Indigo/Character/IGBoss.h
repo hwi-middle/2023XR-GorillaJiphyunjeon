@@ -53,6 +53,9 @@ private:
 	UPROPERTY()
 	float StoppingDistance;
 
+	UPROPERTY()
+	TObjectPtr<AActor> PlayerActor;
+
 	// 능력치 데이터
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UIGBossDataAsset> BossDataAsset;
@@ -111,7 +114,9 @@ public:
 	void DisableHUD();
 	void PerformCloseAttack();
 	void PerformFloorAttack();
+	void PerformFarAttack();
 	void GenerateCloseAttack();
 	void GenerateFloorAttack();
+	void GenerateFarAttack();
 	void EndAttack();
 };

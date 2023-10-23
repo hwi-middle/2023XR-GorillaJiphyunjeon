@@ -20,6 +20,11 @@ void UIGBossAnimInstance::AnimNotify_GenerateFloorAttack()
 	OnGenerateBossFloorAttack.Broadcast();
 }
 
+void UIGBossAnimInstance::AnimNotify_GenerateFarAttack()
+{
+	OnGenerateBossFarAttack.Broadcast();
+}
+
 void UIGBossAnimInstance::AnimNotify_FinishAttack()
 {
 	OnFinishAttack.Broadcast();

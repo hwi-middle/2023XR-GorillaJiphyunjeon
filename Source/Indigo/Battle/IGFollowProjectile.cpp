@@ -3,7 +3,7 @@
 
 #include "IGFollowProjectile.h"
 
-void AIGFollowProjectile::Init(const float InDamage, AActor& InTarget, const float MaxDistance, const float InSpeed, float InDuration, const EProjectileSpawnType InSpawnType)
+void AIGFollowProjectile::Init(const float InDamage, AActor* InTarget, const float MaxDistance, const float InSpeed, float InDuration, const EProjectileSpawnType InSpawnType)
 {
 	Damage = InDamage;
 	OriginalPosition = GetActorLocation();

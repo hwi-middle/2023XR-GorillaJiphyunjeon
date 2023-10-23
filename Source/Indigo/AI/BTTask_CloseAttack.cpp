@@ -2,7 +2,6 @@
 
 
 #include "BTTask_CloseAttack.h"
-
 #include "AIController.h"
 #include "Indigo/Character/IGBoss.h"
 #include "Indigo/Character/IGPlayerCharacter.h"
