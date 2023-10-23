@@ -4,25 +4,25 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "IGProjectile.generated.h"
+#include "IGProjectileBase.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnHitProjectile)
 
 UENUM()
-enum EProjectileType
+enum EProjectileSpawnType
 {
 	SpawnedByPlayer,
-	SpawnedByEnemy
+	SpawnedByEnemy,
 };
 
 UCLASS()
-class INDIGO_API AIGProjectile : public AActor
+class INDIGO_API AIGProjectileBase : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AIGProjectile();
+	AIGProjectileBase();
 
 protected:
 	// Called when the game starts or when spawned
@@ -32,21 +32,15 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-private:
+protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UStaticMeshComponent> Mesh;
-
+	
 	UPROPERTY()
-	TEnumAsByte<EProjectileType> ProjectileType;
+	TEnumAsByte<EProjectileSpawnType> SpawnType;
 	
 	UPROPERTY()
 	float Damage;
-
-	UPROPERTY()
-	FVector OriginalPosition;
-	
-	UPROPERTY()
-	FVector TargetPosition;
 
 	UPROPERTY()
 	float Duration;
@@ -55,6 +49,5 @@ private:
 	float ElapsedTime;
 	
 public:
-	 FOnHitProjectile OnHitProjectile;
-	void Init(float InDamage, const FVector& InTargetDirection, float MaxDistance, float InSpeed, EProjectileType InType);
+	FOnHitProjectile OnHitProjectile;
 };

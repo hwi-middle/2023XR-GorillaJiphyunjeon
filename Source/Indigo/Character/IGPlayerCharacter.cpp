@@ -15,7 +15,8 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Indigo/Animation/IGPlayerAnimInstance.h"
-#include "Indigo/Battle/IGProjectile.h"
+#include "Indigo/Battle/IGProjectileBase.h"
+#include "Indigo/Battle/IGStraightProjectile.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
 #include "Indigo/DataAsset/IGPlayerControlDataAsset.h"
 #include "Indigo/DataAsset/IGPlayerDataAsset.h"
@@ -510,8 +511,8 @@ void AIGPlayerCharacter::Attack()
 
 	// ---- Temporal (Socket 등으로 위치 조정해줘야함)
 	const FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
-	AIGProjectile* SpawnedActor = GetWorld()->SpawnActor<AIGProjectile>(SpawnLocation, FRotator::ZeroRotator);
-	SpawnedActor->Init(Damage, GetActorForwardVector(), 1000.f, 10.f, EProjectileType::SpawnedByPlayer);
+	AIGStraightProjectile* SpawnedActor = GetWorld()->SpawnActor<AIGStraightProjectile>(SpawnLocation, FRotator::ZeroRotator);
+	SpawnedActor->Init(Damage, GetActorForwardVector(), 1000.f, 10.f, EProjectileSpawnType::SpawnedByPlayer);
 	SpawnedActor->OnHitProjectile.AddUObject(this, &AIGPlayerCharacter::OnHitProjectile);
 	// ----
 	UGameplayStatics::PlaySound2D(this, TestSoundDataAsset->PlayerAttackSoundCue);

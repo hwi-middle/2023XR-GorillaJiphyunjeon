@@ -1,7 +1,7 @@
 // Copyright GorillaJiphyunjeon. All Rights Reserved.
 
 
-#include "IGProjectile.h"
+#include "IGProjectileBase.h"
 
 #include "Engine/DamageEvents.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
@@ -11,7 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
-AIGProjectile::AIGProjectile()
+AIGProjectileBase::AIGProjectileBase()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -25,27 +25,15 @@ AIGProjectile::AIGProjectile()
 		}, EAssertionLevel::None);
 }
 
-void AIGProjectile::Init(const float InDamage, const FVector& InTargetDirection, const float MaxDistance, const float InSpeed, const EProjectileType InType)
-{
-	Damage = InDamage;
-	OriginalPosition = GetActorLocation();
-	TargetPosition = OriginalPosition + InTargetDirection * MaxDistance;
-
-	const float DistancePerSecond = InSpeed * 100.f;
-	const float DistanceToTarget = (TargetPosition - OriginalPosition).Size2D();
-	Duration = DistanceToTarget / DistancePerSecond;
-	ProjectileType = InType;
-}
-
 // Called when the game starts or when spawned
-void AIGProjectile::BeginPlay()
+void AIGProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
 	ElapsedTime = 0;
 }
 
 // Called every frame
-void AIGProjectile::Tick(float DeltaTime)
+void AIGProjectileBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -54,9 +42,6 @@ void AIGProjectile::Tick(float DeltaTime)
 	{
 		Destroy();
 	}
-
-	float Alpha = ElapsedTime / Duration;
-	SetActorLocation(FMath::Lerp(OriginalPosition, TargetPosition, Alpha));
 
 	FHitResult Result;
 	FCollisionQueryParams CollisionParams;
@@ -79,10 +64,8 @@ void AIGProjectile::Tick(float DeltaTime)
 	{
 		return;
 	}
-
-	UE_LOG(LogTemp, Log, TEXT("투사체 충돌 검출: %s"), *Result.GetActor()->GetName());
-
-	switch (ProjectileType)
+	
+	switch (SpawnType)
 	{
 	case SpawnedByPlayer:
 		{
@@ -91,7 +74,6 @@ void AIGProjectile::Tick(float DeltaTime)
 			{
 				return;
 			}
-			UE_LOG(LogTemp, Log, TEXT("적에 닿음"));
 
 			FDamageEvent DamageEvent;
 			Enemy->TakeDamage(Damage, DamageEvent, GetInstigatorController(), this);
@@ -104,7 +86,6 @@ void AIGProjectile::Tick(float DeltaTime)
 			{
 				return;
 			}
-			UE_LOG(LogTemp, Log, TEXT("플레이어에 닿음"));
 
 			FDamageEvent DamageEvent;
 			Player->TakeDamage(Damage, DamageEvent, GetInstigatorController(), this);
@@ -115,7 +96,6 @@ void AIGProjectile::Tick(float DeltaTime)
 		break;
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("투사체 파괴"));
 	OnHitProjectile.Broadcast();
 	Destroy();
 }
