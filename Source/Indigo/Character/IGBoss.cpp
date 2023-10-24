@@ -25,10 +25,10 @@ AIGBoss::AIGBoss()
 	{
 		GetMesh()->SetSkeletalMesh(MeshRef);
 		GetMesh()->SetRelativeRotation(FRotator(0.f, 270.f, 0.f));
-	}, EAssertionLevel::Check);
+	}, EAssertionLevel::None);
 
 	const TSubclassOf<UIGBossAnimInstance> BossAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGBossAnimInstance>(
-		TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Boss/Animation/ABP_Boss.ABP_Boss_C"), EAssertionLevel::Check);
+		TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Boss/Animation/ABP_Boss.ABP_Boss_C"), EAssertionLevel::None);
 	GetMesh()->SetAnimInstanceClass(BossAnimInstanceClass);
 
 	AIControllerClass = AIGBossAIController::StaticClass();
