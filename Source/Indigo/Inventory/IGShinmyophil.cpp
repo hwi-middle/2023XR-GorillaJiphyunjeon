@@ -109,7 +109,6 @@ void UIGShinmyophil::OnProvisoPhase()
 {
 	CurrentPhase = EPhaseState::ProvisoPhase;
 	ProvisoStartProvisoPhase();
-
 }
 
 void UIGShinmyophil::OnBattlePhase()
@@ -118,13 +117,12 @@ void UIGShinmyophil::OnBattlePhase()
 	BattleStartBattlePhase();
 }
 
-void UIGShinmyophil::PrintRelayScript(const TArray<FIGScriptMasterDataTable*> InScriptArray, const int32 InSubNum) 
+void UIGShinmyophil::PrintRelayScript(const TArray<FIGScriptMasterDataTable*> InScriptArray, const int32 InSubNum)
 {
 	AIGPlayerCharacter* IGPlayerCharacter = Cast<AIGPlayerCharacter>(GetOwner());
 	
 	for(int32 Index = 0; Index < InScriptArray.Num(); Index++)
 	{
-
 		TArray<FString> TextCodeArray;
 		InScriptArray[Index]->ScriptCode.ParseIntoArray(TextCodeArray, TEXT("_"), true);//0 string이라 제외, 1 main, 2 sub, 3 detail 
 		
@@ -139,9 +137,8 @@ void UIGShinmyophil::PrintRelayScript(const TArray<FIGScriptMasterDataTable*> In
 			return;
 		}
 	}
-
-
 }
+	
 
 void UIGShinmyophil::TutorialPhaseStart()
 {

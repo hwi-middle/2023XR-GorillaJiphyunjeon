@@ -9,16 +9,20 @@
 /**
  * 
  */
+
+class UButton;
+class UTextBlock;
+
 UCLASS()
 class INDIGO_API UIGLevelButton : public UUserWidget
 {
 	GENERATED_BODY()
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	class UButton* LevelButton;
+	TObjectPtr<UButton> LevelButton;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	class UTextBlock* ButtonText;
+	TObjectPtr<UTextBlock> ButtonText;
 
 protected:
 	virtual void NativeConstruct() override;

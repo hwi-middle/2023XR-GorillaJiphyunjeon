@@ -12,6 +12,7 @@ class UIGPlayerDataAsset;
 class UIGPlayerControlDataAsset;
 enum class ECrystal : uint32;
 class UIGIngameHUDWidget;
+class UIGTutotialWidget;
 class UIGPlayerAnimInstance;
 class UIGCharacterDataParser;
 class USpringArmComponent;
@@ -74,6 +75,12 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UIGIngameHUDWidget> HudWidget;
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UIGTutotialWidget> TutorialWidgetClass;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UIGTutotialWidget> TutorialWidget;
 
 public:
 	virtual void Tick(float DeltaTime) override;
@@ -138,6 +145,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> Crystal3Action;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> ShowTutorialWidget;
 
 	// 애니메이션
 	UPROPERTY()
@@ -165,6 +175,7 @@ private:
 	void ActivateCrystal1();
 	void ActivateCrystal2();
 	void ActivateCrystal3();
+	void TutorialWidgetVisible();
 	void PlayDieSequence();
 	void PlayFadeInSequence();
 
@@ -298,6 +309,7 @@ private:
 
 	UPROPERTY()
 	float ElapsedFadeSequenceTime;
+
 
 private:
 	// 디버그용

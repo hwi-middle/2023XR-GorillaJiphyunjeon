@@ -25,6 +25,8 @@
 #include "Indigo/Interface/Interactable.h"
 #include "Indigo/Inventory/IGPlayerInventory.h"
 #include "Indigo/UI/IGIngameHUDWidget.h"
+#include "Indigo/UI/QuestUI/IGQuest.h"
+#include "Indigo/UI/TutorialUI/IGTutotialWidget.h"
 #include "Indigo/Util/IGCharacterDataTable.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGDataTableParser.h"
@@ -32,7 +34,6 @@
 #include "Sound/SoundCue.h"
 #include "Indigo/Inventory/IGShinmyophil.h"
 #include "Indigo/Interactable/IGHintBase.h"
-#include "Indigo/UI/QuestUI/IGQuest.h"
 
 AIGPlayerCharacter::AIGPlayerCharacter()
 {
@@ -62,7 +63,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	AttackRate = CharacterDataTable->AttackRate;
 	DefenceValue = CharacterDataTable->DefenseValue;
 	StaminaValue = CharacterDataTable->StaminaValue;
-
+		
 	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Mesh/SM_Main_Rigging.SM_Main_Rigging'"), [&](USkeletalMesh* SkeletalMesh)
 	{
 		GetMesh()->SetSkeletalMesh(SkeletalMesh);
@@ -80,8 +81,6 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 
 	}, EAssertionLevel::Check);
 
-
-
 	PlayerControlDataAsset = FIGConstructorHelper::FindAndGetObject<UIGPlayerControlDataAsset>(TEXT("/Script/Indigo.IGPlayerControlDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerControlData.DA_PlayerControlData'"));
 	DefaultMappingContext = PlayerControlDataAsset->DefaultMappingContext;
 	MoveAction = PlayerControlDataAsset->MoveAction;
@@ -93,6 +92,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	Crystal1Action = PlayerControlDataAsset->Crystal1Action;
 	Crystal2Action = PlayerControlDataAsset->Crystal2Action;
 	Crystal3Action = PlayerControlDataAsset->Crystal3Action;
+	ShowTutorialWidget = PlayerControlDataAsset->ShowTutorialWidget;
 
 	const TSubclassOf<UIGPlayerAnimInstance> BossAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGPlayerAnimInstance>(
 		TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/ABP_Player.ABP_Player_C"), EAssertionLevel::Check);
@@ -101,6 +101,11 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	FIGConstructorHelper::FindClassAndInitialize<UIGIngameHUDWidget>(TEXT("/Game/_GorillaJiphyunjeon/UI/Game/WBP_GameHUD.WBP_GameHUD_C"), [&](TSubclassOf<UIGIngameHUDWidget> Class)
 	{
 		HudWidgetClass = Class;
+	}, EAssertionLevel::Check);
+	
+	FIGConstructorHelper::FindClassAndInitialize<UIGTutotialWidget>(TEXT("/Game/_GorillaJiphyunjeon/UI/Game/Tutorial/WBP_TutorialWidget.WBP_TutorialWidget_C"), [&](TSubclassOf<UIGTutotialWidget> Class)
+	{
+		TutorialWidgetClass = Class;
 	}, EAssertionLevel::Check);
 	
 	PlayerInventory = CreateDefaultSubobject<UIGPlayerInventory>(TEXT("Inventory"));
@@ -179,8 +184,13 @@ void AIGPlayerCharacter::BeginPlay()
 		for(int i= 0; i < Shinmyophil->GetQuestArray().Num(); i++)
 		{
 			HudWidget->InitQuestList(Shinmyophil->GetQuestArray()[i]);			
-		}
-		
+		}		
+	}
+
+	TutorialWidget = CreateWidget<UIGTutotialWidget>(GetWorld(), TutorialWidgetClass);
+	if(TutorialWidget)
+	{
+		TutorialWidget->AddToViewport();		
 	}
 
 	ManageStaminaByTime();
@@ -296,6 +306,7 @@ void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(Crystal1Action, ETriggerEvent::Started, this, &AIGPlayerCharacter::ActivateCrystal1);
 		EnhancedInputComponent->BindAction(Crystal2Action, ETriggerEvent::Started, this, &AIGPlayerCharacter::ActivateCrystal2);
 		EnhancedInputComponent->BindAction(Crystal3Action, ETriggerEvent::Started, this, &AIGPlayerCharacter::ActivateCrystal3);
+		EnhancedInputComponent->BindAction(ShowTutorialWidget, ETriggerEvent::Started, this, &AIGPlayerCharacter::TutorialWidgetVisible);
 	}
 }
 
@@ -324,6 +335,7 @@ float AIGPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 
 void AIGPlayerCharacter::Move(const FInputActionValue& Value)
 {
+	
 	if (CheckPlayerState(EPlayerState::Dead))
 	{
 		return;
@@ -393,6 +405,7 @@ void AIGPlayerCharacter::SetIsRunning(const FInputActionValue& Value)
 
 void AIGPlayerCharacter::Interact()
 {
+	
 	FHitResult Result;
 	FCollisionQueryParams CollisionParams;
 	float Radius = 100.f;
@@ -488,7 +501,7 @@ void AIGPlayerCharacter::FinishAttack()
 }
 
 void AIGPlayerCharacter::StartRolling()
-{
+{	
 	if (CheckPlayerState(EPlayerState::Rolling) || CheckPlayerState(EPlayerState::Attacking))
 	{
 		return;
@@ -668,6 +681,19 @@ void AIGPlayerCharacter::ActivateCrystal2()
 void AIGPlayerCharacter::ActivateCrystal3()
 {
 	ActivateCrystalByIndex(2);
+}
+
+void AIGPlayerCharacter::TutorialWidgetVisible()
+{
+	if(TutorialWidget)
+	{
+		if(TutorialWidget->GetVisibility() == ESlateVisibility::Hidden)
+		{
+			TutorialWidget->VisibleTutorialWidget();			
+			return;
+		}
+			TutorialWidget->CloseTutorialWidget();		
+	}
 }
 
 void AIGPlayerCharacter::PlayDieSequence()

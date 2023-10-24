@@ -45,4 +45,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "InputAction", DisplayName = "3번 결정 활성화")
 	TObjectPtr<UInputAction> Crystal3Action;
+	
+	UPROPERTY(EditAnywhere, Category = "InputAction", DisplayName = "튜토리얼 창 띄우기")
+	TObjectPtr<UInputAction> ShowTutorialWidget;
 };
