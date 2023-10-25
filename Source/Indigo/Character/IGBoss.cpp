@@ -21,7 +21,7 @@
 
 AIGBoss::AIGBoss()
 {
-	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Boss/Mesh/SK_Boss.SK_Boss'"), [&](USkeletalMesh* MeshRef)
+	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Boss/Mesh/Dummy/SK_Boss.SK_Boss'"), [&](USkeletalMesh* MeshRef)
 	{
 		GetMesh()->SetSkeletalMesh(MeshRef);
 		GetMesh()->SetRelativeRotation(FRotator(0.f, 270.f, 0.f));
