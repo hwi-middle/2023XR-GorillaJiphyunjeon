@@ -57,18 +57,18 @@ void AIGPhasePlaceBase::Tick(float DeltaTime)
 		FCollisionShape::MakeBox(BoxCollider->GetScaledBoxExtent()),
 		CollisionParams
 	);
-
+	
 	if (!bHit)
 	{
 		bIsInCollision = false;
 		return;
-	}
+	}	
 
 	PlayerCharacter = Cast<AIGPlayerCharacter>(Result.GetActor());
 	if (PlayerCharacter == nullptr)
 	{
 		return;
-	}
+	}	
 
 	EnterPhasePlace();		
 	bIsInCollision = true;

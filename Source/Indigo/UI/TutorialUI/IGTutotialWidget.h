@@ -21,6 +21,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void CloseTutorialWidget();
+	UFUNCTION(BlueprintCallable)
 	void VisibleTutorialWidget();
 	
 protected:
@@ -34,5 +35,5 @@ protected:
 	TObjectPtr<UButton> ConfirmButton;
 
 private:
-	APlayerController* Controller;
+	TObjectPtr<APlayerController> Controller;
 };

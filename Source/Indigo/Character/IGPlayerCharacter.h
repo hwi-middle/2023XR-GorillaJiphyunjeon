@@ -89,6 +89,7 @@ public:
 	
 	//신묘필 대사 갱신
 	void UpdateShinmyophilScript(const FString InText);
+	
 public:
 	//인터페이스 함수
 	virtual FORCEINLINE float GetHp() const override { return Hp; }

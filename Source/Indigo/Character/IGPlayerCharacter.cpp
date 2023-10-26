@@ -190,7 +190,8 @@ void AIGPlayerCharacter::BeginPlay()
 	TutorialWidget = CreateWidget<UIGTutotialWidget>(GetWorld(), TutorialWidgetClass);
 	if(TutorialWidget)
 	{
-		TutorialWidget->AddToViewport();		
+		TutorialWidget->AddToViewport();
+		TutorialWidget->SetKeyboardFocus();
 	}
 
 	ManageStaminaByTime();
@@ -442,6 +443,7 @@ void AIGPlayerCharacter::Interact()
 	if (Crystal != nullptr)
 	{
 		PlayerInventory->AddCrystal(Crystal);
+		HudWidget->AddCrystal(Crystal);
 
 		// Temporal
 		FString CrystalDebugText;
@@ -689,10 +691,8 @@ void AIGPlayerCharacter::TutorialWidgetVisible()
 	{
 		if(TutorialWidget->GetVisibility() == ESlateVisibility::Hidden)
 		{
-			TutorialWidget->VisibleTutorialWidget();			
-			return;
+			TutorialWidget->VisibleTutorialWidget();
 		}
-			TutorialWidget->CloseTutorialWidget();		
 	}
 }
 
@@ -753,6 +753,7 @@ void AIGPlayerCharacter::UpdateShinmyophilScript(const FString InText)
 {
 	HudWidget->UpdateShinmyophilText(InText);
 }
+
 
 void AIGPlayerCharacter::SetHp_DEBUG(const uint32 Value)
 {

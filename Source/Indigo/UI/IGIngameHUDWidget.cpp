@@ -6,6 +6,8 @@
 #include "QuestUI/IGQuestList.h"
 #include "Indigo/Inventory/IGShinmyophil.h"
 #include "Indigo/UI/Shinmyophil/IGShinmyophilText.h"
+#include "Indigo/UI/CrystalUI/IGCrystalSlot.h"
+#include "Indigo/Interactable/IGCrystalBase.h"
 #include "Components/TextBlock.h"
 
 void UIGIngameHUDWidget::InitHpGauge(float InMaxValue, float InInitialValue) const
@@ -43,6 +45,11 @@ void UIGIngameHUDWidget::UpdateShinmyophilText(const FString& Str) const
 	ShinmyophilText->SetText(Str);
 }
 
+void UIGIngameHUDWidget::AddCrystal(AIGCrystalBase* InCrystal) const
+{
+	CrystalSlot->AddCrystal(InCrystal);
+}
+
 void UIGIngameHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -52,4 +59,5 @@ void UIGIngameHUDWidget::NativeConstruct()
 	CrystalTextBlock = Cast<UTextBlock>(GetWidgetFromName(TEXT("CrystalDebug")));
 	ShinmyophilQuestList = Cast<UIGQuestList>(GetWidgetFromName(TEXT("Quest_List")));
 	ShinmyophilText = Cast<UIGShinmyophilText>(GetWidgetFromName(TEXT("IGShinmyophilText")));
+	CrystalSlot = Cast<UIGCrystalSlot>(GetWidgetFromName(TEXT("CrystalSlots")));
 }

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/TextBlock.h"
 #include "IGShinmyophilText.generated.h"
 
 class UTextBlock;
@@ -16,6 +17,7 @@ class INDIGO_API UIGShinmyophilText : public UUserWidget
 public:
 	UIGShinmyophilText(const FObjectInitializer& ObjectInitializer);
 	void SetText(const FString InText);
+	FORCEINLINE FString GetText() const {return ChatterBoxText->GetText().ToString();}
 	
 protected:
 	virtual void NativeConstruct() override;

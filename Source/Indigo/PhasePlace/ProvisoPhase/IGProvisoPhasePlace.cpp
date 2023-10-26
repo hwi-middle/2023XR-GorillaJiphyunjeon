@@ -23,11 +23,10 @@ void AIGProvisoPhasePlace::BeginPlay()
 void AIGProvisoPhasePlace::EnterPhasePlace()
 {
 	Super::EnterPhasePlace();
-	if(PlayerCharacter != nullptr)
-	{
-		PlayerCharacter->GetShinmyophil()->OnProvisoPhase();
-		Destroy();
-	}
+	
+	PlayerCharacter->GetShinmyophil()->OnProvisoPhase();
+	Destroy();
+	
 }
 
 // Called every frame

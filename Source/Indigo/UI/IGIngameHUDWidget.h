@@ -4,14 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Shinmyophil/IGShinmyophilText.h"
 #include "IGIngameHUDWidget.generated.h"
 
+class AIGCrystalBase;
 class UTextBlock;
 class UIGGauge;
 class UIGQuestList;
 class UIGQuest;
 class UQuest;
 class UIGShinmyophilText;
+class UIGCrystalSlot;
 
 /**
  * 
@@ -29,6 +32,9 @@ public:
 	void UpdateStaminaGauge(const float InValue) const;
 	void UpdateCrystalDebug(const FString& Str) const;
 	void UpdateShinmyophilText(const FString& Str) const;
+	void AddCrystal(AIGCrystalBase* InCrystal) const;
+
+	FORCEINLINE FString GetShinmyophilText() const { return ShinmyophilText->GetText();}
 
 protected:
 	virtual void NativeConstruct() override;
@@ -48,4 +54,7 @@ protected:
 	
 	UPROPERTY()
 	TObjectPtr<UIGShinmyophilText> ShinmyophilText;
+
+	UPROPERTY()
+	TObjectPtr<UIGCrystalSlot> CrystalSlot;
 };

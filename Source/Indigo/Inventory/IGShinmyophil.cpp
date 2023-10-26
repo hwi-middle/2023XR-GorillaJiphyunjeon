@@ -3,12 +3,16 @@
 
 #include "IGShinmyophil.h"
 
+#include "IAutomationControllerManager.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Indigo/Character/IGPlayerCharacter.h"
 #include "Indigo/Util/IGDataTableParser.h"
 #include "Indigo/Util/IGScriptMasterDataTable.h"
 #include "Indigo/Util/IGTextMasterDataTable.h"
+#include "TimerManager.h"
+#include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
@@ -18,9 +22,8 @@ UIGShinmyophil::UIGShinmyophil()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-
-
 	IdleTime = 0.0f;
+	ScriptDelayTime = 0.0f;
 
 	CurrentPhase = EPhaseState::None;
 	bIsMoveTutorial = false;
@@ -120,17 +123,27 @@ void UIGShinmyophil::OnBattlePhase()
 void UIGShinmyophil::PrintRelayScript(const TArray<FIGScriptMasterDataTable*> InScriptArray, const int32 InSubNum)
 {
 	AIGPlayerCharacter* IGPlayerCharacter = Cast<AIGPlayerCharacter>(GetOwner());
-	
 	for(int32 Index = 0; Index < InScriptArray.Num(); Index++)
 	{
 		TArray<FString> TextCodeArray;
 		InScriptArray[Index]->ScriptCode.ParseIntoArray(TextCodeArray, TEXT("_"), true);//0 string이라 제외, 1 main, 2 sub, 3 detail 
 		
+		FTimerHandle TimerHandle;
 		if(FCString::Atof(*TextCodeArray[2]) == InSubNum)
 		{
-			ScriptLogArray.AddUnique(InScriptArray[Index]->ScriptText);
-			IGPlayerCharacter->UpdateShinmyophilScript(InScriptArray[Index]->ScriptText);
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%s]"), *InScriptArray[Index]->ScriptText));			
+			int32 CurrentIndex = Index;
+			
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([=, &TimerHandle]()
+			{
+				if (InScriptArray.IsValidIndex(CurrentIndex))
+				{					
+					ScriptLogArray.AddUnique(InScriptArray[Index]->ScriptText);
+					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%s]"), *InScriptArray[Index]->ScriptText));				
+					IGPlayerCharacter->UpdateShinmyophilScript(InScriptArray[Index]->ScriptText);
+				}
+				GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+			}), ScriptDelayTime, false);			
+			ScriptDelayTime += 2.0f;
 		}
 		else if(FCString::Atof(*TextCodeArray[2])  > InSubNum)
 		{
@@ -138,7 +151,6 @@ void UIGShinmyophil::PrintRelayScript(const TArray<FIGScriptMasterDataTable*> In
 		}
 	}
 }
-	
 
 void UIGShinmyophil::TutorialPhaseStart()
 {
@@ -326,14 +338,13 @@ void UIGShinmyophil::BattlePlayerHealthUnder3()
 	PrintRelayScript(BattleScriptsArray, 9);
 }
 
-
-
-
-
 // Called every frame
 void UIGShinmyophil::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	FMath::Clamp(ScriptDelayTime -= DeltaTime, 0.0, FLT_MAX);	
+	
 	AIGPlayerCharacter* IGPlayerCharacter = Cast<AIGPlayerCharacter>(GetOwner());
 	
 	if(IGPlayerCharacter == nullptr)

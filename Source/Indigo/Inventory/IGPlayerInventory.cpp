@@ -65,7 +65,8 @@ void UIGPlayerInventory::AddCrystal(AIGCrystalBase* InCrystal)
 	if (CrystalArray.Num() >= 3)
 	{
 		Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGetAllProviso();
-		IGCrystalManager::GetInstance()->OnFoundAllCrystals();
+
+		//IGCrystalManager::GetInstance()->OnFoundAllCrystals();
 	}
 }
 

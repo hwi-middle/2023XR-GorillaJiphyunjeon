@@ -41,8 +41,8 @@ public:
 	void OnBattlePhase();
 
 	void PrintRelayScript(const TArray<FIGScriptMasterDataTable*> InScriptArray, const int32 InSubNum);
-
-	//튜토리얼 페이즈
+	
+	//튜토리얼 페이즈 - 이제 안씀
 	//튜토리얼 페이즈 시작
 	void TutorialPhaseStart();
 	//플레이어 조작을 이용해 이동할 경우
@@ -101,6 +101,12 @@ public:
 	void ProvisoOpenGateAndInteractToGate();
 	//보스 문이 열리기 전 보스 문과 상호작용했을 경우
 	void ProvisoBeforeOpenGateAndInteractToGate();
+
+	//도꺠비불 드랍한 결정조각을 처음 얻었을 경우
+	//같은 결정 조각을 3개 얻어 완전한 결정 1개를 얻었을 경우
+	// 모든 결정을 획득했을 경우
+	//단서를 다 찾지 못하고 3분이 지났을 경우
+	
 	
 	//전투 페이즈
 	//전투 페이즈 시작 시
@@ -128,7 +134,6 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -136,6 +141,7 @@ public:
 	FORCEINLINE TArray<FIGTextMasterDataTable*> GetQuestTitleArray() const {return QuestTitleArray;}
 	FORCEINLINE TArray<FIGTextMasterDataTable*> GetQuestSummaryArray() const {return QuestSummaryArray;};
 	FORCEINLINE TArray<UQuest*> GetQuestArray() const {return QuestArray;};
+	
 private:
 	
 	UPROPERTY()
@@ -150,6 +156,9 @@ private:
 	UPROPERTY()
 	float IdleTime;
 
+	UPROPERTY()
+	float ScriptDelayTime;
+	
 	UPROPERTY()
 	TArray<FString> ScriptLogArray;
 		
