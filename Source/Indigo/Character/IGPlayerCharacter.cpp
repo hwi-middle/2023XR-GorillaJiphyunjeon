@@ -431,7 +431,6 @@ void AIGPlayerCharacter::Interact()
 
 	IInteractable* Interactable = Cast<IInteractable>(Result.GetActor());
 	AIGCrystalBase* Crystal = Cast<AIGCrystalBase>(Result.GetActor());
-	AIGHintBase* Hint = Cast<AIGHintBase>(Result.GetActor());
 
 	if (Interactable == nullptr)
 	{
@@ -444,19 +443,6 @@ void AIGPlayerCharacter::Interact()
 	{
 		PlayerInventory->AddCrystal(Crystal);
 		HudWidget->AddCrystal(Crystal);
-
-		// Temporal
-		FString CrystalDebugText;
-		auto CrystalArray = PlayerInventory->GetCrystalArray();
-		for (int i = 0; i < CrystalArray.Num(); i++)
-		{
-			CrystalDebugText.Append(FString::Printf(TEXT("%d. %s\n"), i + 1, *CrystalArray[i]->GetCrystalName()));
-		}
-		HudWidget->UpdateCrystalDebug(CrystalDebugText);
-	}
-	else if(Hint != nullptr)
-	{
-		PlayerInventory->AddHint(Hint->GetHint());
 	}
 }
 
@@ -609,7 +595,48 @@ void AIGPlayerCharacter::ActivateCrystalByIndex(uint32 Index)
 		return;
 	}
 
-	const ECrystal Type = CrystalArray[Index]->GetCrystalType();
+	int32 SameCount = 0;
+	ECrystal Type = ECrystal::None;
+	if(Index == 0)
+	{
+		Type = ECrystal::Mountain;
+		for(const AIGCrystalBase* Crystals : CrystalArray)
+		{
+			if(Crystals->GetCrystalType() == ECrystal::Mountain)
+			{
+				SameCount++;
+			}
+		}
+		
+	}
+	else if(Index == 1)
+	{
+		Type = ECrystal::Tree;
+		for(const AIGCrystalBase* Crystals : CrystalArray)
+		{
+			if(Crystals->GetCrystalType() == ECrystal::Tree)
+			{
+				SameCount++;
+			}
+		}
+	}
+	else if(Index == 2)
+	{		
+		Type = ECrystal::Wave;
+		for(const AIGCrystalBase* Crystals : CrystalArray)
+		{
+			if(Crystals->GetCrystalType() == ECrystal::Wave)
+			{
+				SameCount++;
+			}
+		}
+	}
+	if(SameCount < 3)
+	{
+		return;
+	}
+
+	
 	ensure(Type != ECrystal::None);
 
 	ActivatedCrystal = Type;

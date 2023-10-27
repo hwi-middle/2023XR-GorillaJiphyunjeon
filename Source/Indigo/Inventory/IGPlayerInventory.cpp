@@ -9,6 +9,7 @@
 #include "Indigo/Character/IGPlayerCharacter.h"
 #include "Indigo/Interactable/IGBlankHint.h"
 #include "Indigo/Interactable/IGMainHint.h"
+#include "Indigo/Management/IGBossZoneGateManager.h"
 
 
 UIGPlayerInventory::UIGPlayerInventory()
@@ -18,6 +19,7 @@ UIGPlayerInventory::UIGPlayerInventory()
 	bIsGetFirstBlankHint = false;
 	bIsGetFirstHint = false;
 	bIsGet2HintBySameProviso =false;
+	bIsGetFirstCrystal = false;
 	CantFindProvisoTime = 0.0f;
 }
 
@@ -38,13 +40,13 @@ void UIGPlayerInventory::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	{
 		return;
 	}
-	if(PlayerCharacter->GetShinmyophil()->GetCurrentPhaseState() == EPhaseState::ProvisoPhase)
+	if(PlayerCharacter->GetShinmyophil()->GetCurrentPhaseState() == EPhaseState::ProvisoPhase && CrystalArray.Num() <= 0)
 	{	
 		CantFindProvisoTime+=DeltaTime;
 	}
 	if(CantFindProvisoTime >= 180.0f)
 	{
-		PlayerCharacter->GetShinmyophil()->ProvisoNotFindAllProvisoAndSkip3Minute();
+		PlayerCharacter->GetShinmyophil()->ProvisoRemakeCantFindCrystalAnd3Minute();
 		CantFindProvisoTime = 0.0f;
 	}
 
@@ -52,21 +54,46 @@ void UIGPlayerInventory::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 void UIGPlayerInventory::AddCrystal(AIGCrystalBase* InCrystal)
 {
-	CrystalArray.AddUnique(InCrystal);
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("현재 결정 갯수: [%d]"), CrystalArray.Num()));
-	ShowOwnedCrystals();
+	CrystalArray.Add(InCrystal);
+	const AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(GetOwner());	
 
-	if(bIsGetFirstCrystal == false)
+	if(Player == nullptr)
 	{
-		Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGetFirstProviso();
-		bIsGetFirstCrystal = true;
+		return;
 	}
 	
-	if (CrystalArray.Num() >= 3)
+	if(!bIsGetFirstCrystalFrag)
 	{
-		Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGetAllProviso();
 
-		//IGCrystalManager::GetInstance()->OnFoundAllCrystals();
+		//처음 결정 조각 얻었을 떄
+		Player->GetShinmyophil()->ProvisoRemakeFirstGetCrystalFrag();
+		bIsGetFirstCrystalFrag = true;
+	}
+	
+	if(!bIsGetFirstCrystal)
+	{
+		int SameCrystalCount = 0;
+		for(const AIGCrystalBase* Crystal : CrystalArray)
+		{
+			if(Crystal->GetCrystalType() == InCrystal->GetCrystalType())
+			{
+				SameCrystalCount++;
+			}
+		}
+
+		if(SameCrystalCount >= 3)
+		{
+			//3개 모아서 결정 하나 만들었을 떄
+			Player->GetShinmyophil()->ProvisoRemakeGetAllCrystalAndGetCompleteCrystal();
+			bIsGetFirstCrystal = true;		
+		}
+	}
+	
+	if (CrystalArray.Num() >= 9)
+	{
+		//다 모았을 때
+		IGBossZoneGateManager::GetInstance()->OpenGate();
+		Player->GetShinmyophil()->ProvisoRemakeGetAllCrystal();
 	}
 }
 

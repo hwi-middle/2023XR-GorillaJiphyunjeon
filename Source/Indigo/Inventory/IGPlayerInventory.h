@@ -37,17 +37,20 @@ public:
 private:
 	UPROPERTY()
 	TArray<AIGCrystalBase*> CrystalArray;
+
 	
 	TArray<ProvisoText*> HintArray;
 	
 	UPROPERTY()
-	uint8 bIsGetFirstCrystal : 1;
+	uint8 bIsGetFirstCrystalFrag : 1;
 	UPROPERTY()
 	uint8 bIsGetFirstHint : 1;
 	UPROPERTY()
 	uint8 bIsGetFirstBlankHint : 1;
 	UPROPERTY()
 	uint8 bIsGet2HintBySameProviso : 1;
+	UPROPERTY()
+	uint8 bIsGetFirstCrystal : 1;
 	
 	UPROPERTY()
 	float CantFindProvisoTime;	

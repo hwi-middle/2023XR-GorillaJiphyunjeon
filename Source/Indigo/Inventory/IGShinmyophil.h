@@ -41,6 +41,7 @@ public:
 	void OnBattlePhase();
 
 	void PrintRelayScript(const TArray<FIGScriptMasterDataTable*> InScriptArray, const int32 InSubNum);
+	void PrintTimer(const TArray<FIGScriptMasterDataTable*> InScriptArray, const int32 InSubNum);
 	
 	//튜토리얼 페이즈 - 이제 안씀
 	//튜토리얼 페이즈 시작
@@ -102,11 +103,26 @@ public:
 	//보스 문이 열리기 전 보스 문과 상호작용했을 경우
 	void ProvisoBeforeOpenGateAndInteractToGate();
 
+
+	//단서 페이즈 리메이크
 	//도꺠비불 드랍한 결정조각을 처음 얻었을 경우
+	void ProvisoRemakeFirstGetCrystalFrag();	
 	//같은 결정 조각을 3개 얻어 완전한 결정 1개를 얻었을 경우
+	void ProvisoRemakeGetAllCrystalAndGetCompleteCrystal();
 	// 모든 결정을 획득했을 경우
-	//단서를 다 찾지 못하고 3분이 지났을 경우
-	
+	void ProvisoRemakeGetAllCrystal();
+	//결정을 다 찾지 못하고 3분이 지났을 경우
+	void ProvisoRemakeCantFindCrystalAnd3Minute();
+	// 결정을 다 찾지 못하고 마을 중앙의 신목으로 다가갔을 경우
+	void ProvisoRemakeCantFindCrystalAndCloseToOldTree();
+	// 결정을 다 찾지 못하고 마을 중앙의 신목과 상호작용했을 경우
+	void ProvisoRemakeNoFindCrystalAndInteractToOldTree();
+	// 문루가 열린 이후 문루 근처로 다가갔을 경우
+	void ProvisoRemakeOpenGateAndCloseToGate();
+	//문루가 열린 이후 문루와 상호작용했을 경우
+	void ProvisoRemakeOpenGateAndInteractToGate();
+	//문루가 열린기 전 문루와 상호작용했을 경우
+	void ProvisoRemakeBeforeOpenGateAndInteractToGate();
 	
 	//전투 페이즈
 	//전투 페이즈 시작 시
@@ -127,6 +143,18 @@ public:
 	void BattleBossDead();
 	//플레이어 체력이 3 이하인 경우
 	void BattlePlayerHealthUnder3();
+
+	//전투페이즈 리메이크
+	//보스가 첫 공격 시전시
+	void BattleRemakeBossFirstAttack();
+	//첫 결정 활성화 성공시
+	void BattleRemakeFirstActiveSuccess();
+	//보스 사망시
+	void BattleRemakeBossDie();
+	//보스 시체와 상호작용시
+	void BattleRemakeInteractBossDeadBody();
+	//플레이어 체력이 3이하인 경우
+	void BattleRemakePlayerHpUnder3();
 	
 	FORCEINLINE EPhaseState GetCurrentPhaseState() const {return CurrentPhase;}
 
@@ -165,6 +193,8 @@ private:
 	TArray<FIGScriptMasterDataTable*> TutorialScriptsArray;
 	TArray<FIGScriptMasterDataTable*> ProvisoScriptsArray;
 	TArray<FIGScriptMasterDataTable*> BattleScriptsArray;
+	TArray<FIGScriptMasterDataTable*> ProvisoScriptsReFixArray;
+	TArray<FIGScriptMasterDataTable*> BattleScriptsReFixArray;
 	TArray<FIGTextMasterDataTable*> QuestTitleArray;
 	TArray<FIGTextMasterDataTable*> QuestSummaryArray;
 	TArray<TObjectPtr<UQuest>> QuestArray;

@@ -23,7 +23,7 @@ UIGShinmyophil::UIGShinmyophil()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	IdleTime = 0.0f;
-	ScriptDelayTime = 0.0f;
+	ScriptDelayTime = 2.0f;
 
 	CurrentPhase = EPhaseState::None;
 	bIsMoveTutorial = false;
@@ -61,6 +61,27 @@ void UIGShinmyophil::BeginPlay()
 			}
 		});
 
+	FIGDataTableParser::LoadAndInitializeDataTable(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/ScriptMasterDataTable/Script_Master_Refix.Script_Master_Refix'"),
+	[&](const UDataTable* ScriptDataTable)
+	{
+		TArray<FIGScriptMasterDataTable*> Scripts;
+		ScriptDataTable->GetAllRows(TEXT(""), Scripts);
+			
+		for (int32 i = 0; i < Scripts.Num(); i++)
+		{
+			TArray<FString> ScriptCodeArray;
+			Scripts[i]->ScriptCode.ParseIntoArray(ScriptCodeArray, TEXT("_"), true);//0 string이라 제외, 1 main, 2 sub, 3 detail 
+	
+			if (FCString::Atof(*ScriptCodeArray[1]) == 1)
+			{
+				ProvisoScriptsReFixArray.Add(Scripts[i]);
+			}
+			else if (FCString::Atof(*ScriptCodeArray[1]) == 2)
+			{
+				BattleScriptsReFixArray.Add(Scripts[i]);
+			}
+		}
+	});
 
 
 	FIGDataTableParser::LoadAndInitializeDataTable(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/TextMasterDataTable/Text_Master.Text_Master'"),
@@ -126,24 +147,20 @@ void UIGShinmyophil::PrintRelayScript(const TArray<FIGScriptMasterDataTable*> In
 	for(int32 Index = 0; Index < InScriptArray.Num(); Index++)
 	{
 		TArray<FString> TextCodeArray;
-		InScriptArray[Index]->ScriptCode.ParseIntoArray(TextCodeArray, TEXT("_"), true);//0 string이라 제외, 1 main, 2 sub, 3 detail 
-		
-		FTimerHandle TimerHandle;
+		InScriptArray[Index]->ScriptCode.ParseIntoArray(TextCodeArray, TEXT("_"), false);//0 string이라 제외, 1 main, 2 sub, 3 detail 
+			
 		if(FCString::Atof(*TextCodeArray[2]) == InSubNum)
 		{
-			int32 CurrentIndex = Index;
-			
+			FTimerHandle TimerHandle;
+
 			GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([=, &TimerHandle]()
-			{
-				if (InScriptArray.IsValidIndex(CurrentIndex))
-				{					
-					ScriptLogArray.AddUnique(InScriptArray[Index]->ScriptText);
-					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%s]"), *InScriptArray[Index]->ScriptText));				
+			{			
+					ScriptLogArray.Add(InScriptArray[Index]->ScriptText);
 					IGPlayerCharacter->UpdateShinmyophilScript(InScriptArray[Index]->ScriptText);
-				}
-				GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
-			}), ScriptDelayTime, false);			
-			ScriptDelayTime += 2.0f;
+					GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+			}), ScriptDelayTime, false);
+			ScriptDelayTime += 2.0f;			
+			
 		}
 		else if(FCString::Atof(*TextCodeArray[2])  > InSubNum)
 		{
@@ -152,198 +169,269 @@ void UIGShinmyophil::PrintRelayScript(const TArray<FIGScriptMasterDataTable*> In
 	}
 }
 
+
 void UIGShinmyophil::TutorialPhaseStart()
 {
-	PrintRelayScript(TutorialScriptsArray, 1);
+	//PrintRelayScript(TutorialScriptsArray, 1);
 }
 
 void UIGShinmyophil::TutorialPlayerMove()
 {
-	PrintRelayScript(TutorialScriptsArray, 2);
-	bIsMoveTutorial = true;
+	//PrintRelayScript(TutorialScriptsArray, 2);
+	//bIsMoveTutorial = true;
 }
 
 void UIGShinmyophil::TutorialPlayerOvertheCorner()
 {
-	PrintRelayScript(TutorialScriptsArray, 3);
+	//PrintRelayScript(TutorialScriptsArray, 3);
 }
 
 void UIGShinmyophil::TutorialPlayerCrackInteract()
 {
-	PrintRelayScript(TutorialScriptsArray, 4);
+	//PrintRelayScript(TutorialScriptsArray, 4);
 }
 
 void UIGShinmyophil::TutorialRollCrack()
 {
-	PrintRelayScript(TutorialScriptsArray, 5);
+	//PrintRelayScript(TutorialScriptsArray, 5);
 }
 
 void UIGShinmyophil::TutorialCloseToJangseung()
 {
-	PrintRelayScript(TutorialScriptsArray, 6);
+	//PrintRelayScript(TutorialScriptsArray, 6);
 }
 
 void UIGShinmyophil::TutorialAttackToJangseung3Times()
 {
-	PrintRelayScript(TutorialScriptsArray, 7);
+	//PrintRelayScript(TutorialScriptsArray, 7);
 }
 
 void UIGShinmyophil::TutorialEnforceAttackToJangseung()
 {
-	PrintRelayScript(TutorialScriptsArray, 8);
+	//PrintRelayScript(TutorialScriptsArray, 8);
 }
 
 void UIGShinmyophil::TutorialOpenGate()
 {
-	PrintRelayScript(TutorialScriptsArray, 9);
+	//PrintRelayScript(TutorialScriptsArray, 9);
 }
 
 void UIGShinmyophil::TutorialInteractToGate()
 {
-	PrintRelayScript(TutorialScriptsArray, 10);
+	//PrintRelayScript(TutorialScriptsArray, 10);
 }
 
 void UIGShinmyophil::ProvisoStartProvisoPhase()
 {
-	PrintRelayScript(ProvisoScriptsArray, 1);
+	PrintRelayScript(ProvisoScriptsReFixArray, 1);
 }
 
 void UIGShinmyophil::ProvisoGetFirstProviso()
 {
-	PrintRelayScript(ProvisoScriptsArray, 2);
+	//PrintRelayScript(ProvisoScriptsArray, 2);
 }
 
 void UIGShinmyophil::ProvisoReadFirstProviso()
 {
-	PrintRelayScript(ProvisoScriptsArray, 3);
+	//PrintRelayScript(ProvisoScriptsArray, 3);
 }
 
 void UIGShinmyophil::ProvisoFirstMeetingWist()
 {
-	PrintRelayScript(ProvisoScriptsArray, 4);
+	//PrintRelayScript(ProvisoScriptsArray, 4);
 }
 
 void UIGShinmyophil::ProvisoGetFirstHint()
 {
-	PrintRelayScript(ProvisoScriptsArray, 5);
+	//PrintRelayScript(ProvisoScriptsArray, 5);
 }
 
 void UIGShinmyophil::ProvisoReadFirstHint()
 {
-	PrintRelayScript(ProvisoScriptsArray, 6);
+	//PrintRelayScript(ProvisoScriptsArray, 6);
 }
 
 void UIGShinmyophil::ProvisoGetFirstBlankHint()
 {
-	PrintRelayScript(ProvisoScriptsArray, 7);
+	//PrintRelayScript(ProvisoScriptsArray, 7);
 }
 
 void UIGShinmyophil::ProvisoGet2HintToSameProviso()
 {
-	PrintRelayScript(ProvisoScriptsArray, 8);
+	//PrintRelayScript(ProvisoScriptsArray, 8);
 }
 
 void UIGShinmyophil::ProvisoGetHint6All()
 {
-	PrintRelayScript(ProvisoScriptsArray, 9);
+	//PrintRelayScript(ProvisoScriptsArray, 9);
 }
 
 void UIGShinmyophil::ProvisoCloseToProviso()
 {
-	PrintRelayScript(ProvisoScriptsArray, 10);
+	//PrintRelayScript(ProvisoScriptsArray, 10);
 }
 
 void UIGShinmyophil::ProvisoGetAllProviso()
 {
-	PrintRelayScript(ProvisoScriptsArray, 11);
+	//PrintRelayScript(ProvisoScriptsArray, 11);
 }
 
 void UIGShinmyophil::ProvisoPlayerStay1Minute()
 {
-	PrintRelayScript(ProvisoScriptsArray, 12);
+	//PrintRelayScript(ProvisoScriptsArray, 12);
 }
 
 void UIGShinmyophil::ProvisoNotFindAllProvisoAndSkip3Minute()
 {
-	PrintRelayScript(ProvisoScriptsArray, 13);
+	//PrintRelayScript(ProvisoScriptsArray, 13);
 }
 
 void UIGShinmyophil::ProvisoNotFindAllProvisoAndCloseToOldTree()
 {
-	PrintRelayScript(ProvisoScriptsArray, 14);
+//	PrintRelayScript(ProvisoScriptsArray, 14);
 }
 
 void UIGShinmyophil::ProvisoNotFindAllProvisoAndInteractToOldTree()
 {
-	PrintRelayScript(ProvisoScriptsArray, 15);
+//	PrintRelayScript(ProvisoScriptsArray, 15);
 }
 
 void UIGShinmyophil::ProvisoOpenGateAndCloseToGate()
 {
-	PrintRelayScript(ProvisoScriptsArray, 16);
+	//PrintRelayScript(ProvisoScriptsArray, 16);
 }
 
 void UIGShinmyophil::ProvisoOpenGateAndInteractToGate()
 {
-	PrintRelayScript(ProvisoScriptsArray, 17);
+	//PrintRelayScript(ProvisoScriptsArray, 17);
 }
 
 void UIGShinmyophil::ProvisoBeforeOpenGateAndInteractToGate()
 {
-	PrintRelayScript(ProvisoScriptsArray, 18);
+	//PrintRelayScript(ProvisoScriptsArray, 18);
+}
+
+void UIGShinmyophil::ProvisoRemakeFirstGetCrystalFrag()
+{
+	PrintRelayScript(ProvisoScriptsReFixArray, 3);
+}
+
+void UIGShinmyophil::ProvisoRemakeGetAllCrystalAndGetCompleteCrystal()
+{
+	PrintRelayScript(ProvisoScriptsReFixArray, 4);
+}
+
+void UIGShinmyophil::ProvisoRemakeGetAllCrystal()
+{
+	PrintRelayScript(ProvisoScriptsReFixArray, 5);
+}
+
+void UIGShinmyophil::ProvisoRemakeCantFindCrystalAnd3Minute()
+{
+	PrintRelayScript(ProvisoScriptsReFixArray, 6);
+}
+
+void UIGShinmyophil::ProvisoRemakeCantFindCrystalAndCloseToOldTree()
+{
+	PrintRelayScript(ProvisoScriptsReFixArray, 7);
+}
+
+void UIGShinmyophil::ProvisoRemakeNoFindCrystalAndInteractToOldTree()
+{
+	PrintRelayScript(ProvisoScriptsReFixArray, 8);
+}
+
+void UIGShinmyophil::ProvisoRemakeOpenGateAndCloseToGate()
+{
+	PrintRelayScript(ProvisoScriptsReFixArray, 9);
+}
+
+void UIGShinmyophil::ProvisoRemakeOpenGateAndInteractToGate()
+{
+	PrintRelayScript(ProvisoScriptsReFixArray, 10);
+}
+
+void UIGShinmyophil::ProvisoRemakeBeforeOpenGateAndInteractToGate()
+{
+	PrintRelayScript(ProvisoScriptsReFixArray, 11);
 }
 
 void UIGShinmyophil::BattleStartBattlePhase()
 {
-	PrintRelayScript(BattleScriptsArray, 1);
+	PrintRelayScript(BattleScriptsReFixArray, 1);
 }
 
 void UIGShinmyophil::BattleBossFirstAttack()
 {
-	PrintRelayScript(BattleScriptsArray, 2);
+	//PrintRelayScript(BattleScriptsArray, 2);
 }
 
 void UIGShinmyophil::BattleFirstActiveCrystal()
 {
-	PrintRelayScript(BattleScriptsArray, 3);
+	//PrintRelayScript(BattleScriptsArray, 3);
 }
 
 void UIGShinmyophil::BattleBoss2Phase()
 {
-	PrintRelayScript(BattleScriptsArray, 4);
+	//PrintRelayScript(BattleScriptsArray, 4);
 }
 
 void UIGShinmyophil::BattleBossFirstRangeAttack()
 {
-	PrintRelayScript(BattleScriptsArray, 5);
+	//PrintRelayScript(BattleScriptsArray, 5);
 }
 
 void UIGShinmyophil::BattleBoss3Phase()
 {
-	PrintRelayScript(BattleScriptsArray, 6);
+	//PrintRelayScript(BattleScriptsArray, 6);
 }
 
 void UIGShinmyophil::BattleBossFistFloorAttack()
 {
-	PrintRelayScript(BattleScriptsArray, 7);
+	//PrintRelayScript(BattleScriptsArray, 7);
 }
 
 void UIGShinmyophil::BattleBossDead()
 {
-	PrintRelayScript(BattleScriptsArray, 8);
+	//PrintRelayScript(BattleScriptsArray, 8);
 }
 
 void UIGShinmyophil::BattlePlayerHealthUnder3()
 {
-	PrintRelayScript(BattleScriptsArray, 9);
+	//PrintRelayScript(BattleScriptsArray, 9);
+}
+
+void UIGShinmyophil::BattleRemakeBossFirstAttack()
+{
+	PrintRelayScript(BattleScriptsReFixArray, 2);
+}
+
+void UIGShinmyophil::BattleRemakeFirstActiveSuccess()
+{
+	PrintRelayScript(BattleScriptsReFixArray, 3);
+}
+
+void UIGShinmyophil::BattleRemakeBossDie()
+{
+	PrintRelayScript(BattleScriptsReFixArray, 4);
+}
+
+void UIGShinmyophil::BattleRemakeInteractBossDeadBody()
+{
+	PrintRelayScript(BattleScriptsReFixArray, 5);
+}
+
+void UIGShinmyophil::BattleRemakePlayerHpUnder3()
+{
+	PrintRelayScript(BattleScriptsReFixArray, 6);
 }
 
 // Called every frame
 void UIGShinmyophil::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	FMath::Clamp(ScriptDelayTime -= DeltaTime, 0.0, FLT_MAX);	
+	
+	ScriptDelayTime = FMath::Clamp(ScriptDelayTime -= DeltaTime, 0.5, FLT_MAX);	
 	
 	AIGPlayerCharacter* IGPlayerCharacter = Cast<AIGPlayerCharacter>(GetOwner());
 	
@@ -369,7 +457,7 @@ void UIGShinmyophil::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		//체력 3이하일때
 		if(IGPlayerCharacter->GetHp() <= 3 && bIsHpUnder3 == false)
 		{
-			BattlePlayerHealthUnder3();
+			BattleRemakePlayerHpUnder3();
 			bIsHpUnder3 = true;
 		}
 		else if(IGPlayerCharacter->GetHp() > 3 && bIsHpUnder3 == true)

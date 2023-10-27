@@ -4,12 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "IGEnemyBase.h"
+#include "Indigo/Interface/Interactable.h"
 #include "IGBoss.generated.h"
 
 class UIGIngameHUDWidget;
 class UIGBossDataAsset;
 class UIGBossGimmickDataAsset;
-DECLARE_MULTICAST_DELEGATE(FOnFinishBossAttackDelegate)
+class UBoxComponent;
+DECLARE_MULTICAST_DELEGATE(FOnFinishBossCloseAttackDelegate)
 
 class UIGBossAnimInstance;
 class UIGPlayerAnimInstance;
@@ -29,7 +31,7 @@ enum EAttackPattern : uint32
 };
 
 UCLASS()
-class INDIGO_API AIGBoss : public AIGEnemyBase
+class INDIGO_API AIGBoss : public AIGEnemyBase, public IInteractable
 {
 	GENERATED_BODY()
 
@@ -41,6 +43,8 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	void FadeOut();
+
+	virtual void Interact() override;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UIGIngameHUDWidget> HudWidgetClass;
@@ -95,6 +99,9 @@ private:
 	float CloseAttack_SpikeDestroyDelay;
 
 	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UBoxComponent> InteractCollider; 
+	
+	UPROPERTY(VisibleAnywhere)
 	float CloseAttack_SpikeGroundOffset;
 
 	UPROPERTY(VisibleAnywhere)
@@ -111,6 +118,10 @@ private:
 	//첫 장판기 시전
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsFirstFloorAttack : 1;
+	
+	//죽었을 때 상호작용
+	UPROPERTY(VisibleAnywhere)
+	uint8 bIsFirstDeadInteract : 1;
 	
 public:
 	FOnFinishBossAttackDelegate OnFinishBossAttack;

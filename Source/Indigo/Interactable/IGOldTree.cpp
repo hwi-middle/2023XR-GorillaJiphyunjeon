@@ -23,8 +23,7 @@ Mesh->SetStaticMesh(MeshRef);
 Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
 RootComponent = Mesh;
 Mesh->SetCollisionProfileName(TEXT("Evidence"));
-}, EAssertionLevel::Check);
-	
+}, EAssertionLevel::Check);	
 }
 
 // Called when the game starts or when spawned
@@ -54,9 +53,9 @@ void AIGOldTree::Interact()
 		return;
 	}
 
-	if(IGPlayerCharacter->GetInventory()->GetCrystalArray().Num() < 3)
+	if(IGPlayerCharacter->GetInventory()->GetCrystalArray().Num() < 9)
 	{
-		IGPlayerCharacter->GetShinmyophil()->ProvisoNotFindAllProvisoAndInteractToOldTree();
+		IGPlayerCharacter->GetShinmyophil()->ProvisoRemakeNoFindCrystalAndInteractToOldTree();
 		IGBossZoneGateManager::GetInstance()->OpenGate();
 	}
 	

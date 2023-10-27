@@ -76,7 +76,7 @@ void AIGGate::Tick(float DeltaTime)
 
 void AIGGate::OpenGate()
 {
-	if(bIsOpen == true)
+	if(bIsOpen)
 	{
 		return;
 	}
@@ -88,19 +88,19 @@ void AIGGate::OpenGate()
 void AIGGate::Interact()
 {
 	APawn* PlayerController = UGameplayStatics::GetPlayerPawn(GWorld, 0);
-	AIGPlayerCharacter* IGPlayerCharacter = Cast<AIGPlayerCharacter>(PlayerController);
+	const AIGPlayerCharacter* IGPlayerCharacter = Cast<AIGPlayerCharacter>(PlayerController);
 
 	if(IGPlayerCharacter == nullptr)
 	{
 		return;
 	}
-	IGPlayerCharacter->GetShinmyophil()->ProvisoBeforeOpenGateAndInteractToGate();
 	
-	if(bIsOpen == false)
+	if(!bIsOpen)
 	{
+		IGPlayerCharacter->GetShinmyophil()->ProvisoRemakeBeforeOpenGateAndInteractToGate();
 		return;
 	}
-	IGPlayerCharacter->GetShinmyophil()->ProvisoOpenGateAndInteractToGate();
+	IGPlayerCharacter->GetShinmyophil()->ProvisoRemakeOpenGateAndInteractToGate();
 
 }
 

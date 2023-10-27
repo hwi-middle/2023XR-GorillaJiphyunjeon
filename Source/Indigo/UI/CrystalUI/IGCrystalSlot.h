@@ -32,9 +32,14 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UImage> CrystalSlot1;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UImage> CrystalSlot2;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UImage> CrystalSlot3;
 
 private:
 	TObjectPtr<AIGPlayerCharacter> Character;
+
+	int32 CrystalFragCount;
+	
 };

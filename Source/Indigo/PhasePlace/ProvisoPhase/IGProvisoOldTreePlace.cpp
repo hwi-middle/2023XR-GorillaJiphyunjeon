@@ -26,9 +26,9 @@ void AIGProvisoOldTreePlace::EnterPhasePlace()
 		return;
 	}
 
-	if(PlayerCharacter->GetInventory()->GetCrystalArray().Num() < 3 && bIsInCollision == false)
+	if(PlayerCharacter->GetInventory()->GetCrystalArray().Num() < 9 && bIsInCollision == false)
 	{
-		PlayerCharacter->GetShinmyophil()->ProvisoNotFindAllProvisoAndCloseToOldTree();
+		PlayerCharacter->GetShinmyophil()->ProvisoRemakeCantFindCrystalAndCloseToOldTree();
 	}
 }
 

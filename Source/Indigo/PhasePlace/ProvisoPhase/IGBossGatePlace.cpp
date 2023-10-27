@@ -24,7 +24,7 @@ void AIGBossGatePlace::EnterPhasePlace()
 		return;
 	}
 
-	PlayerCharacter->GetShinmyophil()->ProvisoOpenGateAndCloseToGate();
+	PlayerCharacter->GetShinmyophil()->ProvisoRemakeOpenGateAndCloseToGate();
 	Destroy();
 	
 }

@@ -56,5 +56,11 @@ protected:
 	TObjectPtr<UIGShinmyophilText> ShinmyophilText;
 
 	UPROPERTY()
-	TObjectPtr<UIGCrystalSlot> CrystalSlot;
+	TObjectPtr<UIGCrystalSlot> MountainCrystalSlot;
+	
+	UPROPERTY()
+	TObjectPtr<UIGCrystalSlot> TreeCrystalSlot;
+	
+	UPROPERTY()
+	TObjectPtr<UIGCrystalSlot> WaveCrystalSlot;
 };

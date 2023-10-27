@@ -8,6 +8,9 @@
 #include "Indigo/UI/Shinmyophil/IGShinmyophilText.h"
 #include "Indigo/UI/CrystalUI/IGCrystalSlot.h"
 #include "Indigo/Interactable/IGCrystalBase.h"
+#include "Indigo/Interactable/IGMountainCrystal.h"
+#include "Indigo/Interactable/IGTreeCrystal.h"
+#include "Indigo/Interactable/IGWaveCrystal.h"
 #include "Components/TextBlock.h"
 
 void UIGIngameHUDWidget::InitHpGauge(float InMaxValue, float InInitialValue) const
@@ -47,7 +50,18 @@ void UIGIngameHUDWidget::UpdateShinmyophilText(const FString& Str) const
 
 void UIGIngameHUDWidget::AddCrystal(AIGCrystalBase* InCrystal) const
 {
-	CrystalSlot->AddCrystal(InCrystal);
+	if(Cast<AIGTreeCrystal>(InCrystal) != nullptr)
+	{
+		TreeCrystalSlot->AddCrystal(InCrystal);
+	}
+	else if(Cast<AIGWaveCrystal>(InCrystal) != nullptr)
+	{
+		WaveCrystalSlot->AddCrystal(InCrystal);
+	}	
+	else if(Cast<AIGMountainCrystal>(InCrystal) != nullptr)
+	{
+		MountainCrystalSlot->AddCrystal(InCrystal);
+	}
 }
 
 void UIGIngameHUDWidget::NativeConstruct()
@@ -59,5 +73,7 @@ void UIGIngameHUDWidget::NativeConstruct()
 	CrystalTextBlock = Cast<UTextBlock>(GetWidgetFromName(TEXT("CrystalDebug")));
 	ShinmyophilQuestList = Cast<UIGQuestList>(GetWidgetFromName(TEXT("Quest_List")));
 	ShinmyophilText = Cast<UIGShinmyophilText>(GetWidgetFromName(TEXT("IGShinmyophilText")));
-	CrystalSlot = Cast<UIGCrystalSlot>(GetWidgetFromName(TEXT("CrystalSlots")));
+	MountainCrystalSlot = Cast<UIGCrystalSlot>(GetWidgetFromName(TEXT("MountainCrystalSlots")));
+	TreeCrystalSlot = Cast<UIGCrystalSlot>(GetWidgetFromName(TEXT("TreeCrystalSlots")));
+	WaveCrystalSlot = Cast<UIGCrystalSlot>(GetWidgetFromName(TEXT("WaveCrystalSlots")));
 }

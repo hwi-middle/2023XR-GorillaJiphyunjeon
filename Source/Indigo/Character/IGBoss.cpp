@@ -5,6 +5,7 @@
 
 #include "IGPlayerCharacter.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/BoxComponent.h"
 #include "Engine/DamageEvents.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Indigo/AI/IGBossAIController.h"
@@ -35,6 +36,11 @@ AIGBoss::AIGBoss()
 		TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Boss/Animation/ABP_Boss.ABP_Boss_C"), EAssertionLevel::None);
 	GetMesh()->SetAnimInstanceClass(BossAnimInstanceClass);
 
+	InteractCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractCollider"));
+	InteractCollider->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
+	InteractCollider->SetCollisionProfileName(TEXT("Evidence"));
+	InteractCollider->SetupAttachment(GetMesh());
+	
 	AIControllerClass = AIGBossAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	GetCharacterMovement()->MaxWalkSpeed = 200.f;
@@ -49,9 +55,12 @@ AIGBoss::AIGBoss()
 		HudWidgetClass = Class;
 	}, EAssertionLevel::Check);
 
+	
+
 	bIsFirstAttack = false;
 	bIsFirstRangeAttack = false;
 	bIsFirstFloorAttack =false;
+	bIsFirstDeadInteract =false;
 }
 
 void AIGBoss::BeginPlay()
@@ -89,6 +98,9 @@ void AIGBoss::Tick(float DeltaSeconds)
 
 	DrawDebugSphere(GetWorld(), GetMesh()->GetSocketLocation(BOSS_LEFT_HAND), 100.f, 16, FColor::Red, false, 0.f);
 	DrawDebugSphere(GetWorld(), GetMesh()->GetSocketLocation(BOSS_RIGHT_HAND), 100.f, 16, FColor::Red, false, 0.f);
+
+	InteractCollider->SetRelativeLocation(GetActorLocation());
+	DrawDebugBox(GetWorld(), GetActorLocation(), InteractCollider->GetScaledBoxExtent(), FColor::Green, false, 1.f);
 	
 }
 
@@ -96,16 +108,6 @@ float AIGBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	HudWidget->UpdateHpGauge(Hp);
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("Boss HP: [%f]"), Hp));
-	
-	if(Hp <= 70 && Hp > 30)
-	{
-		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleBoss2Phase();
-	}
-	if(Hp <= 30)
-	{
-		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleBoss3Phase();
-	}
 	
 	if (Hp <= 0 && !bIsDead)
 	{
@@ -113,7 +115,7 @@ float AIGBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 		AnimInstance->OnFinishDead.AddUObject(this, &AIGBoss::FadeOut);
 		HudWidget->UpdateHpGauge(0.f);
 		bIsDead = true;
-		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleBossDead();
+		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleRemakeBossDie();
 		return DamageAmount;
 	}
 	return DamageAmount;
@@ -121,7 +123,16 @@ float AIGBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 
 void AIGBoss::FadeOut()
 {
-	Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->PlayFadeOutSequence();
+	//Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->PlayFadeOutSequence();
+}
+
+void AIGBoss::Interact()
+{
+	if(bIsDead && !bIsFirstDeadInteract)
+	{
+		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleRemakeInteractBossDeadBody();	
+		bIsFirstDeadInteract = true;	
+	}
 }
 
 void AIGBoss::EnableHUD()
@@ -156,7 +167,7 @@ void AIGBoss::PerformCloseAttack()
 	AnimInstance->StartCloseAttack();
 	if(!bIsFirstAttack)
 	{
-		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleBossFirstAttack();
+		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleRemakeBossFirstAttack();
 		bIsFirstAttack = true;
 	}
 }

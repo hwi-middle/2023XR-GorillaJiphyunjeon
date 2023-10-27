@@ -36,13 +36,21 @@ public:
 	virtual void Interact() override;
 	
 private:
+	UPROPERTY()
 	TObjectPtr<UStaticMeshComponent> Mesh;
+	UPROPERTY()
 	uint8 bIsOpen : 1;
+	UPROPERTY()
 	FVector OffSet;
+	UPROPERTY()
 	float ElapsedTime; 
+	UPROPERTY()
 	float RotationTime;
+	UPROPERTY()
 	FRotator TargetRotation;
+	UPROPERTY()
 	FRotator StartRotation;
-	AIGBossGatePlace* BossGatePlace;
+	UPROPERTY()
+	TObjectPtr<AIGBossGatePlace> BossGatePlace;
 	
 };

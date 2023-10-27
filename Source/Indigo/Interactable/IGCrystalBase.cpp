@@ -54,7 +54,7 @@ void AIGCrystalBase::Tick(float DeltaTime)
 
 void AIGCrystalBase::Interact()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%s]"), *CrystalScript->Script));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%s]"), *CrystalScript->Script));
 	Take();
 
 	if(CloseToCrystalPlace != nullptr)
@@ -71,7 +71,7 @@ void AIGCrystalBase::Take()
 	{
 		return;
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("[%s]의 결정 습득"), *CrystalScript->Name));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("[%s]의 결정 습득"), *CrystalScript->Name));
 
 	bIsTaken = true;
 
