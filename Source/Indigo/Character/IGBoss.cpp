@@ -26,14 +26,14 @@
 
 AIGBoss::AIGBoss()
 {
-	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Boss/Mesh/Dummy/SK_Boss.SK_Boss'"), [&](USkeletalMesh* MeshRef)
+	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Boss/Mesh/SM_Boss_Rigging.SM_Boss_Rigging'"), [&](USkeletalMesh* MeshRef)
 	{
 		GetMesh()->SetSkeletalMesh(MeshRef);
 		GetMesh()->SetRelativeRotation(FRotator(0.f, 270.f, 0.f));
-	}, EAssertionLevel::None);
+	}, EAssertionLevel::Check);
 
 	const TSubclassOf<UIGBossAnimInstance> BossAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGBossAnimInstance>(
-		TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Boss/Animation/ABP_Boss.ABP_Boss_C"), EAssertionLevel::None);
+		TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Boss/Animation/ABP_Boss.ABP_Boss_C"), EAssertionLevel::Check);
 	GetMesh()->SetAnimInstanceClass(BossAnimInstanceClass);
 
 	InteractCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractCollider"));
