@@ -39,15 +39,13 @@ enum class EPlayerState : uint32
 	// 구르는 중
 	Attacking = 0x10,
 	// 공격 중
-	Enforced = 0x20,
-	// 공격 강화 활성화
-	ExhaustedPhase1 = 0x40,
+	ExhaustedPhase1 = 0x20,
 	// 탈진 (일월 게이지 비활성화)
-	ExhaustedPhase2 = 0x80,
+	ExhaustedPhase2 = 0x40,
 	// 탈진 (일월 게이지 획득량 감소)
-	CrystalActivated = 0x100,
-	CrystalCooldown = 0x200,
-	Dead = 0x400,
+	CrystalActivated = 0x80,
+	CrystalCooldown = 0x100,
+	Dead = 0x200,
 	All = 0xff,
 };
 
@@ -133,9 +131,6 @@ private:
 	TObjectPtr<UInputAction> AttackAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> ToggleSunMoonAction;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> Crystal1Action;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -161,8 +156,6 @@ private:
 	void FinishAttack();
 	void StartRolling();
 	void FinishRolling();
-	void ToggleSunMoon();
-	void ConsumeSunMoonByTime();
 	void EnableExhaustion();
 	void OnHitProjectile();
 	void ManageStaminaByTime(); // 초당 스태미나 소모/회복량 관리
@@ -196,9 +189,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UIGPlayerDataAsset> PlayerDataAsset;
-
-	UPROPERTY(VisibleAnywhere)
-	float SunMoonValue;
 
 	UPROPERTY(VisibleAnywhere)
 	float Hp;
@@ -244,9 +234,6 @@ private:
 
 	// 증감값
 	UPROPERTY(VisibleAnywhere)
-	float SunMoonRecoveryAmountOnAttackHit;
-
-	UPROPERTY(VisibleAnywhere)
 	float StaminaConsumptionAmountOnNormalAttack;
 
 	UPROPERTY(VisibleAnywhere)
@@ -254,9 +241,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	float StaminaConsumptionAmountOnRoll;
-
-	UPROPERTY(VisibleAnywhere)
-	float SunMoonConsumptionAmountOnAttack;
 
 	UPROPERTY(VisibleAnywhere)
 	float StaminaRecoveryAmountPerSecondOnIdle;
@@ -267,24 +251,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	float StaminaConsumptionAmountPerSecondOnRunning;
 
-	UPROPERTY(VisibleAnywhere)
-	float SunMoonAutoConsumptionAmount;
-
 	// 기타 필요한 정보
-	UPROPERTY(VisibleAnywhere)
-	float SunMoonSection2Threshold;
-
-	UPROPERTY(VisibleAnywhere)
-	float SunMoonSection3Threshold;
-
-	UPROPERTY(VisibleAnywhere)
-	float SunMoonSection1DamageScaleFactor;
-
-	UPROPERTY(VisibleAnywhere)
-	float SunMoonSection2DamageScaleFactor;
-
-	UPROPERTY(VisibleAnywhere)
-	float SunMoonSection3DamageScaleFactor;
 
 	UPROPERTY(VisibleAnywhere)
 	float ExhaustionPhase1Duration;
@@ -293,16 +260,10 @@ private:
 	float ExhaustionPhase2Duration;
 
 	UPROPERTY(VisibleAnywhere)
-	float ElapsedSunMoonAutoConsumptionTime;
-
-	UPROPERTY(VisibleAnywhere)
 	float ElapsedCrystalActivationTime;
 
 	UPROPERTY(VisibleAnywhere)
 	float ElapsedCrystalCooldownTime;
-
-	UPROPERTY(VisibleAnywhere)
-	float SunMoonAutoConsumptionDelay;
 
 	UPROPERTY(VisibleAnywhere)
 	float DieZLocation;
@@ -345,9 +306,6 @@ private:
 
 	UFUNCTION(Exec, Category="Command")
 	void SetStaminaValue_DEBUG(const uint32 Value);
-
-	UFUNCTION(Exec, Category="Command")
-	void SetSunMoon_DEBUG(const uint32 Value);
 
 	UFUNCTION(Exec, Category="Command")
 	void CheckCrystal_DEBUG();

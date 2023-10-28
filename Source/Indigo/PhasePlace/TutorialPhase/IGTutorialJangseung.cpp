@@ -49,7 +49,7 @@ float AIGTutorialEnemyJangseung::TakeDamage(float DamageAmount, FDamageEvent con
 		{
 			IGPlayerCharacter->GetShinmyophil()->TutorialAttackToJangseung3Times();
 		}
-		else if(DamageCount >= 3 && EnumHasAnyFlags(IGPlayerCharacter->GetCurrentState(), EPlayerState::Enforced) == true)
+		else if(DamageCount >= 3)
 		{
 			IGPlayerCharacter->GetShinmyophil()->TutorialEnforceAttackToJangseung();
 			OpenGate();

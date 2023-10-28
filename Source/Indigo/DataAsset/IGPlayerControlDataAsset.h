@@ -37,9 +37,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "InputAction", DisplayName = "공격")
 	TObjectPtr<UInputAction> AttackAction;
 
-	UPROPERTY(EditAnywhere, Category = "InputAction", DisplayName = "일월 토글")
-	TObjectPtr<UInputAction> ToggleSunMoonAction;
-
 	UPROPERTY(EditAnywhere, Category = "InputAction", DisplayName = "1번 결정 활성화")
 	TObjectPtr<UInputAction> Crystal1Action;
 

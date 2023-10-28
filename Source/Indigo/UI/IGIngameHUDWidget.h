@@ -23,12 +23,10 @@ class INDIGO_API UIGIngameHUDWidget : public UUserWidget
 public:
 	void InitHpGauge(float InMaxValue, float InInitialValue) const;
 	void InitStaminaGauge(float InMaxValue, float InInitialValue) const;
-	void InitSunMoonGauge(float InMaxValue, float InInitialValue) const;
 	void InitQuestList(UQuest* InQuest) const;
 	
 	void UpdateHpGauge(float InValue) const;
 	void UpdateStaminaGauge(const float InValue) const;
-	void UpdateSunMoonGauge(float InValue) const;
 	void UpdateCrystalDebug(const FString& Str) const;
 	void UpdateShinmyophilText(const FString& Str) const;
 
@@ -41,9 +39,6 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UIGGauge> StaminaGauge;
-	
-	UPROPERTY()
-	TObjectPtr<UIGGauge> SunMoonGauge;
 
 	UPROPERTY()
 	TObjectPtr<UTextBlock> CrystalTextBlock;

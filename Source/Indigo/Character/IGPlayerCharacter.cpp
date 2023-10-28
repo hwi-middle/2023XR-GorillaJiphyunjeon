@@ -90,7 +90,6 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	InteractAction = PlayerControlDataAsset->InteractAction;
 	RollAction = PlayerControlDataAsset->RollAction;
 	AttackAction = PlayerControlDataAsset->AttackAction;
-	ToggleSunMoonAction = PlayerControlDataAsset->ToggleSunMoonAction;
 	Crystal1Action = PlayerControlDataAsset->Crystal1Action;
 	Crystal2Action = PlayerControlDataAsset->Crystal2Action;
 	Crystal3Action = PlayerControlDataAsset->Crystal3Action;
@@ -141,33 +140,16 @@ void AIGPlayerCharacter::BeginPlay()
 	WalkSpeed = PlayerDataAsset->WalkSpeed;
 	SprintSpeed = PlayerDataAsset->SprintSpeed;
 	RollSpeed = PlayerDataAsset->RollSpeed;
-
-	SunMoonValue = 0.f;
-	SunMoonRecoveryAmountOnAttackHit = PlayerDataAsset->SunMoonRecoveryAmountOnAttackHit;
-	SunMoonSection2Threshold = PlayerDataAsset->SunMoonSection2Threshold;
-	SunMoonSection3Threshold = PlayerDataAsset->SunMoonSection3Threshold;
-	SunMoonSection1DamageScaleFactor = PlayerDataAsset->SunMoonSection1DamageScaleFactor;
-	SunMoonSection2DamageScaleFactor = PlayerDataAsset->SunMoonSection2DamageScaleFactor;
-	SunMoonSection3DamageScaleFactor = PlayerDataAsset->SunMoonSection3DamageScaleFactor;
-	SunMoonConsumptionAmountOnAttack = PlayerDataAsset->SunMoonConsumptionAmountOnAttack;
+	
 	ExhaustionPhase1Duration = PlayerDataAsset->ExhaustionPhase1Duration;
 	ExhaustionPhase2Duration = PlayerDataAsset->ExhaustionPhase2Duration;
-	SunMoonAutoConsumptionDelay = PlayerDataAsset->SunMoonAutoConsumptionDelay;
-	ElapsedSunMoonAutoConsumptionTime = 0.f;
-	SunMoonAutoConsumptionAmount = PlayerDataAsset->SunMoonAutoConsumptionAmount;
 	StaminaRecoveryAmountPerSecondOnIdle = PlayerDataAsset->StaminaRecoveryAmountPerSecondOnIdle;
 	StaminaRecoveryAmountPerSecondOnWalk = PlayerDataAsset->StaminaRecoveryAmountPerSecondOnWalk;
 	StaminaConsumptionAmountPerSecondOnRunning = PlayerDataAsset->StaminaConsumptionAmountPerSecondOnRunning;
 	StaminaConsumptionAmountOnRoll = PlayerDataAsset->StaminaConsumptionAmountOnRoll;
 	ActivatedCrystal = ECrystal::None;
 
-	NormalAttackDamageMin = PlayerDataAsset->NormalAttackDamageMin;
-	NormalAttackDamageMax = PlayerDataAsset->NormalAttackDamageMax;
-	StrongAttackDamageMin = PlayerDataAsset->StrongAttackDamageMin;
-	StrongAttackDamageMax = PlayerDataAsset->StrongAttackDamageMax;
-
-	StaminaConsumptionAmountOnNormalAttack = PlayerDataAsset->StaminaConsumptionAmountOnNormalAttack;
-	StaminaConsumptionAmountOnStrongAttack = PlayerDataAsset->StaminaConsumptionAmountOnStrongAttack;
+	// TODO: 3타 데미지 적용
 	DieZLocation = PlayerDataAsset->DieZLocation;
 	ElapsedDieSequenceTime = 0.f;
 	ElapsedFadeSequenceTime = 0.f;
@@ -193,8 +175,6 @@ void AIGPlayerCharacter::BeginPlay()
 		HudWidget->AddToViewport();
 		HudWidget->InitHpGauge(100.f, Hp);
 		HudWidget->InitStaminaGauge(100.f, StaminaValue);
-		HudWidget->InitSunMoonGauge(100.f, 0.f);
-	
 
 		for(int i= 0; i < Shinmyophil->GetQuestArray().Num(); i++)
 		{
@@ -258,10 +238,6 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 	{
 		DebugMessage.Append(TEXT("공격\n"));
 	}
-	if (CheckPlayerState(EPlayerState::Enforced))
-	{
-		DebugMessage.Append(TEXT("강화됨\n"));
-	}
 	if (CheckPlayerState(EPlayerState::ExhaustedPhase1))
 	{
 		DebugMessage.Append(TEXT("탈진상태(게이지 획득 불가)\n"));
@@ -317,7 +293,6 @@ void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::Interact);
 		EnhancedInputComponent->BindAction(RollAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::StartRolling);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::Attack);
-		EnhancedInputComponent->BindAction(ToggleSunMoonAction, ETriggerEvent::Started, this, &AIGPlayerCharacter::ToggleSunMoon);
 		EnhancedInputComponent->BindAction(Crystal1Action, ETriggerEvent::Started, this, &AIGPlayerCharacter::ActivateCrystal1);
 		EnhancedInputComponent->BindAction(Crystal2Action, ETriggerEvent::Started, this, &AIGPlayerCharacter::ActivateCrystal2);
 		EnhancedInputComponent->BindAction(Crystal3Action, ETriggerEvent::Started, this, &AIGPlayerCharacter::ActivateCrystal3);
@@ -477,9 +452,10 @@ void AIGPlayerCharacter::Attack()
 		return;
 	}
 
-	const bool IsEnforced = CheckPlayerState(EPlayerState::Enforced);
 	// 스태미너 부족
-	const float Cost = IsEnforced ? StaminaConsumptionAmountOnStrongAttack : StaminaConsumptionAmountOnNormalAttack;
+	// const float Cost = IsEnforced ? StaminaConsumptionAmountOnStrongAttack : StaminaConsumptionAmountOnNormalAttack;
+	// TODO: 3타 스태미너 코스트 적용
+	const float Cost = 10.f;
 	if (StaminaValue < Cost)
 	{
 		return;
@@ -489,25 +465,13 @@ void AIGPlayerCharacter::Attack()
 	HudWidget->UpdateStaminaGauge(StaminaValue);
 
 	AddPlayerState(EPlayerState::Attacking);
-	ElapsedSunMoonAutoConsumptionTime = 0.f;
-	AnimInstance->SetEnforced(IsEnforced);
+	// TODO: 3타 관련 애니 적용
+	// AnimInstance->SetEnforced(IsEnforced);
 	AnimInstance->StartAttack();
 
 	//데미지 연산뒤 선문게이지 감소
 	const float Damage = ComputeDamage();
 	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("데미지: [%f]"), Damage));
-	if (IsEnforced)
-	{
-		SunMoonValue -= SunMoonConsumptionAmountOnAttack;
-		if (SunMoonValue < 0)
-		{
-			SunMoonValue = 0;
-			RemovePlayerState(EPlayerState::Enforced);
-			AddPlayerState(EPlayerState::ExhaustedPhase1);
-			EnableExhaustion();
-		}
-		HudWidget->UpdateSunMoonGauge(SunMoonValue);
-	}
 
 	// ---- Temporal (Socket 등으로 위치 조정해줘야함)
 	const FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
@@ -550,61 +514,6 @@ void AIGPlayerCharacter::FinishRolling()
 	RemovePlayerState(EPlayerState::Rolling);
 }
 
-void AIGPlayerCharacter::ToggleSunMoon()
-{
-	if (CheckPlayerState(EPlayerState::Enforced))
-	{
-		RemovePlayerState(EPlayerState::Enforced);
-	}
-	else
-	{
-		AddPlayerState(EPlayerState::Enforced);
-		ConsumeSunMoonByTime();
-	}
-}
-
-void AIGPlayerCharacter::ConsumeSunMoonByTime()
-{
-	static bool bIsInitialDelayDone = false;
-	const float DeltaTime = GWorld->DeltaTimeSeconds;
-	ElapsedSunMoonAutoConsumptionTime += DeltaTime;
-
-	if (!CheckPlayerState(EPlayerState::Enforced))
-	{
-		bIsInitialDelayDone = false;
-		return;
-	}
-
-	if (!bIsInitialDelayDone)
-	{
-		if (ElapsedSunMoonAutoConsumptionTime < SunMoonAutoConsumptionDelay)
-		{
-			GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::ConsumeSunMoonByTime);
-			return;
-		}
-
-		bIsInitialDelayDone = true;
-		ensure(ElapsedSunMoonAutoConsumptionTime >= 1.f);
-	}
-
-	if (ElapsedSunMoonAutoConsumptionTime >= 1.f)
-	{
-		if (SunMoonValue < SunMoonAutoConsumptionAmount)
-		{
-			SunMoonValue = 0;
-		}
-		else
-		{
-			SunMoonValue -= SunMoonAutoConsumptionAmount;
-		}
-		HudWidget->UpdateSunMoonGauge(SunMoonValue);
-
-		ElapsedSunMoonAutoConsumptionTime = 0.f;
-	}
-
-	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::ConsumeSunMoonByTime);
-}
-
 void AIGPlayerCharacter::EnableExhaustion()
 {
 	static float ElapsedTime = 0.f;
@@ -633,14 +542,10 @@ void AIGPlayerCharacter::EnableExhaustion()
 
 void AIGPlayerCharacter::OnHitProjectile()
 {
-	if (CheckPlayerState(EPlayerState::ExhaustedPhase1) || CheckPlayerState(EPlayerState::Enforced))
+	if (CheckPlayerState(EPlayerState::ExhaustedPhase1))
 	{
 		return;
 	}
-
-	const uint32 ActualRecoveryAmount = CheckPlayerState(EPlayerState::ExhaustedPhase2) ? SunMoonRecoveryAmountOnAttackHit / 2 : SunMoonRecoveryAmountOnAttackHit;
-	SunMoonValue += ActualRecoveryAmount;
-	HudWidget->UpdateSunMoonGauge(SunMoonValue);
 }
 
 void AIGPlayerCharacter::ManageStaminaByTime()
@@ -815,28 +720,7 @@ void AIGPlayerCharacter::PlayFadeOutSequence()
 
 float AIGPlayerCharacter::ComputeDamage()
 {
-	if (CheckPlayerState(EPlayerState::Enforced))
-	{
-		float DamageScaleFactor = 1.0f;
-
-		// 데미지 배율 계산
-		if (SunMoonValue >= SunMoonSection3Threshold)
-		{
-			DamageScaleFactor = SunMoonSection3DamageScaleFactor;
-		}
-		else if (SunMoonValue >= SunMoonSection2Threshold)
-		{
-			DamageScaleFactor = SunMoonSection2DamageScaleFactor;
-		}
-		else
-		{
-			DamageScaleFactor = SunMoonSection1DamageScaleFactor;
-		}
-
-		return DamageScaleFactor * FMath::RandRange(StrongAttackDamageMin, StrongAttackDamageMax);
-	}
-
-	return FMath::RandRange(NormalAttackDamageMin, NormalAttackDamageMax);
+	return 10.f; // TODO: 3타 데미지 적용
 }
 
 void AIGPlayerCharacter::UpdateShinmyophilScript(const FString InText)
@@ -854,12 +738,6 @@ void AIGPlayerCharacter::SetStaminaValue_DEBUG(const uint32 Value)
 {
 	StaminaValue = Value;
 	HudWidget->UpdateStaminaGauge(StaminaValue);
-}
-
-void AIGPlayerCharacter::SetSunMoon_DEBUG(const uint32 Value)
-{
-	SunMoonValue = Value;
-	HudWidget->UpdateSunMoonGauge(SunMoonValue);
 }
 
 void AIGPlayerCharacter::CheckCrystal_DEBUG()
