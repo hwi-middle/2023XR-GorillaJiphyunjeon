@@ -21,6 +21,8 @@ UENUM(BlueprintType)
 enum EAttackPattern : uint32
 {
 	None,
+	NormalWeak,
+	NormalStrong,
 	Close,
 	Far,
 	Floor,
@@ -67,6 +69,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UIGBossGimmickDataAsset> GimmickDataAsset;
 
+	// 평타
+	// TODO: 평타 관련 구현
+	
 	// 근거리 패턴
 	UPROPERTY(VisibleAnywhere)
 	uint32 CloseAttack_SpikeNum;
