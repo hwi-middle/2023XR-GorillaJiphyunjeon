@@ -49,7 +49,6 @@ public:
 	FORCEINLINE float GetDetectRange() const { return 3000.f; }
 	FORCEINLINE FVector GetOrigin() const { return Origin; }
 
-
 protected:
 	UPROPERTY(VisibleAnywhere)
 	float MaxHp;

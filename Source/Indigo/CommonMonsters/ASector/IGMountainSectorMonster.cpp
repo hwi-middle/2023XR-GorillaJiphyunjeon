@@ -5,14 +5,13 @@
 
 AIGMountainSectorMonster::AIGMountainSectorMonster()
 {
+	
 }
 
 void AIGMountainSectorMonster::BeginPlay()
 {
 	Super::BeginPlay();
-	SetHintType(EHintType::Mountain);
-
-	
+	SetHintType(EHintType::Mountain);	
 	
 }
 
