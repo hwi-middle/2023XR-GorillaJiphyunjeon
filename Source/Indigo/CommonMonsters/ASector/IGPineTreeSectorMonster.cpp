@@ -15,7 +15,7 @@ AIGPineTreeSectorMonster::AIGPineTreeSectorMonster()
 void AIGPineTreeSectorMonster::BeginPlay()
 {
 	Super::BeginPlay();
-	SetHintType(EHintType::PineTree);
+	SetCrystalType(ECrystal::Tree);
 }
 
 // Called every frame

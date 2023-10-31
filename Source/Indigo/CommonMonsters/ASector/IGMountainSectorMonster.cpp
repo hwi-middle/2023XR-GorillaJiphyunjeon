@@ -11,7 +11,7 @@ AIGMountainSectorMonster::AIGMountainSectorMonster()
 void AIGMountainSectorMonster::BeginPlay()
 {
 	Super::BeginPlay();
-	SetHintType(EHintType::Mountain);	
+	SetCrystalType(ECrystal::Mountain);	
 	
 }
 

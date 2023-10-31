@@ -10,7 +10,7 @@ AIGWaveSectorMonster::AIGWaveSectorMonster()
 void AIGWaveSectorMonster::BeginPlay()
 {
 	Super::BeginPlay();
-	SetHintType(EHintType::Wave);
+	SetCrystalType(ECrystal::Wave);
 }
 
 void AIGWaveSectorMonster::Tick(float DeltaTime)
