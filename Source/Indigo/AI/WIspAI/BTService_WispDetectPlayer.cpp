@@ -35,7 +35,7 @@ void UBTService_WispDetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 	}
 
 	const FVector Origin = Wisp->GetActorLocation();
-	const float DetectRadius = 1000.0f;
+	const float DetectRadius = 500.0f;
 
 	FHitResult Result;
 	FCollisionQueryParams CollisionParams;
@@ -61,16 +61,15 @@ void UBTService_WispDetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 	
 	if (AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(Result.GetActor()))
 	{
-		const FVector WispToTarget = Player->GetActorLocation() - Origin;
+		const FVector WispToTarget = Player->GetActorLocation() - Wisp->GetActorLocation();
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, Player);
 		const bool IsCloseEnough = WispToTarget.Length() <= Wisp->GetStoppingDistance();
 		OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_CLOSE_ENOUGH, IsCloseEnough);
 
-		DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Green, false, 0.1f);
+		DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Green, false, 0.f);
 		if (!IsCloseEnough)
 		{
-			
-			DrawDebugLine(World, ControllingPawn->GetActorLocation(), Origin, FColor::Green, false, 0.f);
+			DrawDebugLine(World, ControllingPawn->GetActorLocation(), Player->GetActorLocation(), FColor::Green, false, 0.f);
 		}
 		return;
 	}

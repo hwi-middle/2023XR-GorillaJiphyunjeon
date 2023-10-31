@@ -5,15 +5,14 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Indigo/Character/IGEnemyBase.h"
-#include "Indigo/Interactable/IGHintBase.h"
+#include "Indigo/Interactable/IGCrystalBase.h"
 #include "IGHintMonsterBase.generated.h"
 
 class AIGProvisoWispPlace;
 class AIGWispAIController;
 DECLARE_MULTICAST_DELEGATE(FOnFinishWispAttackDelegate)
 
-enum class EHintType : uint8;
-
+enum class ECrystal : uint32;
 UCLASS()
 class INDIGO_API AIGHintMonsterBase : public AIGEnemyBase
 {
@@ -23,10 +22,9 @@ public:
 	// Sets default values for this actor's properties
 	AIGHintMonsterBase();
 	
-	virtual void DropHint(); 
+	virtual void DropCrystal(); 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	FORCEINLINE float GetStoppingDistance() const { return StoppingDistance; }
-	FORCEINLINE void SetIsFirstAttack(bool InIsFirstAttack){bIsFirstAttack = InIsFirstAttack;} 
 	FORCEINLINE	bool GetIsDelay() const {return bIsDelay;}
 	
 	void PerformCloseAttack();
@@ -39,13 +37,11 @@ protected:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	FORCEINLINE	void SetHintType(const EHintType InHintType) {HintType = InHintType;}
+	FORCEINLINE	void SetCrystalType(const ECrystal InCrystalType) {CrystalType = InCrystalType;}
 	
 private:
-	TObjectPtr<AIGProvisoWispPlace> WispPlace;
-	
 	UPROPERTY(EditAnywhere)
-	EHintType HintType;
+	ECrystal CrystalType;
 
 	UPROPERTY(EditAnywhere)
 	float RespawnTime;
@@ -63,13 +59,16 @@ private:
 	float AttackTime;
 	
 	UPROPERTY()
+	float AttackSpeed;
+	
+	UPROPERTY()
+	float RetreatTime;
+	
+	UPROPERTY()
 	uint8 bIsDelay : 1;
 	
 	UPROPERTY()
 	uint8 bIsAttack : 1;
-
-	UPROPERTY()
-	uint8 bIsFirstAttack : 1;
 
 	UPROPERTY()
 	FVector AttackStartLocation;
@@ -80,11 +79,6 @@ private:
 	UPROPERTY()
 	FVector DashEndLocation;
 
-	UPROPERTY()
-	float DashStartTime;
-
-	UPROPERTY()
-	float DashEndTime;
 	
 	UPROPERTY()
 	uint8 bIsRetreating : 1;
@@ -94,11 +88,8 @@ private:
 
 	UPROPERTY()
 	FVector RetreatEndLocation;
-
+		
 	UPROPERTY()
-	float RetreatStartTime;
+	FVector SpawnPos;
 	
-	UPROPERTY()
-	float RetreatEndTime;
-
 };

@@ -19,7 +19,6 @@ enum class ECrystal : uint32
 	Wave,
 	Mountain,
 };
-
 UCLASS()
 class INDIGO_API AIGCrystalBase : public AActor, public IInteractable
 {

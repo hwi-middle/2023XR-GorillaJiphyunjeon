@@ -24,16 +24,12 @@ EBTNodeResult::Type UBTTast_WispAttack::ExecuteTask(UBehaviorTreeComponent& Owne
 		return EBTNodeResult::Failed;
 	}
 
-	if(Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->IsDead())
+	AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0));
+	if(Player->IsDead())
 	{
 		return EBTNodeResult::Aborted;
 	}
 	
-	if(ControllingWisp->GetIsDelay())
-	{
-		return EBTNodeResult::Aborted;
-	}
-
 	CheckEndDelegateHandle = ControllingWisp->OnFinishWispAttack.AddLambda(
 		[&]()
 		{
