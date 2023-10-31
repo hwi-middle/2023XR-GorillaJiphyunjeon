@@ -31,6 +31,7 @@ void UBTService_WispDetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 
 	if(Wisp->IsDead())
 	{
+		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, nullptr);
 		return;
 	}
 

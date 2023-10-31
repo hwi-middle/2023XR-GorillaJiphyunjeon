@@ -10,6 +10,7 @@
 
 class AIGProvisoWispPlace;
 class AIGWispAIController;
+class UIGWispAnimInstance;
 DECLARE_MULTICAST_DELEGATE(FOnFinishWispAttackDelegate)
 
 enum class ECrystal : uint32;
@@ -40,6 +41,9 @@ protected:
 	FORCEINLINE	void SetCrystalType(const ECrystal InCrystalType) {CrystalType = InCrystalType;}
 	
 private:
+	UPROPERTY()
+	TObjectPtr<UIGWispAnimInstance> AnimInstance;
+	
 	UPROPERTY(EditAnywhere)
 	ECrystal CrystalType;
 

@@ -25,7 +25,7 @@ EBTNodeResult::Type UBTTast_WispAttack::ExecuteTask(UBehaviorTreeComponent& Owne
 	}
 
 	AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0));
-	if(Player->IsDead())
+	if(Player->IsDead() || ControllingWisp->IsDead())
 	{
 		return EBTNodeResult::Aborted;
 	}
