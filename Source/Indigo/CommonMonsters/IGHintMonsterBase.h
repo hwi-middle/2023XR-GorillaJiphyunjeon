@@ -78,7 +78,6 @@ private:
 
 	UPROPERTY()
 	FVector DashEndLocation;
-
 	
 	UPROPERTY()
 	uint8 bIsRetreating : 1;
