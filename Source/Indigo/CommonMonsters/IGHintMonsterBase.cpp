@@ -38,7 +38,7 @@ AIGHintMonsterBase::AIGHintMonsterBase()
 	bIsAttack = false;
 	bIsDelay = false;
 	bIsRetreating = false;
-	RespawnTime = 0.0f;
+	RespawnTime = 10.0f;
 	AttackDelay = 4.0f;
 	ElapsedTime = 0.0f;
 	AttackTime  = 0.0f;
@@ -78,10 +78,10 @@ void AIGHintMonsterBase::Tick(float DeltaTime)
 			GetActorLocation(),
 			FQuat::Identity,
 			ECC_CHECK_PAWN,
-			FCollisionShape::MakeSphere(50),
+			FCollisionShape::MakeSphere(25),
 			CollisionParams
 		);
-		DrawDebugSphere(GWorld, GetActorLocation(), 50, 16, FColor::Green, false, 0.f);
+		DrawDebugSphere(GWorld, GetActorLocation(), 25, 16, FColor::Green, false, 0.f);
 		
 		if (bHit)
 		{
@@ -113,7 +113,7 @@ void AIGHintMonsterBase::Tick(float DeltaTime)
 		FVector TargetPos = (AttackStartLocation - GetActorLocation()).GetSafeNormal();
 		AddActorLocalOffset(TargetPos * DeltaTime * AttackSpeed);
 		RetreatTime += DeltaTime;
-		if ((GetActorLocation() - RetreatStartLocation).Size() >= StoppingDistance / 2 || RetreatTime >= 0.5f)
+		if ((GetActorLocation() - RetreatStartLocation).Size() >= StoppingDistance / 3 || RetreatTime >= 0.5f)
 		{
 			bIsRetreating = false;
 			RetreatTime = 0.0f;			
@@ -165,10 +165,10 @@ float AIGHintMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Dam
             {
         		this->SetActorEnableCollision(true);
 				this->SetActorHiddenInGame(false);
-				AIGEnemyBase::SetHp(1);
+				AIGEnemyBase::SetHp(9);
         		bIsDead = false;
                 GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
-            }), 10.0f, false);			
+            }), RespawnTime, false);			
 	}	
 
 	return DamageAmount;
