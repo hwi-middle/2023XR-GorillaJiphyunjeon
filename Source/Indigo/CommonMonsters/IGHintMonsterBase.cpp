@@ -53,7 +53,7 @@ void AIGHintMonsterBase::BeginPlay()
 {
 	Super::BeginPlay();	
 	
-	AIGEnemyBase::SetHp(1);
+	AIGEnemyBase::SetHp(9);
 	SpawnPos = GetActorLocation();
 }
 
@@ -168,7 +168,7 @@ float AIGHintMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 				AIGEnemyBase::SetHp(1);
         		bIsDead = false;
                 GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
-            }), 3.0f, false);			
+            }), 10.0f, false);			
 	}	
 
 	return DamageAmount;
