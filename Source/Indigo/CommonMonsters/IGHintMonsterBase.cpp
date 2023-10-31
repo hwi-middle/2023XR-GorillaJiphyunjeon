@@ -14,6 +14,7 @@
 #include "Indigo/Interactable/IGMountainCrystal.h"
 #include "Indigo/Interactable/IGWaveCrystal.h"
 #include "Indigo/Interactable/IGTreeCrystal.h"
+#include "Indigo/Animation/IGWispAnimInstance.h"
 
 // Sets default values
 AIGHintMonsterBase::AIGHintMonsterBase()
@@ -24,6 +25,10 @@ AIGHintMonsterBase::AIGHintMonsterBase()
 	GetMesh()->SetSkeletalMesh(MeshRef);
 		GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -50.0f));
 }, EAssertionLevel::Check);
+	
+	const TSubclassOf<UIGWispAnimInstance> WispAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGWispAnimInstance>(
+	TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Monster/Animation/ABP_Monster.ABP_Monster_C"), EAssertionLevel::None);
+	GetMesh()->SetAnimInstanceClass(WispAnimInstanceClass);
 	
 	GetCapsuleComponent()->SetSimulatePhysics(false);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly); 
@@ -55,6 +60,9 @@ void AIGHintMonsterBase::BeginPlay()
 	
 	AIGEnemyBase::SetHp(9);
 	SpawnPos = GetActorLocation();
+
+	AnimInstance = CastChecked<UIGWispAnimInstance>(GetMesh()->GetAnimInstance());
+	
 }
 
 // Called every frame
@@ -153,18 +161,25 @@ void AIGHintMonsterBase::DropCrystal()
 float AIGHintMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	AActor* DamageCauser)
 {
+	if(bIsDead)
+	{
+		return 0.0f;
+	}
+	
+	AnimInstance->OnHit();
 	SetHp(GetHp() - DamageAmount);
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("[도깨비불 체력] %f"), GetHp()));
 	if(GetHp() <= 0)
 	{
+		AnimInstance->OnFinishHit.AddUObject(this, &AIGHintMonsterBase::DropCrystal);
 		bIsDead = true;
-		DropCrystal();
-		SetActorLocation(SpawnPos);
 	    FTimerHandle TimerHandle;
         GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([&]()
             {
+				SetActorLocation(SpawnPos);
         		this->SetActorEnableCollision(true);
 				this->SetActorHiddenInGame(false);
+        		AnimInstance->OnFinishHit.RemoveAll(this);
 				AIGEnemyBase::SetHp(9);
         		bIsDead = false;
                 GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
@@ -176,7 +191,7 @@ float AIGHintMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 
 void AIGHintMonsterBase::PerformCloseAttack()
 {
-	if(bIsAttack)
+	if(bIsAttack || bIsDead)
 	{
 		return;
 	}
