@@ -27,6 +27,10 @@ public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	FORCEINLINE float GetStoppingDistance() const { return StoppingDistance; }
 	FORCEINLINE	bool GetIsDelay() const {return bIsDelay;}
+
+	FORCEINLINE	bool GetIsHit() const {return bIsHit;}
+	FORCEINLINE	void IsHitFinish() { bIsHit = false;}
+
 	
 	void PerformCloseAttack();
 	void EndAttack();
@@ -73,6 +77,9 @@ private:
 	
 	UPROPERTY()
 	uint8 bIsAttack : 1;
+	
+	UPROPERTY()
+	uint8 bIsHit : 1;
 
 	UPROPERTY()
 	FVector AttackStartLocation;

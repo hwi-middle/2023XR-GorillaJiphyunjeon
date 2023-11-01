@@ -9,6 +9,7 @@
 #include "Indigo/CommonMonsters/IGHintMonsterBase.h"
 #include "Indigo/Character/IGPlayerCharacter.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
+#include "Kismet/GameplayStatics.h"
 
 UBTService_WispDetectPlayer::UBTService_WispDetectPlayer()
 {
@@ -29,7 +30,7 @@ void UBTService_WispDetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 		return;
 	}
 
-	if(Wisp->IsDead())
+	if(Wisp->IsDead() || Wisp->GetIsHit())
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, nullptr);
 		return;
@@ -40,7 +41,13 @@ void UBTService_WispDetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 
 	FHitResult Result;
 	FCollisionQueryParams CollisionParams;
-	CollisionParams.AddIgnoredActor(Wisp);
+	TArray<AActor*> IgnoredWisps;
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AIGHintMonsterBase::StaticClass(), IgnoredWisps);
+
+	for (AActor* Wisps : IgnoredWisps) {
+		CollisionParams.AddIgnoredActor(Wisps);
+	}
 	
 	bool bHit = GetWorld()->SweepSingleByChannel(
 		Result,
