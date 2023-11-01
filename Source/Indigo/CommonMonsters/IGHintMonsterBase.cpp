@@ -31,7 +31,7 @@ AIGHintMonsterBase::AIGHintMonsterBase()
 	GetMesh()->SetAnimInstanceClass(WispAnimInstanceClass);
 	
 	GetCapsuleComponent()->SetSimulatePhysics(false);
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly); 
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Monster"));
 	RootComponent = GetCapsuleComponent();
 
 	AIControllerClass = AIGWispAIController::StaticClass();
@@ -39,7 +39,8 @@ AIGHintMonsterBase::AIGHintMonsterBase()
 	GetCharacterMovement()->MaxWalkSpeed = 200.f;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	bUseControllerRotationYaw = false;
-	
+
+	bIsHit = false;
 	bIsAttack = false;
 	bIsDelay = false;
 	bIsRetreating = false;
@@ -58,11 +59,11 @@ void AIGHintMonsterBase::BeginPlay()
 {
 	Super::BeginPlay();	
 	
-	AIGEnemyBase::SetHp(9);
+	AIGEnemyBase::SetHp(30);
 	SpawnPos = GetActorLocation();
 
 	AnimInstance = CastChecked<UIGWispAnimInstance>(GetMesh()->GetAnimInstance());
-	
+	AnimInstance->OnFinishHit.AddUObject(this, &AIGHintMonsterBase::IsHitFinish);
 }
 
 // Called every frame
@@ -165,13 +166,14 @@ float AIGHintMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	{
 		return 0.0f;
 	}
-	
-	AnimInstance->OnHit();
+
+	AnimInstance->OnHit();	
 	SetHp(GetHp() - DamageAmount);
+	bIsHit = true;
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("[도깨비불 체력] %f"), GetHp()));
 	if(GetHp() <= 0)
 	{
-		AnimInstance->OnFinishHit.AddUObject(this, &AIGHintMonsterBase::DropCrystal);
+		const FDelegateHandle DelegateHandle = AnimInstance->OnFinishHit.AddUObject(this, &AIGHintMonsterBase::DropCrystal);
 		bIsDead = true;
 	    FTimerHandle TimerHandle;
         GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([&]()
@@ -179,8 +181,8 @@ float AIGHintMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 				SetActorLocation(SpawnPos);
         		this->SetActorEnableCollision(true);
 				this->SetActorHiddenInGame(false);
-        		AnimInstance->OnFinishHit.RemoveAll(this);
-				AIGEnemyBase::SetHp(9);
+        		AnimInstance->OnFinishHit.Remove(DelegateHandle);
+				AIGEnemyBase::SetHp(30);
         		bIsDead = false;
                 GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
             }), RespawnTime, false);			
