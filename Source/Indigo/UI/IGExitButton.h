@@ -17,6 +17,8 @@ class INDIGO_API UIGExitButton : public UUserWidget
 	GENERATED_BODY()
 public:
 	UIGExitButton(const FObjectInitializer& ObjectInitializer);
+
+	UFUNCTION()
 	void GameExit();
 protected:
 	virtual void NativeConstruct() override;

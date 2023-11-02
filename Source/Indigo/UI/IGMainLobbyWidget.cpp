@@ -19,7 +19,7 @@ void UIGMainLobbyWidget::NativeConstruct()
 	GameStartButton = Cast<UIGLevelButton>(GetWidgetFromName(TEXT("GameStartButton")));
 	OptionButton = Cast<UButton>(GetWidgetFromName(TEXT("Option")));
 	ExitButton = Cast<UIGExitButton>(GetWidgetFromName(TEXT("Exit")));
-	OptionWidget = Cast<UIGOptionWidget>(GetWidgetFromName(TEXT("OptionWidget")));
+	OptionWidget = Cast<UIGOptionWidget>(GetWidgetFromName(TEXT("WBP_OptionWidget")));
 
 	OptionWidget->SetVisibility(ESlateVisibility::Hidden);
 	OptionButton->OnClicked.AddDynamic(this, &UIGMainLobbyWidget::OpenCloseOptionWidget);

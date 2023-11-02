@@ -18,6 +18,9 @@ UIGOptionSlide::UIGOptionSlide(const FObjectInitializer& ObjectInitializer): Sup
 
 void UIGOptionSlide::SetSliderType(const ESliderType InType)
 {
+	SoundSlider->SetMinValue(0.0f);
+	SoundSlider->SetMaxValue(2.0f);
+	SoundSlider->SetValue(1.0f);
 	if(InType == ESliderType::BGM)
 	{
 		SoundSlider->OnValueChanged.AddDynamic(this, &UIGOptionSlide::SetBGM);		
@@ -28,29 +31,25 @@ void UIGOptionSlide::SetSliderType(const ESliderType InType)
 	}
 	else if(InType == ESliderType::MouseSensitivity)
 	{
-		SoundSlider->SetMinValue(0.0f);
-		SoundSlider->SetMaxValue(2.0f);
-		// 초기 값을 설정
-		SoundSlider->SetValue(1.0f);
 		SoundSlider->OnValueChanged.AddDynamic(this, &UIGOptionSlide::SetMouseSensitivity);		
 	}
 }
 
 void UIGOptionSlide::SetBGM(const float InValue)
 {
+	ValueText->SetText(FText::AsNumber(FMath::TruncToInt(InValue * 50)));
 	for(USoundCue* BGM: BGMSoundsData)
 	{
 		BGM->VolumeMultiplier = InValue;
-		ValueText->SetText(FText::AsNumber(InValue * 100.0f));
 	}
 }
 
 void UIGOptionSlide::SetSFX(const float InValue)
 {
+	ValueText->SetText(FText::AsNumber(FMath::TruncToInt(InValue  * 50)));
 	for(USoundCue* SFX: SFXSoundsData)
 	{
 		SFX->VolumeMultiplier = InValue;
-		ValueText->SetText(FText::AsNumber(InValue * 100.0f));
 	}
 }
 
@@ -60,7 +59,7 @@ void UIGOptionSlide::SetMouseSensitivity(const float InValue)
 	{		
 		PlayerController->InputYawScale_DEPRECATED = InValue;
 		PlayerController->InputPitchScale_DEPRECATED = InValue;
-		ValueText->SetText(FText::AsNumber(InValue));
+		ValueText->SetText(FText::AsNumber(FMath::TruncToInt(InValue  * 50)));
 	}
 }
 
@@ -69,7 +68,7 @@ void UIGOptionSlide::NativeConstruct()
 	Super::NativeConstruct();
 	SoundSlider = Cast<USlider>(GetWidgetFromName(TEXT("Slider")));
 	ValueText = Cast<UTextBlock>(GetWidgetFromName(TEXT("Value")));
-	
+	ValueText->SetText(FText::AsNumber(50));
 
 	if (SoundDataAsset)
 	{
@@ -94,14 +93,5 @@ void UIGOptionSlide::NativeConstruct()
 			}
 		}
 	}
-
 	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	if (SoundSlider)
-	{
-		// 슬라이더의 범위를 설정 (예: 0.0부터 1.0까지)
-		SoundSlider->SetMinValue(0.0f);
-		SoundSlider->SetMaxValue(1.0f);
-		// 초기 값을 설정
-		SoundSlider->SetValue(0.5f);		
-	}
 }

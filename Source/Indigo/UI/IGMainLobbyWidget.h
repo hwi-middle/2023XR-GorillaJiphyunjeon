@@ -25,19 +25,20 @@ public:
 protected:
 	virtual void NativeConstruct() override;
 
+	UFUNCTION(BlueprintCallable)
 	void OpenCloseOptionWidget(); 
 	
 protected:
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UIGLevelButton> GameStartButton;
 	
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UButton> OptionButton;
 	
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UIGExitButton> ExitButton;
 	
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UIGOptionWidget> OptionWidget;
 	
 	
