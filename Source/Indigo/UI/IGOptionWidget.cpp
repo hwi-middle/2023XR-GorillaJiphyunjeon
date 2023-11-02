@@ -47,10 +47,13 @@ void UIGOptionWidget::NativeConstruct()
 	SliderOptionButton = Cast<UButton>(GetWidgetFromName(TEXT("SliderWidgetButton")));
 	SliderOptionButton->OnClicked.AddDynamic(this, &UIGOptionWidget::OpenSliderOption);
 
-	OptionCloseButton = Cast<UButton>(GetWidgetFromName(TEXT("CloseButton")));
+	OptionCloseButton = Cast<UButton>(GetWidgetFromName(TEXT("Close")));
 	OptionCloseButton->OnClicked.AddDynamic(this, &UIGOptionWidget::CloseOption);
 	
 	CreditPanel = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("CreditPan")));
 	CreditPanel->SetVisibility(ESlateVisibility::Hidden);
-	OptionPanel = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("OptionPan")));	
+	OptionPanel = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("OptionPan")));
+
+	SetVisibility(ESlateVisibility::Visible);
+	OptionPanel->SetVisibility(ESlateVisibility::Visible);
 }

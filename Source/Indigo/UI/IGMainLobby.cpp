@@ -8,7 +8,7 @@
 
 AIGMainLobby::AIGMainLobby()
 {
-	FIGConstructorHelper::FindClassAndInitialize<UIGMainLobbyWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/_GorillaJiphyunjeon/UI/MainLobbyUI/MainLobby.MainLobby'"),
+	FIGConstructorHelper::FindClassAndInitialize<UIGMainLobbyWidget>(TEXT("/Game/_GorillaJiphyunjeon/UI/MainLobbyUI/MainLobby.MainLobby_C"),
 		[&](TSubclassOf<UIGMainLobbyWidget> Class)
 		{
 			MainLobbyWidgetClass = Class;

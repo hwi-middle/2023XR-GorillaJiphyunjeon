@@ -30,9 +30,12 @@ public:
 	UIGOptionSlide(const FObjectInitializer& ObjectInitializer);
 
 	FORCEINLINE void SetSliderType(const ESliderType InType);
-	
+
+	UFUNCTION(BlueprintCallable)
 	void SetBGM(const float InValue);
+	UFUNCTION(BlueprintCallable)
 	void SetSFX(const float InValue);
+	UFUNCTION(BlueprintCallable)
 	void SetMouseSensitivity(const float InValue);
 
 	FORCEINLINE float GetValue() const {return SoundSlider->GetValue(); }
@@ -46,18 +49,18 @@ protected:
 	ESliderType SliderType;
 
 private:
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TArray<USoundCue*> SFXSoundsData;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TArray<USoundCue*> BGMSoundsData;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<APlayerController> PlayerController;
 	
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UTextBlock> ValueText;
 };

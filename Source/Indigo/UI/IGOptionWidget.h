@@ -20,9 +20,12 @@ class INDIGO_API UIGOptionWidget : public UUserWidget
 public:
 	UIGOptionWidget(const FObjectInitializer& ObjectInitializer);
 
+	UFUNCTION()
 	void CloseOption();
 
+	UFUNCTION()
 	void OpenCredit();
+	UFUNCTION()
 	void OpenSliderOption();
 	
 protected:
