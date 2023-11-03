@@ -8,8 +8,12 @@
 #include "IGPlayerInventory.generated.h"
 
 class AIGCrystalBase;
+class AIGMountainCrystal;
+class AIGWaveCrystal;
+class AIGTreeCrystal;
 class AIGHintBase;
 enum class EHintType : uint8;
+enum class ECrystal : uint32;
 
 struct ProvisoText;
 
@@ -26,17 +30,24 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
-	void AddCrystal(AIGCrystalBase* InCrystal);
-	void ShowOwnedCrystals();
+	void AddCrystal(ECrystal InCrystalType);
 
 	void AddHint(ProvisoText* InHint);
 
-	FORCEINLINE TArray<AIGCrystalBase*> GetCrystalArray() { return CrystalArray; }
+	FORCEINLINE TArray<AIGMountainCrystal*> GetMountainCrystalArray() { return MountainCrystalArray; }
+	FORCEINLINE TArray<AIGWaveCrystal*> GetWaveCrystalArray() { return WaveCrystalArray; }
+	FORCEINLINE TArray<AIGTreeCrystal*> GetTreeCrystalArray() { return TreeCrystalArray; }
 	FORCEINLINE TArray<ProvisoText*> GetHintArray() { return HintArray; }
 
 private:
 	UPROPERTY()
-	TArray<AIGCrystalBase*> CrystalArray;
+	TArray<AIGMountainCrystal*> MountainCrystalArray;
+	
+	UPROPERTY()
+	TArray<AIGWaveCrystal*> WaveCrystalArray;
+	
+	UPROPERTY()
+	TArray<AIGTreeCrystal*> TreeCrystalArray;
 
 	
 	TArray<ProvisoText*> HintArray;

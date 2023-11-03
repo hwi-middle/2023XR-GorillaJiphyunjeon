@@ -22,6 +22,9 @@
 #include "Indigo/DataAsset/IGPlayerDataAsset.h"
 #include "Indigo/DataAsset/IGSoundDataAsset.h"
 #include "Indigo/Interactable/IGCrystalBase.h"
+#include "Indigo/Interactable/IGMountainCrystal.h"
+#include "Indigo/Interactable/IGWaveCrystal.h"
+#include "Indigo/Interactable/IGTreeCrystal.h"
 #include "Indigo/Interface/Interactable.h"
 #include "Indigo/Inventory/IGPlayerInventory.h"
 #include "Indigo/UI/IGIngameHUDWidget.h"
@@ -441,7 +444,7 @@ void AIGPlayerCharacter::Interact()
 
 	if (Crystal != nullptr)
 	{
-		PlayerInventory->AddCrystal(Crystal);
+		PlayerInventory->AddCrystal(Crystal->GetCrystalType());
 		HudWidget->AddCrystal(Crystal);
 	}
 }
@@ -589,53 +592,28 @@ void AIGPlayerCharacter::ActivateCrystalByIndex(uint32 Index)
 		return;
 	}
 
-	const TArray<AIGCrystalBase*> CrystalArray = PlayerInventory->GetCrystalArray();
-	if (!CrystalArray.IsValidIndex(Index))
-	{
-		return;
-	}
-
-	int32 SameCount = 0;
 	ECrystal Type = ECrystal::None;
-	if(Index == 0)
+	const TArray<AIGMountainCrystal*> MountainCrystalArray = PlayerInventory->GetMountainCrystalArray();
+	const TArray<AIGTreeCrystal*> TreeCrystalArray = PlayerInventory->GetTreeCrystalArray();
+	const TArray<AIGWaveCrystal*> WaveCrystalArray = PlayerInventory->GetWaveCrystalArray();
+
+	if(Index == 1 && MountainCrystalArray.Num() >= 3)
 	{
 		Type = ECrystal::Mountain;
-		for(const AIGCrystalBase* Crystals : CrystalArray)
-		{
-			if(Crystals->GetCrystalType() == ECrystal::Mountain)
-			{
-				SameCount++;
-			}
-		}
-		
 	}
-	else if(Index == 1)
+	else if(Index == 2 && TreeCrystalArray.Num() >= 3)
 	{
 		Type = ECrystal::Tree;
-		for(const AIGCrystalBase* Crystals : CrystalArray)
-		{
-			if(Crystals->GetCrystalType() == ECrystal::Tree)
-			{
-				SameCount++;
-			}
-		}
 	}
-	else if(Index == 2)
-	{		
+	else if(Index == 2 && WaveCrystalArray.Num() >= 3)
+	{
 		Type = ECrystal::Wave;
-		for(const AIGCrystalBase* Crystals : CrystalArray)
-		{
-			if(Crystals->GetCrystalType() == ECrystal::Wave)
-			{
-				SameCount++;
-			}
-		}
 	}
-	if(SameCount < 3)
+	else
 	{
 		return;
 	}
-
+	
 	
 	ensure(Type != ECrystal::None);
 
@@ -798,9 +776,11 @@ void AIGPlayerCharacter::CheckCrystal_DEBUG()
 {
 	UE_LOG(LogTemp, Log, TEXT("크리스탈 목록"));
 
-	auto CrystalArray = PlayerInventory->GetCrystalArray();
-	for (auto Crystal : CrystalArray)
-	{
-		UE_LOG(LogTemp, Log, TEXT("[크리스탈]: %s"), *Crystal->GetCrystalName());
-	}
+	auto MountainCrystalArray = PlayerInventory->GetMountainCrystalArray();
+	auto WaveCrystalArray = PlayerInventory->GetWaveCrystalArray();
+	auto TreeCrystalArray = PlayerInventory->GetTreeCrystalArray();
+	
+	UE_LOG(LogTemp, Log, TEXT("[산 크리스탈 파편 갯수]: %d"), MountainCrystalArray.Num());
+	UE_LOG(LogTemp, Log, TEXT("[물결 크리스탈 파편 갯수]: %d"), WaveCrystalArray.Num());
+	UE_LOG(LogTemp, Log, TEXT("[나무 크리스탈 파편 갯수]: %d"), TreeCrystalArray.Num());
 }

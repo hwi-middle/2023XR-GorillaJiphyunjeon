@@ -5,6 +5,9 @@
 
 #include "IGShinmyophil.h"
 #include "Indigo/Interactable/IGCrystalBase.h"
+#include "Indigo/Interactable/IGMountainCrystal.h"
+#include "Indigo/Interactable/IGWaveCrystal.h"
+#include "Indigo/Interactable/IGTreeCrystal.h"
 #include "Indigo/Management/IGCrystalManager.h"
 #include "Indigo/Character/IGPlayerCharacter.h"
 #include "Indigo/Interactable/IGBlankHint.h"
@@ -40,7 +43,10 @@ void UIGPlayerInventory::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	{
 		return;
 	}
-	if(PlayerCharacter->GetShinmyophil()->GetCurrentPhaseState() == EPhaseState::ProvisoPhase && CrystalArray.Num() <= 0)
+	if(PlayerCharacter->GetShinmyophil()->GetCurrentPhaseState() == EPhaseState::ProvisoPhase
+		&& MountainCrystalArray.Num() <= 0
+		&& WaveCrystalArray.Num() <= 0
+		&& TreeCrystalArray.Num() <= 0)
 	{	
 		CantFindProvisoTime+=DeltaTime;
 	}
@@ -52,11 +58,28 @@ void UIGPlayerInventory::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 }
 
-void UIGPlayerInventory::AddCrystal(AIGCrystalBase* InCrystal)
+void UIGPlayerInventory::AddCrystal(ECrystal InCrystalType)
 {
-	CrystalArray.Add(InCrystal);
-	const AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(GetOwner());	
+	switch(InCrystalType)
+	{
+	case ECrystal::Mountain:
+		MountainCrystalArray.Add(NewObject<AIGMountainCrystal>());
+		break;		
 
+	case ECrystal::Tree:
+		TreeCrystalArray.Add(NewObject<AIGTreeCrystal>());	
+		break;
+
+	case ECrystal::Wave:
+		WaveCrystalArray.Add(NewObject<AIGWaveCrystal>());	
+		break;
+		
+		default:
+			break;
+	}
+	
+	
+	const AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(GetOwner());	
 	if(Player == nullptr)
 	{
 		return;
@@ -64,7 +87,6 @@ void UIGPlayerInventory::AddCrystal(AIGCrystalBase* InCrystal)
 	
 	if(!bIsGetFirstCrystalFrag)
 	{
-
 		//처음 결정 조각 얻었을 떄
 		Player->GetShinmyophil()->ProvisoRemakeFirstGetCrystalFrag();
 		bIsGetFirstCrystalFrag = true;
@@ -72,16 +94,7 @@ void UIGPlayerInventory::AddCrystal(AIGCrystalBase* InCrystal)
 	
 	if(!bIsGetFirstCrystal)
 	{
-		int SameCrystalCount = 0;
-		for(const AIGCrystalBase* Crystal : CrystalArray)
-		{
-			if(Crystal->GetCrystalType() == InCrystal->GetCrystalType())
-			{
-				SameCrystalCount++;
-			}
-		}
-
-		if(SameCrystalCount >= 3)
+		if(MountainCrystalArray.Num() >= 3 || TreeCrystalArray.Num() >= 3 || WaveCrystalArray.Num() >= 3)
 		{
 			//3개 모아서 결정 하나 만들었을 떄
 			Player->GetShinmyophil()->ProvisoRemakeGetAllCrystalAndGetCompleteCrystal();
@@ -89,19 +102,14 @@ void UIGPlayerInventory::AddCrystal(AIGCrystalBase* InCrystal)
 		}
 	}
 	
-	if (CrystalArray.Num() >= 9)
+	if (MountainCrystalArray.Num() >= 3 &&
+		TreeCrystalArray.Num() >= 3 &&
+		WaveCrystalArray.Num() >= 3
+		)
 	{
 		//다 모았을 때
 		IGBossZoneGateManager::GetInstance()->OpenGate();
 		Player->GetShinmyophil()->ProvisoRemakeGetAllCrystal();
-	}
-}
-
-void UIGPlayerInventory::ShowOwnedCrystals()
-{
-	for (const AIGCrystalBase* Crystals : CrystalArray)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("[%s]의 결정 소유"), *Crystals->GetCrystalName()));
 	}
 }
 

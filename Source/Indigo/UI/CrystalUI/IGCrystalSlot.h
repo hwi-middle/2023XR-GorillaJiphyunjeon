@@ -30,16 +30,14 @@ public:
 protected:
 	virtual void NativeConstruct() override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UImage> CrystalSlot1;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UImage> CrystalSlot2;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UImage> CrystalSlot3;
+	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UImage> CrystalSlot[3];
 
 private:
+	UPROPERTY()
 	TObjectPtr<AIGPlayerCharacter> Character;
 
+	UPROPERTY()
 	int32 CrystalFragCount;
 	
 };

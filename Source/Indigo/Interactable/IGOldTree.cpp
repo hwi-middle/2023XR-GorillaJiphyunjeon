@@ -53,7 +53,9 @@ void AIGOldTree::Interact()
 		return;
 	}
 
-	if(IGPlayerCharacter->GetInventory()->GetCrystalArray().Num() < 9)
+	if((IGPlayerCharacter->GetInventory()->GetMountainCrystalArray().Num() +
+		IGPlayerCharacter->GetInventory()->GetTreeCrystalArray().Num() +
+		IGPlayerCharacter->GetInventory()->GetWaveCrystalArray().Num()) < 9)
 	{
 		IGPlayerCharacter->GetShinmyophil()->ProvisoRemakeNoFindCrystalAndInteractToOldTree();
 		IGBossZoneGateManager::GetInstance()->OpenGate();
