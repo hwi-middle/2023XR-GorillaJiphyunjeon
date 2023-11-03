@@ -11,7 +11,7 @@ class UIGIngameHUDWidget;
 class UIGBossDataAsset;
 class UIGBossGimmickDataAsset;
 class UBoxComponent;
-DECLARE_MULTICAST_DELEGATE(FOnFinishBossCloseAttackDelegate)
+DECLARE_MULTICAST_DELEGATE(FOnFinishBossAttackDelegate)
 
 class UIGBossAnimInstance;
 class UIGPlayerAnimInstance;
