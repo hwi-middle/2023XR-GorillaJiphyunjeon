@@ -8,5 +8,9 @@
 
 AIndigoGameModeBase::AIndigoGameModeBase()
 {
-	DefaultPawnClass = AIGPlayerCharacter::StaticClass();
+	FIGConstructorHelper::FindClassAndInitialize<AIGPlayerCharacter>(TEXT("/Game/_GorillaJiphyunjeon/Blueprint/BP_Player.BP_Player_C"), [&](TSubclassOf<AIGPlayerCharacter> CharacterClass)
+	{
+		DefaultPawnClass = CharacterClass;
+	}, EAssertionLevel::Check);
+	//DefaultPawnClass = AIGPlayerCharacter::StaticClass();
 }
