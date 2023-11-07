@@ -15,6 +15,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Indigo/Animation/IGPlayerAnimInstance.h"
+#include "Indigo/Animation/IGPlayerWeaponAnimInstance.h"
 #include "Indigo/Battle/IGProjectileBase.h"
 #include "Indigo/Battle/IGStraightProjectile.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
@@ -75,15 +76,18 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 		GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -100.f));
 	}, EAssertionLevel::Check);
 
-	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/PlayerWeapon/Mesh/SM_Weapon.SM_Weapon'"), [&](UStaticMesh* MeshRef)
+	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Weapon/SM_Main_Weapon.SM_Main_Weapon'"), [&](USkeletalMesh* MeshRef)
 	{
-		BrushMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BrushMesh"));
-		BrushMesh->SetStaticMesh(MeshRef);
-		BrushMesh->SetWorldLocation(GetMesh()->GetSocketLocation(TEXT("RightHand")));
-		BrushMesh->SetupAttachment(GetMesh());
-
+		WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BrushMesh"));
+		WeaponMesh->SetSkeletalMesh(MeshRef);
+		WeaponMesh->SetWorldLocation(GetMesh()->GetSocketLocation(TEXT("RightHand")));
+		WeaponMesh->SetupAttachment(GetMesh());
 	}, EAssertionLevel::Check);
 
+	const TSubclassOf<UIGPlayerWeaponAnimInstance> WeaponAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGPlayerWeaponAnimInstance>(
+		TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Weapon/ABP_PlayerWeapon.ABP_PlayerWeapon_C"), EAssertionLevel::Check);
+	WeaponMesh->SetAnimInstanceClass(WeaponAnimInstanceClass);
+	
 	PlayerControlDataAsset = FIGConstructorHelper::FindAndGetObject<UIGPlayerControlDataAsset>(TEXT("/Script/Indigo.IGPlayerControlDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerControlData.DA_PlayerControlData'"));
 	DefaultMappingContext = PlayerControlDataAsset->DefaultMappingContext;
 	MoveAction = PlayerControlDataAsset->MoveAction;
@@ -98,9 +102,9 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	ShowTutorialWidget = PlayerControlDataAsset->ShowTutorialWidget;
 	UseHealKit = PlayerControlDataAsset->UseHealKit;
 
-	const TSubclassOf<UIGPlayerAnimInstance> BossAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGPlayerAnimInstance>(
+	const TSubclassOf<UIGPlayerAnimInstance> PlayerAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGPlayerAnimInstance>(
 		TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/ABP_Player.ABP_Player_C"), EAssertionLevel::Check);
-	GetMesh()->SetAnimInstanceClass(BossAnimInstanceClass);
+	GetMesh()->SetAnimInstanceClass(PlayerAnimInstanceClass);
 
 	FIGConstructorHelper::FindClassAndInitialize<UIGIngameHUDWidget>(TEXT("/Game/_GorillaJiphyunjeon/UI/Game/WBP_GameHUD.WBP_GameHUD_C"), [&](TSubclassOf<UIGIngameHUDWidget> Class)
 	{
@@ -169,11 +173,13 @@ void AIGPlayerCharacter::BeginPlay()
 	ElapsedDieSequenceTime = 0.f;
 	ElapsedFadeSequenceTime = 0.f;
 
-	AnimInstance = CastChecked<UIGPlayerAnimInstance>(GetMesh()->GetAnimInstance());
-	AnimInstance->SetSpeed(0.f);
-	AnimInstance->OnFinishRoll.AddUObject(this, &AIGPlayerCharacter::FinishRolling);
-	AnimInstance->OnFinishAttack.AddUObject(this, &AIGPlayerCharacter::FinishAttack);
-	AnimInstance->OnShouldGenerateProjectile.AddUObject(this, &AIGPlayerCharacter::GenerateProjectile);
+	WeaponAnimInstance = CastChecked<UIGPlayerWeaponAnimInstance>(WeaponMesh->GetAnimInstance());
+	
+	PlayerAnimInstance = CastChecked<UIGPlayerAnimInstance>(GetMesh()->GetAnimInstance());
+	PlayerAnimInstance->SetSpeed(0.f);
+	PlayerAnimInstance->OnFinishRoll.AddUObject(this, &AIGPlayerCharacter::FinishRolling);
+	PlayerAnimInstance->OnFinishAttack.AddUObject(this, &AIGPlayerCharacter::FinishAttack);
+	PlayerAnimInstance->OnShouldGenerateProjectile.AddUObject(this, &AIGPlayerCharacter::GenerateProjectile);
 	CurrentState = EPlayerState::Idling;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -283,12 +289,12 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, *DebugMessage);
 #endif
 
-	AnimInstance->SetSpeed(GetVelocity().Size2D());
+	PlayerAnimInstance->SetSpeed(GetVelocity().Size2D());
 	if (GetActorLocation().Z <= DieZLocation)
 	{
 		if (!CheckPlayerState(EPlayerState::Dead))
 		{
-			AnimInstance->Die();
+			PlayerAnimInstance->Die();
 			HudWidget->UpdateHpGauge(0.f);
 			AddPlayerState(EPlayerState::Dead);
 			bIsDead = true;
@@ -298,8 +304,8 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 		AdjustedLocation.Z = DieZLocation;
 		SetActorLocation(AdjustedLocation);
 	}
-	BrushMesh->SetWorldLocation(GetMesh()->GetSocketLocation(TEXT("RightHand")));
-	BrushMesh->SetWorldRotation(GetMesh()->GetSocketRotation(TEXT("RightHand")));
+	WeaponMesh->SetWorldLocation(GetMesh()->GetSocketLocation(TEXT("RightHand")));
+	WeaponMesh->SetWorldRotation(GetMesh()->GetSocketRotation(TEXT("RightHand")));
 }
 
 void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -334,7 +340,7 @@ float AIGPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("Player HP: [%f]"), Hp));
 	if (Hp <= 0)
 	{
-		AnimInstance->Die();
+		PlayerAnimInstance->Die();
 		HudWidget->UpdateHpGauge(0.f);
 		AddPlayerState(EPlayerState::Dead);
 		bIsDead = true;
@@ -401,6 +407,7 @@ void AIGPlayerCharacter::SetIsIdling()
 void AIGPlayerCharacter::SetIsRunning(const FInputActionValue& Value)
 {
 	const bool IsSprintKeyDown = Value.Get<bool>();
+	WeaponAnimInstance->SetIsPlayerRunning(IsSprintKeyDown);
 	if (IsSprintKeyDown)
 	{
 		RemovePlayerState(EPlayerState::Walking);
@@ -521,11 +528,11 @@ void AIGPlayerCharacter::ComboActionBegin()
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 
 	// Animation Setting
-	AnimInstance->Montage_Play(ComboActionMontage);
+	PlayerAnimInstance->Montage_Play(ComboActionMontage);
 
 	FOnMontageEnded EndDelegate;
 	EndDelegate.BindUObject(this, &AIGPlayerCharacter::ComboActionEnd);
-	AnimInstance->Montage_SetEndDelegate(EndDelegate, ComboActionMontage);
+	PlayerAnimInstance->Montage_SetEndDelegate(EndDelegate, ComboActionMontage);
 
 	ComboTimerHandle.Invalidate();
 	SetComboCheckTimer();
@@ -573,7 +580,7 @@ void AIGPlayerCharacter::ComboCheck()
 	UE_LOG(LogTemp, Log, TEXT("HasNextComboCommand"));
 	CurrentCombo = FMath::Clamp(CurrentCombo + 1, 1, 3);
 	const FName NextSection = *FString::Printf(TEXT("PlayerAttack%d"), CurrentCombo);
-	AnimInstance->Montage_JumpToSection(NextSection, ComboActionMontage);
+	PlayerAnimInstance->Montage_JumpToSection(NextSection, ComboActionMontage);
 	SetComboCheckTimer();
 	HasNextComboCommand = false;
 }
@@ -612,7 +619,7 @@ void AIGPlayerCharacter::StartRolling()
 
 	AddPlayerState(EPlayerState::Rolling);
 	GetCharacterMovement()->MaxWalkSpeed = RollSpeed;
-	AnimInstance->StartRoll();
+	PlayerAnimInstance->StartRoll();
 	UGameplayStatics::PlaySound2D(this, TestSoundDataAsset->PlayerRollingSoundCue);
 }
 

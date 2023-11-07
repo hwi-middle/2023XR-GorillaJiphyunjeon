@@ -7,6 +7,7 @@
 #include "Indigo/Interface/IGCharacterStatus.h"
 #include "IGPlayerCharacter.generated.h"
 
+class UIGPlayerWeaponAnimInstance;
 class APostProcessVolume;
 class UIGPlayerDataAsset;
 class UIGPlayerControlDataAsset;
@@ -159,10 +160,13 @@ private:
 
 	// 애니메이션
 	UPROPERTY()
-	TObjectPtr<UIGPlayerAnimInstance> AnimInstance;
+	TObjectPtr<UIGPlayerAnimInstance> PlayerAnimInstance;
 
 	UPROPERTY()
-	TObjectPtr<UStaticMeshComponent> BrushMesh;
+	TObjectPtr<UIGPlayerWeaponAnimInstance> WeaponAnimInstance;
+	
+	UPROPERTY()
+	TObjectPtr<USkeletalMeshComponent> WeaponMesh;
 
 private:
 	void Move(const FInputActionValue& Value);
