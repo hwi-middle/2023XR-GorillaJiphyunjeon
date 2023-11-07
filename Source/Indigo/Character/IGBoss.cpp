@@ -10,6 +10,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Indigo/AI/IGBossAIController.h"
 #include "Indigo/Animation/IGBossAnimInstance.h"
+#include "Indigo/Battle/IGBossFlooringProjectile.h"
 #include "Indigo/Battle/IGFollowProjectile.h"
 #include "Indigo/Battle/IGMountainSpike.h"
 #include "Indigo/Battle/IGProjectileBase.h"
@@ -236,11 +237,11 @@ void AIGBoss::GenerateCloseAttack()
 
 void AIGBoss::GenerateFloorAttack()
 {
-	const uint32 ProjectileCount = 30;
+	const uint32 ProjectileCount = 15;
 	float Angle = 0.f;
 	for (uint32 i = 0; i < ProjectileCount; ++i)
 	{
-		AIGStraightProjectile* SpawnedProjectile = GWorld->SpawnActor<AIGStraightProjectile>(GetActorLocation(), FRotator(0.f, Angle, 0.f));
+		AIGStraightProjectile* SpawnedProjectile = GWorld->SpawnActor<AIGBossFlooringProjectile>(GetActorLocation(), FRotator(0.f, Angle, 0.f));
 		SpawnedProjectile->Init(10.f, SpawnedProjectile->GetActorForwardVector(), 10000.f, 10.f, EProjectileSpawnType::SpawnedByEnemy);
 		Angle += 360.f / ProjectileCount;
 	}
