@@ -40,7 +40,7 @@ AIGBoss::AIGBoss()
 	InteractCollider->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
 	InteractCollider->SetCollisionProfileName(TEXT("Evidence"));
 	InteractCollider->SetupAttachment(GetMesh());
-	
+
 	AIControllerClass = AIGBossAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	GetCharacterMovement()->MaxWalkSpeed = 200.f;
@@ -55,12 +55,18 @@ AIGBoss::AIGBoss()
 		HudWidgetClass = Class;
 	}, EAssertionLevel::Check);
 
-	
+	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Boss/Mesh/Boss_eye.Boss_eye'"), [&](UStaticMesh* MeshRef)
+	{
+		EyeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EyeMesh"));
+		EyeMesh->SetStaticMesh(MeshRef);
+		EyeMesh->SetWorldLocation(GetMesh()->GetSocketLocation(BOSS_LEFT_HAND));
+		EyeMesh->SetupAttachment(GetMesh());
+	}, EAssertionLevel::Check);
 
 	bIsFirstAttack = false;
 	bIsFirstRangeAttack = false;
-	bIsFirstFloorAttack =false;
-	bIsFirstDeadInteract =false;
+	bIsFirstFloorAttack = false;
+	bIsFirstDeadInteract = false;
 }
 
 void AIGBoss::BeginPlay()
@@ -69,7 +75,7 @@ void AIGBoss::BeginPlay()
 
 	CurrentGimmick = EAttackPattern::None;
 	PlayerActor = UGameplayStatics::GetPlayerPawn(GWorld, 0);
-	
+
 	AnimInstance = CastChecked<UIGBossAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->SetSpeed(0.f);
 	AnimInstance->OnGenerateBossCloseAttack.AddUObject(this, &AIGBoss::GenerateCloseAttack);
@@ -101,14 +107,15 @@ void AIGBoss::Tick(float DeltaSeconds)
 
 	InteractCollider->SetRelativeLocation(GetActorLocation());
 	DrawDebugBox(GetWorld(), GetActorLocation(), InteractCollider->GetScaledBoxExtent(), FColor::Green, false, 1.f);
-	
+	EyeMesh->SetWorldLocation(GetMesh()->GetSocketLocation(BOSS_LEFT_EYE));
+	EyeMesh->SetWorldRotation(GetMesh()->GetSocketRotation(BOSS_LEFT_EYE));
 }
 
 float AIGBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	HudWidget->UpdateHpGauge(Hp);
-	
+
 	if (Hp <= 0 && !bIsDead)
 	{
 		AnimInstance->Die();
@@ -128,10 +135,10 @@ void AIGBoss::FadeOut()
 
 void AIGBoss::Interact()
 {
-	if(bIsDead && !bIsFirstDeadInteract)
+	if (bIsDead && !bIsFirstDeadInteract)
 	{
-		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleRemakeInteractBossDeadBody();	
-		bIsFirstDeadInteract = true;	
+		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleRemakeInteractBossDeadBody();
+		bIsFirstDeadInteract = true;
 	}
 }
 
@@ -165,7 +172,7 @@ void AIGBoss::PerformCloseAttack()
 {
 	CurrentGimmick = EAttackPattern::Close;
 	AnimInstance->StartCloseAttack();
-	if(!bIsFirstAttack)
+	if (!bIsFirstAttack)
 	{
 		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleRemakeBossFirstAttack();
 		bIsFirstAttack = true;

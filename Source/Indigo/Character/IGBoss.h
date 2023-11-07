@@ -54,6 +54,9 @@ protected:
 
 private:
 	UPROPERTY()
+	TObjectPtr<UStaticMeshComponent> EyeMesh;
+	
+	UPROPERTY()
 	TObjectPtr<UIGBossAnimInstance> AnimInstance;
 
 	UPROPERTY()
