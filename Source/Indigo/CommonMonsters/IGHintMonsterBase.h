@@ -99,6 +99,8 @@ private:
 	UPROPERTY()
 	FVector RetreatEndLocation;
 		
+	FDelegateHandle DelegateHandle;
+	
 	UPROPERTY()
 	FVector SpawnPos;
 	

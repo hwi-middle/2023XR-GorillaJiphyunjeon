@@ -40,6 +40,7 @@ public:
 	FORCEINLINE TArray<ProvisoText*> GetHintArray() { return HintArray; }
 
 private:
+	
 	UPROPERTY()
 	TArray<AIGMountainCrystal*> MountainCrystalArray;
 	

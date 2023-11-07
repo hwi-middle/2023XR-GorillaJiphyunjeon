@@ -8,6 +8,7 @@
 #include "Indigo/UI/Shinmyophil/IGShinmyophilText.h"
 #include "Indigo/UI/CrystalUI/IGCrystalSlot.h"
 #include "Indigo/Interactable/IGCrystalBase.h"
+#include "Indigo/UI/InventoryUI/IGHealKits.h"
 #include "Indigo/Interactable/IGMountainCrystal.h"
 #include "Indigo/Interactable/IGTreeCrystal.h"
 #include "Indigo/Interactable/IGWaveCrystal.h"
@@ -64,6 +65,11 @@ void UIGIngameHUDWidget::AddCrystal(AIGCrystalBase* InCrystal) const
 	}
 }
 
+void UIGIngameHUDWidget::SetHealKit(const int32 InValue) const
+{
+	HealKit->SetHealKitCount(InValue);
+}
+
 void UIGIngameHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -76,4 +82,5 @@ void UIGIngameHUDWidget::NativeConstruct()
 	MountainCrystalSlot = Cast<UIGCrystalSlot>(GetWidgetFromName(TEXT("MountainCrystalSlots")));
 	TreeCrystalSlot = Cast<UIGCrystalSlot>(GetWidgetFromName(TEXT("TreeCrystalSlots")));
 	WaveCrystalSlot = Cast<UIGCrystalSlot>(GetWidgetFromName(TEXT("WaveCrystalSlots")));
+	HealKit = Cast<UIGHealKits>(GetWidgetFromName(TEXT("HealKitSlot")));
 }

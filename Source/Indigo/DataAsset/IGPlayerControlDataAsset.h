@@ -48,4 +48,7 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "InputAction", DisplayName = "튜토리얼 창 띄우기")
 	TObjectPtr<UInputAction> ShowTutorialWidget;
+	
+	UPROPERTY(EditAnywhere, Category = "InputAction", DisplayName = "체력템 사용")
+	TObjectPtr<UInputAction> UseHealKit;
 };

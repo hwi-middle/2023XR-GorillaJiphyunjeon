@@ -13,6 +13,7 @@ class UIGGauge;
 class UIGQuestList;
 class UIGQuest;
 class UQuest;
+class UIGHealKits;
 class UIGShinmyophilText;
 class UIGCrystalSlot;
 
@@ -33,6 +34,7 @@ public:
 	void UpdateCrystalDebug(const FString& Str) const;
 	void UpdateShinmyophilText(const FString& Str) const;
 	void AddCrystal(AIGCrystalBase* InCrystal) const;
+	void SetHealKit(const int32 InValue) const;
 
 	FORCEINLINE FString GetShinmyophilText() const { return ShinmyophilText->GetText();}
 
@@ -63,4 +65,7 @@ protected:
 	
 	UPROPERTY()
 	TObjectPtr<UIGCrystalSlot> WaveCrystalSlot;
+	
+	UPROPERTY()
+	TObjectPtr<UIGHealKits> HealKit;
 };

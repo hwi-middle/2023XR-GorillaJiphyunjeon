@@ -89,6 +89,9 @@ public:
 	
 	//신묘필 대사 갱신
 	void UpdateShinmyophilScript(const FString InText);
+
+	//체력템 획득
+	void AddHealKit();
 	
 public:
 	//인터페이스 함수
@@ -149,6 +152,9 @@ private:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> ShowTutorialWidget;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> UseHealKit;
 
 	// 애니메이션
 	UPROPERTY()
@@ -177,6 +183,7 @@ private:
 	void ActivateCrystal2();
 	void ActivateCrystal3();
 	void TutorialWidgetVisible();
+	void UseHeal();
 	void PlayDieSequence();
 	void PlayFadeInSequence();
 
@@ -290,6 +297,10 @@ private:
 	
 	UPROPERTY()
 	ECrystal ActivatedCrystal;
+
+	//체력가능 횟수
+	UPROPERTY()
+	int32 HealCount;
 
 	// 사운드
 	UPROPERTY()

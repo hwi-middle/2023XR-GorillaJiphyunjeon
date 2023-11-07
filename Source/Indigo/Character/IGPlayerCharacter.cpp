@@ -96,6 +96,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	Crystal2Action = PlayerControlDataAsset->Crystal2Action;
 	Crystal3Action = PlayerControlDataAsset->Crystal3Action;
 	ShowTutorialWidget = PlayerControlDataAsset->ShowTutorialWidget;
+	UseHealKit = PlayerControlDataAsset->UseHealKit;
 
 	const TSubclassOf<UIGPlayerAnimInstance> BossAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGPlayerAnimInstance>(
 		TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/ABP_Player.ABP_Player_C"), EAssertionLevel::Check);
@@ -114,9 +115,10 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	PlayerInventory = CreateDefaultSubobject<UIGPlayerInventory>(TEXT("Inventory"));
 	Shinmyophil = CreateDefaultSubobject<UIGShinmyophil>(TEXT("Shinmyophil"));
 	
-
 	TestSoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
 	PlayerDataAsset = FIGConstructorHelper::FindAndGetObject<UIGPlayerDataAsset>(TEXT("/Script/Indigo.IGPlayerDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerData.DA_PlayerData'"));
+
+	HealCount = 0;
 }
 
 bool AIGPlayerCharacter::CheckPlayerState(const EPlayerState InState) const
@@ -311,6 +313,7 @@ void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(Crystal2Action, ETriggerEvent::Started, this, &AIGPlayerCharacter::ActivateCrystal2);
 		EnhancedInputComponent->BindAction(Crystal3Action, ETriggerEvent::Started, this, &AIGPlayerCharacter::ActivateCrystal3);
 		EnhancedInputComponent->BindAction(ShowTutorialWidget, ETriggerEvent::Started, this, &AIGPlayerCharacter::TutorialWidgetVisible);
+		EnhancedInputComponent->BindAction(UseHealKit, ETriggerEvent::Started, this, &AIGPlayerCharacter::UseHeal);
 	}
 }
 
@@ -701,6 +704,26 @@ void AIGPlayerCharacter::TutorialWidgetVisible()
 	}
 }
 
+void AIGPlayerCharacter::UseHeal()
+{
+	if(HealCount <= 0)
+	{
+		return;
+	}
+	
+	HealCount--;
+	Hp = FMath::Clamp(Hp + 30.0f, 0, 100.0f);
+	
+	if(HudWidget != nullptr)
+	{
+		HudWidget->SetHealKit(HealCount);
+		HudWidget->UpdateHpGauge(Hp);
+	}
+	
+	
+	
+}
+
 void AIGPlayerCharacter::PlayDieSequence()
 {
 	constexpr float Duration = 1.f;
@@ -757,6 +780,15 @@ float AIGPlayerCharacter::ComputeDamage()
 void AIGPlayerCharacter::UpdateShinmyophilScript(const FString InText)
 {
 	HudWidget->UpdateShinmyophilText(InText);
+}
+
+void AIGPlayerCharacter::AddHealKit()
+{
+	HealCount++;
+	if(HudWidget != nullptr)
+	{
+		HudWidget->SetHealKit(HealCount);
+	}
 }
 
 

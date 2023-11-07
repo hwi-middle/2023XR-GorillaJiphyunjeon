@@ -15,6 +15,7 @@
 #include "Indigo/Interactable/IGWaveCrystal.h"
 #include "Indigo/Interactable/IGTreeCrystal.h"
 #include "Indigo/Animation/IGWispAnimInstance.h"
+#include "Indigo/Interactable/IGHealKit.h"
 
 // Sets default values
 AIGHintMonsterBase::AIGHintMonsterBase()
@@ -71,6 +72,11 @@ void AIGHintMonsterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if(bIsDead || bIsHit)
+	{
+		return;
+	}
+	
 	if (bIsAttack)
 	{
 		AddActorLocalOffset(DashStartLocation * DeltaTime * AttackSpeed);
@@ -132,9 +138,9 @@ void AIGHintMonsterBase::Tick(float DeltaTime)
 
 void AIGHintMonsterBase::DropCrystal()
 {
-	const int8 CrystalDropPercent = FMath::RandRange(0,1);
+	const int8 DropPercent = FMath::RandRange(1,10);
 	
-	if(CrystalDropPercent == 1)
+	if(DropPercent <= 3)
 	{	
 		if(CrystalType == ECrystal::Mountain)
 		{
@@ -149,10 +155,15 @@ void AIGHintMonsterBase::DropCrystal()
 			AIGWaveCrystal* WaveCrystal = GetWorld()->SpawnActor<AIGWaveCrystal>(GetActorTransform().GetLocation(), FRotator::ZeroRotator);					
 		}
 	}
+	else if(DropPercent <= 8)
+	{
+		AIGHealKit* HealKit = GetWorld()->SpawnActor<AIGHealKit>(GetActorTransform().GetLocation(), FRotator::ZeroRotator);
+	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("결정파편 드랍 안됨!")));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("드랍 안됨!")));
 	}
+
 
 	this->SetActorEnableCollision(false);
 	this->SetActorHiddenInGame(true);
@@ -167,14 +178,14 @@ float AIGHintMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 		return 0.0f;
 	}
 
-	AnimInstance->OnHit();	
-	SetHp(GetHp() - DamageAmount);
+	AnimInstance->OnHit();
 	bIsHit = true;
+	SetHp(GetHp() - DamageAmount);
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("[도깨비불 체력] %f"), GetHp()));
 	if(GetHp() <= 0)
 	{
-		const FDelegateHandle DelegateHandle = AnimInstance->OnFinishHit.AddUObject(this, &AIGHintMonsterBase::DropCrystal);
 		bIsDead = true;
+		DelegateHandle = AnimInstance->OnFinishHit.AddUObject(this, &AIGHintMonsterBase::DropCrystal);			
 	    FTimerHandle TimerHandle;
         GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([&]()
             {

@@ -8,11 +8,13 @@
 #include "Indigo/Interactable/IGMountainCrystal.h"
 #include "Indigo/Interactable/IGWaveCrystal.h"
 #include "Indigo/Interactable/IGTreeCrystal.h"
-#include "Indigo/Management/IGCrystalManager.h"
 #include "Indigo/Character/IGPlayerCharacter.h"
-#include "Indigo/Interactable/IGBlankHint.h"
 #include "Indigo/Interactable/IGMainHint.h"
 #include "Indigo/Management/IGBossZoneGateManager.h"
+#include "Indigo/CommonMonsters/ASector/IGMountainSectorMonster.h"
+#include "Indigo/CommonMonsters/ASector/IGWaveSectorMonster.h"
+#include "Indigo/CommonMonsters/ASector/IGPineTreeSectorMonster.h"
+#include "Kismet/GameplayStatics.h"
 
 
 UIGPlayerInventory::UIGPlayerInventory()
@@ -101,7 +103,37 @@ void UIGPlayerInventory::AddCrystal(ECrystal InCrystalType)
 			bIsGetFirstCrystal = true;		
 		}
 	}
-	
+
+
+	//각 구역 결정 먹었을 때 필드 위 몹 제거	
+	if (MountainCrystalArray.Num() >= 3)
+	{
+		TArray<AActor*> Wisps;
+		UGameplayStatics::GetAllActorsOfClass(GWorld, AIGMountainSectorMonster::StaticClass(), Wisps);
+		for (AActor* Actor : Wisps)
+		{
+			Actor->Destroy();
+		}
+	}
+	if (TreeCrystalArray.Num() >= 3)
+	{
+		TArray<AActor*> Wisps;
+		UGameplayStatics::GetAllActorsOfClass(GWorld, AIGPineTreeSectorMonster::StaticClass(), Wisps);
+		for (AActor* Actor : Wisps)
+		{
+			Actor->Destroy();
+		}
+	}
+	if (WaveCrystalArray.Num() >= 3)
+	{
+		TArray<AActor*> Wisps;
+		UGameplayStatics::GetAllActorsOfClass(GWorld, AIGWaveSectorMonster::StaticClass(), Wisps);
+		for (AActor* Actor : Wisps)
+		{
+			Actor->Destroy();
+		}
+	}
+			
 	if (MountainCrystalArray.Num() >= 3 &&
 		TreeCrystalArray.Num() >= 3 &&
 		WaveCrystalArray.Num() >= 3
