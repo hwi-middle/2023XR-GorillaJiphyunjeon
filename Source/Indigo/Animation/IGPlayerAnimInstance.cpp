@@ -16,11 +16,11 @@ void UIGPlayerAnimInstance::AnimNotify_RollEnd()
 	OnFinishRoll.Broadcast();
 }
 
-void UIGPlayerAnimInstance::AnimNotify_AttackEnd()
-{
-	bIsAttacking = false;
-	OnFinishAttack.Broadcast();
-}
+// void UIGPlayerAnimInstance::AnimNotify_AttackEnd()
+// {
+// 	bIsAttacking = false;
+// 	OnFinishAttack.Broadcast();
+// }
 
 void UIGPlayerAnimInstance::AnimNotify_GenerateProjectile()
 {

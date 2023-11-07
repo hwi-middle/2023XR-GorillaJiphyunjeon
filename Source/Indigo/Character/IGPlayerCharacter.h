@@ -162,11 +162,14 @@ private:
 	UPROPERTY()
 	TObjectPtr<UIGPlayerAnimInstance> PlayerAnimInstance;
 
-	UPROPERTY()
-	TObjectPtr<UIGPlayerWeaponAnimInstance> WeaponAnimInstance;
+	// UPROPERTY()
+	// TObjectPtr<UIGPlayerWeaponAnimInstance> WeaponAnimInstance;
+	
+	// UPROPERTY()
+	// TObjectPtr<USkeletalMeshComponent> WeaponMesh;
 	
 	UPROPERTY()
-	TObjectPtr<USkeletalMeshComponent> WeaponMesh;
+	TObjectPtr<UStaticMeshComponent> WeaponMesh;
 
 private:
 	void Move(const FInputActionValue& Value);
@@ -181,7 +184,6 @@ private:
 	void SetComboCheckTimer();
 	int32 GetComboAnimationFrameCount() const;
 	void ComboCheck();
-	void FinishAttack();
 	void ComboActionEnd(UAnimMontage* TargetMontage, bool IsProperlyEnded);
 	virtual void NotifyComboActionEnd();
 	void StartRolling();

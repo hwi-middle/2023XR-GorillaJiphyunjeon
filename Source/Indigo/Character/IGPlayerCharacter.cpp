@@ -76,17 +76,25 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 		GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -100.f));
 	}, EAssertionLevel::Check);
 
-	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Weapon/SM_Main_Weapon.SM_Main_Weapon'"), [&](USkeletalMesh* MeshRef)
+	// FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Weapon/SM_Main_Weapon.SM_Main_Weapon'"), [&](USkeletalMesh* MeshRef)
+	// {
+	// 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BrushMesh"));
+	// 	WeaponMesh->SetSkeletalMesh(MeshRef);
+	// 	WeaponMesh->SetWorldLocation(GetMesh()->GetSocketLocation(TEXT("RightHand")));
+	// 	WeaponMesh->SetupAttachment(GetMesh());
+	// }, EAssertionLevel::Check);
+	//
+	// const TSubclassOf<UIGPlayerWeaponAnimInstance> WeaponAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGPlayerWeaponAnimInstance>(
+	// 	TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Weapon/ABP_PlayerWeapon.ABP_PlayerWeapon_C"), EAssertionLevel::Check);
+	// WeaponMesh->SetAnimInstanceClass(WeaponAnimInstanceClass);
+
+	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/PlayerWeapon/Mesh/SM_Weapon.SM_Weapon'"), [&](UStaticMesh* MeshRef)
 	{
-		WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BrushMesh"));
-		WeaponMesh->SetSkeletalMesh(MeshRef);
+		WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BrushMesh"));
+		WeaponMesh->SetStaticMesh(MeshRef);
 		WeaponMesh->SetWorldLocation(GetMesh()->GetSocketLocation(TEXT("RightHand")));
 		WeaponMesh->SetupAttachment(GetMesh());
 	}, EAssertionLevel::Check);
-
-	const TSubclassOf<UIGPlayerWeaponAnimInstance> WeaponAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGPlayerWeaponAnimInstance>(
-		TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Weapon/ABP_PlayerWeapon.ABP_PlayerWeapon_C"), EAssertionLevel::Check);
-	WeaponMesh->SetAnimInstanceClass(WeaponAnimInstanceClass);
 	
 	PlayerControlDataAsset = FIGConstructorHelper::FindAndGetObject<UIGPlayerControlDataAsset>(TEXT("/Script/Indigo.IGPlayerControlDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerControlData.DA_PlayerControlData'"));
 	DefaultMappingContext = PlayerControlDataAsset->DefaultMappingContext;
@@ -173,12 +181,11 @@ void AIGPlayerCharacter::BeginPlay()
 	ElapsedDieSequenceTime = 0.f;
 	ElapsedFadeSequenceTime = 0.f;
 
-	WeaponAnimInstance = CastChecked<UIGPlayerWeaponAnimInstance>(WeaponMesh->GetAnimInstance());
+	// WeaponAnimInstance = CastChecked<UIGPlayerWeaponAnimInstance>(WeaponMesh->GetAnimInstance());
 	
 	PlayerAnimInstance = CastChecked<UIGPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	PlayerAnimInstance->SetSpeed(0.f);
 	PlayerAnimInstance->OnFinishRoll.AddUObject(this, &AIGPlayerCharacter::FinishRolling);
-	PlayerAnimInstance->OnFinishAttack.AddUObject(this, &AIGPlayerCharacter::FinishAttack);
 	PlayerAnimInstance->OnShouldGenerateProjectile.AddUObject(this, &AIGPlayerCharacter::GenerateProjectile);
 	CurrentState = EPlayerState::Idling;
 
@@ -407,7 +414,7 @@ void AIGPlayerCharacter::SetIsIdling()
 void AIGPlayerCharacter::SetIsRunning(const FInputActionValue& Value)
 {
 	const bool IsSprintKeyDown = Value.Get<bool>();
-	WeaponAnimInstance->SetIsPlayerRunning(IsSprintKeyDown);
+	// WeaponAnimInstance->SetIsPlayerRunning(IsSprintKeyDown);
 	if (IsSprintKeyDown)
 	{
 		RemovePlayerState(EPlayerState::Walking);
@@ -471,18 +478,19 @@ void AIGPlayerCharacter::Attack()
 		return;
 	}
 
-	ProcessComboCommand();
-}
-
-void AIGPlayerCharacter::GenerateProjectile()
-{
 	// 스태미너 부족
 	const float Cost = 10.f;
 	if (StaminaValue < Cost)
 	{
 		return;
 	}
+	
+	ProcessComboCommand();
+}
 
+void AIGPlayerCharacter::GenerateProjectile()
+{
+	const float Cost = 10.f;
 	StaminaValue -= Cost;
 	HudWidget->UpdateStaminaGauge(StaminaValue);
 
@@ -583,11 +591,6 @@ void AIGPlayerCharacter::ComboCheck()
 	PlayerAnimInstance->Montage_JumpToSection(NextSection, ComboActionMontage);
 	SetComboCheckTimer();
 	HasNextComboCommand = false;
-}
-
-void AIGPlayerCharacter::FinishAttack()
-{
-	RemovePlayerState(EPlayerState::Attacking);
 }
 
 void AIGPlayerCharacter::ComboActionEnd(UAnimMontage* TargetMontage, bool IsProperlyEnded)

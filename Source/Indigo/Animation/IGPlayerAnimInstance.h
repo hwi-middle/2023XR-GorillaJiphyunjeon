@@ -44,15 +44,15 @@ protected:
 	UFUNCTION()
 	void AnimNotify_RollEnd();
 	
-	UFUNCTION()
-	void AnimNotify_AttackEnd();
+	// UFUNCTION()
+	// void AnimNotify_AttackEnd();
 	
 	UFUNCTION()
 	void AnimNotify_GenerateProjectile();
 	
 public:
 	FOnFinishRollDelegate OnFinishRoll;
-	FOnFinishPlayerAttackDelegate OnFinishAttack;
+	// FOnFinishPlayerAttackDelegate OnFinishAttack;
 	FOnShouldGenerateProjectileDelegate OnShouldGenerateProjectile;
 
 	FORCEINLINE void SetSpeed(const float InValue) { Speed = InValue; }
