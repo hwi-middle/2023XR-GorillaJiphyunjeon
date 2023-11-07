@@ -2,6 +2,21 @@
 
 
 #include "IGFollowProjectile.h"
+#include "NiagaraComponent.h"
+#include "Indigo/Util/IGConstructorHelper.h"
+#include "Kismet/KismetMathLibrary.h"
+
+AIGFollowProjectile::AIGFollowProjectile()
+{
+	NiagaraComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ProjectileVFX"));
+	UNiagaraSystem* NiagaraSystem = FIGConstructorHelper::FindAndGetObject<UNiagaraSystem>(
+		TEXT("/Script/Niagara.NiagaraSystem'/Game/_GorillaJiphyunjeon/Effect/NS_Boss_Attack_LongRange_Projectile03.NS_Boss_Attack_LongRange_Projectile03'"),
+		EAssertionLevel::Check);
+	NiagaraComp->SetAsset(NiagaraSystem);
+	// NiagaraComp->SetAutoActivate(false);
+	// NiagaraComp->SetActive(false);
+	RootComponent = NiagaraComp;
+}
 
 void AIGFollowProjectile::Init(const float InDamage, AActor* InTarget, const float MaxDistance, const float InSpeed, float InDuration, const EProjectileSpawnType InSpawnType)
 {
@@ -20,5 +35,9 @@ void AIGFollowProjectile::Tick(float DeltaSeconds)
 	const float DistancePerSecond = Speed * 100.f;
 	const FVector FinalLocation = CurrentLocation + TargetVector * DistancePerSecond * DeltaSeconds;
 	SetActorLocation(FinalLocation);
+
+	const FRotator Rot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetActor->GetActorLocation());
+	SetActorRotation(Rot + FRotator(0.f, -90.f, 0.f));
+
 	Super::Tick(DeltaSeconds);
 }
