@@ -8,6 +8,7 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnFinishRollDelegate)
 DECLARE_MULTICAST_DELEGATE(FOnFinishPlayerAttackDelegate)
+DECLARE_MULTICAST_DELEGATE(FOnShouldGenerateProjectileDelegate)
 
 /**
  * 
@@ -46,9 +47,13 @@ protected:
 	UFUNCTION()
 	void AnimNotify_AttackEnd();
 	
+	UFUNCTION()
+	void AnimNotify_GenerateProjectile();
+	
 public:
 	FOnFinishRollDelegate OnFinishRoll;
 	FOnFinishPlayerAttackDelegate OnFinishAttack;
+	FOnShouldGenerateProjectileDelegate OnShouldGenerateProjectile;
 
 	FORCEINLINE void SetSpeed(const float InValue) { Speed = InValue; }
 	FORCEINLINE void SetEnforced(const bool InValue) { bIsEnforced = InValue; }

@@ -66,7 +66,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	AttackRate = CharacterDataTable->AttackRate;
 	DefenceValue = CharacterDataTable->DefenseValue;
 	StaminaValue = CharacterDataTable->StaminaValue;
-		
+
 	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Mesh/SM_Main_Rigging.SM_Main_Rigging'"), [&](USkeletalMesh* SkeletalMesh)
 	{
 		GetMesh()->SetSkeletalMesh(SkeletalMesh);
@@ -106,15 +106,20 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	{
 		HudWidgetClass = Class;
 	}, EAssertionLevel::Check);
-	
+
 	FIGConstructorHelper::FindClassAndInitialize<UIGTutotialWidget>(TEXT("/Game/_GorillaJiphyunjeon/UI/Game/Tutorial/WBP_TutorialWidget.WBP_TutorialWidget_C"), [&](TSubclassOf<UIGTutotialWidget> Class)
 	{
 		TutorialWidgetClass = Class;
 	}, EAssertionLevel::Check);
-	
+
+	FIGConstructorHelper::FindObjectAndInitialize<UAnimMontage>(TEXT("/Script/Engine.AnimMontage'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/AM_PlayerAttack.AM_PlayerAttack'"), [&](UAnimMontage* Montage)
+	{
+		ComboActionMontage = Montage;
+	}, EAssertionLevel::Check);
+
 	PlayerInventory = CreateDefaultSubobject<UIGPlayerInventory>(TEXT("Inventory"));
 	Shinmyophil = CreateDefaultSubobject<UIGShinmyophil>(TEXT("Shinmyophil"));
-	
+
 	TestSoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
 	PlayerDataAsset = FIGConstructorHelper::FindAndGetObject<UIGPlayerDataAsset>(TEXT("/Script/Indigo.IGPlayerDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerData.DA_PlayerData'"));
 
@@ -146,11 +151,11 @@ void AIGPlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-	
+
 	WalkSpeed = PlayerDataAsset->WalkSpeed;
 	SprintSpeed = PlayerDataAsset->SprintSpeed;
 	RollSpeed = PlayerDataAsset->RollSpeed;
-	
+
 	ExhaustionPhase1Duration = PlayerDataAsset->ExhaustionPhase1Duration;
 	ExhaustionPhase2Duration = PlayerDataAsset->ExhaustionPhase2Duration;
 	StaminaRecoveryAmountPerSecondOnIdle = PlayerDataAsset->StaminaRecoveryAmountPerSecondOnIdle;
@@ -168,6 +173,7 @@ void AIGPlayerCharacter::BeginPlay()
 	AnimInstance->SetSpeed(0.f);
 	AnimInstance->OnFinishRoll.AddUObject(this, &AIGPlayerCharacter::FinishRolling);
 	AnimInstance->OnFinishAttack.AddUObject(this, &AIGPlayerCharacter::FinishAttack);
+	AnimInstance->OnShouldGenerateProjectile.AddUObject(this, &AIGPlayerCharacter::GenerateProjectile);
 	CurrentState = EPlayerState::Idling;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -178,7 +184,7 @@ void AIGPlayerCharacter::BeginPlay()
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
-	
+
 	HudWidget = CreateWidget<UIGIngameHUDWidget>(GetWorld(), HudWidgetClass);
 	if (HudWidget)
 	{
@@ -186,14 +192,14 @@ void AIGPlayerCharacter::BeginPlay()
 		HudWidget->InitHpGauge(100.f, Hp);
 		HudWidget->InitStaminaGauge(100.f, StaminaValue);
 
-		for(int i= 0; i < Shinmyophil->GetQuestArray().Num(); i++)
+		for (int i = 0; i < Shinmyophil->GetQuestArray().Num(); i++)
 		{
-			HudWidget->InitQuestList(Shinmyophil->GetQuestArray()[i]);			
-		}		
+			HudWidget->InitQuestList(Shinmyophil->GetQuestArray()[i]);
+		}
 	}
 
 	TutorialWidget = CreateWidget<UIGTutotialWidget>(GetWorld(), TutorialWidgetClass);
-	if(TutorialWidget)
+	if (TutorialWidget)
 	{
 		TutorialWidget->AddToViewport();
 		TutorialWidget->SetKeyboardFocus();
@@ -211,7 +217,7 @@ void AIGPlayerCharacter::BeginPlay()
 
 		CustomPostProcessMaterial = LoadObject<UMaterial>(nullptr, TEXT("/Script/Engine.Material'/Game/_GorillaJiphyunjeon/Material/PostProcess/M_PPFade.M_PPFade'"));
 		UMaterialInstanceDynamic* FadeMaterial = UMaterialInstanceDynamic::Create(CustomPostProcessMaterial, nullptr);
-		
+
 		Settings.WeightedBlendables.Array.Empty();
 		Settings.WeightedBlendables.Array.Add(FWeightedBlendable(1.0f, GrayscaleMaterial));
 		Settings.WeightedBlendables.Array.Add(FWeightedBlendable(1.0f, FadeMaterial));
@@ -342,7 +348,7 @@ float AIGPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 
 void AIGPlayerCharacter::Move(const FInputActionValue& Value)
 {
-	
+
 	if (CheckPlayerState(EPlayerState::Dead))
 	{
 		return;
@@ -370,7 +376,6 @@ void AIGPlayerCharacter::Move(const FInputActionValue& Value)
 
 	AddMovementInput(ForwardDirection, MovementVector.Y);
 	AddMovementInput(RightDirection, MovementVector.X);
-
 }
 
 void AIGPlayerCharacter::Look(const FInputActionValue& Value)
@@ -412,7 +417,7 @@ void AIGPlayerCharacter::SetIsRunning(const FInputActionValue& Value)
 
 void AIGPlayerCharacter::Interact()
 {
-	
+
 	FHitResult Result;
 	FCollisionQueryParams CollisionParams;
 	float Radius = 100.f;
@@ -442,7 +447,7 @@ void AIGPlayerCharacter::Interact()
 	{
 		return;
 	}
-	
+
 	Interactable->Interact();
 
 	if (Crystal != nullptr)
@@ -454,14 +459,17 @@ void AIGPlayerCharacter::Interact()
 
 void AIGPlayerCharacter::Attack()
 {
-	if (CheckPlayerState(EPlayerState::Attacking) || CheckPlayerState(EPlayerState::Rolling) || CheckPlayerState(EPlayerState::Dead))
+	if (CheckPlayerState(EPlayerState::Rolling) || CheckPlayerState(EPlayerState::Dead))
 	{
 		return;
 	}
 
+	ProcessComboCommand();
+}
+
+void AIGPlayerCharacter::GenerateProjectile()
+{
 	// 스태미너 부족
-	// const float Cost = IsEnforced ? StaminaConsumptionAmountOnStrongAttack : StaminaConsumptionAmountOnNormalAttack;
-	// TODO: 3타 스태미너 코스트 적용
 	const float Cost = 10.f;
 	if (StaminaValue < Cost)
 	{
@@ -472,9 +480,6 @@ void AIGPlayerCharacter::Attack()
 	HudWidget->UpdateStaminaGauge(StaminaValue);
 
 	AddPlayerState(EPlayerState::Attacking);
-	// TODO: 3타 관련 애니 적용
-	// AnimInstance->SetEnforced(IsEnforced);
-	AnimInstance->StartAttack();
 
 	//데미지 연산뒤 선문게이지 감소
 	const float Damage = ComputeDamage();
@@ -489,13 +494,109 @@ void AIGPlayerCharacter::Attack()
 	UGameplayStatics::PlaySound2D(this, TestSoundDataAsset->PlayerAttackSoundCue);
 }
 
+void AIGPlayerCharacter::ProcessComboCommand()
+{
+	if (CurrentCombo == 0)
+	{
+		ComboActionBegin();
+		return;
+	}
+
+	if (!ComboTimerHandle.IsValid())
+	{
+		HasNextComboCommand = false;
+	}
+	else
+	{
+		HasNextComboCommand = true;
+	}
+}
+
+void AIGPlayerCharacter::ComboActionBegin()
+{
+	// Combo Status
+	CurrentCombo = 1;
+
+	// Movement Setting
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+
+	// Animation Setting
+	AnimInstance->Montage_Play(ComboActionMontage);
+
+	FOnMontageEnded EndDelegate;
+	EndDelegate.BindUObject(this, &AIGPlayerCharacter::ComboActionEnd);
+	AnimInstance->Montage_SetEndDelegate(EndDelegate, ComboActionMontage);
+
+	ComboTimerHandle.Invalidate();
+	SetComboCheckTimer();
+}
+
+void AIGPlayerCharacter::SetComboCheckTimer()
+{
+	const int32 FrameCount = GetComboAnimationFrameCount();
+	constexpr float AnimationFrameRate = 30.f;
+	const float ComboDelayTime = FrameCount / AnimationFrameRate;
+	UE_LOG(LogTemp, Log, TEXT("SetComboCheckTimer"));
+
+	if (ComboDelayTime > 0.0f)
+	{
+		UE_LOG(LogTemp, Log, TEXT("ComboCheckSet"));
+		GetWorld()->GetTimerManager().SetTimer(ComboTimerHandle, this, &AIGPlayerCharacter::ComboCheck, ComboDelayTime, false);
+	}
+}
+
+int32 AIGPlayerCharacter::GetComboAnimationFrameCount() const
+{
+	switch (CurrentCombo)
+	{
+	case 1:
+		return 18;
+	case 2:
+		return 12;
+	case 3:
+		return -1;
+	default:
+		checkNoEntry();
+		return -1;
+	}
+}
+
+void AIGPlayerCharacter::ComboCheck()
+{
+	UE_LOG(LogTemp, Log, TEXT("ComboCheckCalled"));
+	ComboTimerHandle.Invalidate();
+	if (!HasNextComboCommand)
+	{
+		return;
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("HasNextComboCommand"));
+	CurrentCombo = FMath::Clamp(CurrentCombo + 1, 1, 3);
+	const FName NextSection = *FString::Printf(TEXT("PlayerAttack%d"), CurrentCombo);
+	AnimInstance->Montage_JumpToSection(NextSection, ComboActionMontage);
+	SetComboCheckTimer();
+	HasNextComboCommand = false;
+}
+
 void AIGPlayerCharacter::FinishAttack()
 {
 	RemovePlayerState(EPlayerState::Attacking);
 }
 
+void AIGPlayerCharacter::ComboActionEnd(UAnimMontage* TargetMontage, bool IsProperlyEnded)
+{
+	UE_LOG(LogTemp, Log, TEXT("ComboActionEnd"));
+	CurrentCombo = 0;
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+
+	NotifyComboActionEnd();
+}
+
+void AIGPlayerCharacter::NotifyComboActionEnd()
+{}
+
 void AIGPlayerCharacter::StartRolling()
-{	
+{
 	if (CheckPlayerState(EPlayerState::Rolling) || CheckPlayerState(EPlayerState::Attacking))
 	{
 		return;
@@ -508,7 +609,7 @@ void AIGPlayerCharacter::StartRolling()
 
 	StaminaValue -= StaminaConsumptionAmountOnRoll;
 	HudWidget->UpdateStaminaGauge(StaminaValue);
-	
+
 	AddPlayerState(EPlayerState::Rolling);
 	GetCharacterMovement()->MaxWalkSpeed = RollSpeed;
 	AnimInstance->StartRoll();
@@ -600,15 +701,15 @@ void AIGPlayerCharacter::ActivateCrystalByIndex(uint32 Index)
 	const TArray<AIGTreeCrystal*> TreeCrystalArray = PlayerInventory->GetTreeCrystalArray();
 	const TArray<AIGWaveCrystal*> WaveCrystalArray = PlayerInventory->GetWaveCrystalArray();
 
-	if(Index == 1 && MountainCrystalArray.Num() >= 3)
+	if (Index == 1 && MountainCrystalArray.Num() >= 3)
 	{
 		Type = ECrystal::Mountain;
 	}
-	else if(Index == 2 && TreeCrystalArray.Num() >= 3)
+	else if (Index == 2 && TreeCrystalArray.Num() >= 3)
 	{
 		Type = ECrystal::Tree;
 	}
-	else if(Index == 2 && WaveCrystalArray.Num() >= 3)
+	else if (Index == 2 && WaveCrystalArray.Num() >= 3)
 	{
 		Type = ECrystal::Wave;
 	}
@@ -616,8 +717,8 @@ void AIGPlayerCharacter::ActivateCrystalByIndex(uint32 Index)
 	{
 		return;
 	}
-	
-	
+
+
 	ensure(Type != ECrystal::None);
 
 	ActivatedCrystal = Type;
@@ -695,9 +796,9 @@ void AIGPlayerCharacter::ActivateCrystal3()
 
 void AIGPlayerCharacter::TutorialWidgetVisible()
 {
-	if(TutorialWidget)
+	if (TutorialWidget)
 	{
-		if(TutorialWidget->GetVisibility() == ESlateVisibility::Hidden)
+		if (TutorialWidget->GetVisibility() == ESlateVisibility::Hidden)
 		{
 			TutorialWidget->VisibleTutorialWidget();
 		}
@@ -706,22 +807,21 @@ void AIGPlayerCharacter::TutorialWidgetVisible()
 
 void AIGPlayerCharacter::UseHeal()
 {
-	if(HealCount <= 0)
+	if (HealCount <= 0)
 	{
 		return;
 	}
-	
+
 	HealCount--;
 	Hp = FMath::Clamp(Hp + 30.0f, 0, 100.0f);
-	
-	if(HudWidget != nullptr)
+
+	if (HudWidget != nullptr)
 	{
 		HudWidget->SetHealKit(HealCount);
 		HudWidget->UpdateHpGauge(Hp);
 	}
-	
-	
-	
+
+
 }
 
 void AIGPlayerCharacter::PlayDieSequence()
@@ -785,7 +885,7 @@ void AIGPlayerCharacter::UpdateShinmyophilScript(const FString InText)
 void AIGPlayerCharacter::AddHealKit()
 {
 	HealCount++;
-	if(HudWidget != nullptr)
+	if (HudWidget != nullptr)
 	{
 		HudWidget->SetHealKit(HealCount);
 	}
@@ -811,7 +911,7 @@ void AIGPlayerCharacter::CheckCrystal_DEBUG()
 	auto MountainCrystalArray = PlayerInventory->GetMountainCrystalArray();
 	auto WaveCrystalArray = PlayerInventory->GetWaveCrystalArray();
 	auto TreeCrystalArray = PlayerInventory->GetTreeCrystalArray();
-	
+
 	UE_LOG(LogTemp, Log, TEXT("[산 크리스탈 파편 갯수]: %d"), MountainCrystalArray.Num());
 	UE_LOG(LogTemp, Log, TEXT("[물결 크리스탈 파편 갯수]: %d"), WaveCrystalArray.Num());
 	UE_LOG(LogTemp, Log, TEXT("[나무 크리스탈 파편 갯수]: %d"), TreeCrystalArray.Num());

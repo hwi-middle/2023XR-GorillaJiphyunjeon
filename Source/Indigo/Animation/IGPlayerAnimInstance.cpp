@@ -22,6 +22,11 @@ void UIGPlayerAnimInstance::AnimNotify_AttackEnd()
 	OnFinishAttack.Broadcast();
 }
 
+void UIGPlayerAnimInstance::AnimNotify_GenerateProjectile()
+{
+	OnShouldGenerateProjectile.Broadcast();
+}
+
 void UIGPlayerAnimInstance::StartRoll()
 {
 	bIsRolling = true;

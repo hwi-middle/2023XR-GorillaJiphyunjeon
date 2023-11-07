@@ -23,6 +23,7 @@ class UIGPlayerInventory;
 class UIGSoundDataAsset;
 class UIGShinmyophil;
 class UQuest;
+class UAnimMontage;
 struct FInputActionValue;
 struct FIGCharacterDataTable;
 
@@ -170,7 +171,15 @@ private:
 	void SetIsRunning(const FInputActionValue& Value);
 	void Interact();
 	void Attack();
+	void GenerateProjectile();
+	void ProcessComboCommand();
+	void ComboActionBegin();
+	void SetComboCheckTimer();
+	int32 GetComboAnimationFrameCount() const;
+	void ComboCheck();
 	void FinishAttack();
+	void ComboActionEnd(UAnimMontage* TargetMontage, bool IsProperlyEnded);
+	virtual void NotifyComboActionEnd();
 	void StartRolling();
 	void FinishRolling();
 	void EnableExhaustion();
@@ -270,8 +279,20 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	float StaminaConsumptionAmountPerSecondOnRunning;
 
-	// 기타 필요한 정보
+	// 3타 시스템에 필요한 정보
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UAnimMontage> ComboActionMontage;
+	
+	UPROPERTY(VisibleAnywhere)
+	int32 CurrentCombo = 0;
+	
+	UPROPERTY(VisibleAnywhere)
+	FTimerHandle ComboTimerHandle;
 
+	UPROPERTY(VisibleAnywhere)
+	bool HasNextComboCommand = false;
+	
+	// 기타 필요한 정보
 	UPROPERTY(VisibleAnywhere)
 	float ExhaustionPhase1Duration;
 
