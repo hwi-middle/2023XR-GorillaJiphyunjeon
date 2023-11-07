@@ -48,7 +48,7 @@ void AIGProjectileBase::Tick(float DeltaTime)
 	float Radius = 50.f;
 	CollisionParams.AddIgnoredActor(this);
 
-	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 16, FColor::Green, false, 0.f);
+	// DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 16, FColor::Green, false, 0.f);
 
 	bool bHit = GetWorld()->SweepSingleByChannel(
 		Result,
