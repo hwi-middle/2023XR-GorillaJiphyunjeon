@@ -23,11 +23,11 @@ UENUM(BlueprintType)
 enum EAttackPattern : uint32
 {
 	None,
-	NormalWeak,
-	NormalStrong,
 	Close,
 	Far,
 	Floor,
+	NormalWeak,
+	NormalStrong,
 };
 
 UCLASS()
