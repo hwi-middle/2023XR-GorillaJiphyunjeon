@@ -16,6 +16,9 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Indigo/Animation/IGPlayerAnimInstance.h"
 #include "Indigo/Animation/IGPlayerWeaponAnimInstance.h"
+#include "Indigo/Battle/IGPlayerComboProjectile1.h"
+#include "Indigo/Battle/IGPlayerComboProjectile2.h"
+#include "Indigo/Battle/IGPlayerComboProjectile3.h"
 #include "Indigo/Battle/IGProjectileBase.h"
 #include "Indigo/Battle/IGStraightProjectile.h"
 #include "Indigo/Constant/IGCollisionChannels.h"
@@ -496,16 +499,28 @@ void AIGPlayerCharacter::GenerateProjectile()
 
 	AddPlayerState(EPlayerState::Attacking);
 
-	//데미지 연산뒤 선문게이지 감소
 	const float Damage = ComputeDamage();
 	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("데미지: [%f]"), Damage));
 
-	// ---- Temporal (Socket 등으로 위치 조정해줘야함)
 	const FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
-	AIGStraightProjectile* SpawnedActor = GetWorld()->SpawnActor<AIGStraightProjectile>(SpawnLocation, FRotator::ZeroRotator);
-	SpawnedActor->Init(Damage, GetActorForwardVector(), 1000.f, 10.f, EProjectileSpawnType::SpawnedByPlayer);
+	AIGStraightProjectile* SpawnedActor = nullptr;
+	switch (CurrentCombo)
+	{
+	case 1:
+		SpawnedActor = GetWorld()->SpawnActor<AIGPlayerComboProjectile1>(SpawnLocation, GetActorRotation());
+		break;
+	case 2:
+		SpawnedActor = GetWorld()->SpawnActor<AIGPlayerComboProjectile2>(SpawnLocation, GetActorRotation());
+		break;
+	case 3:
+		SpawnedActor = GetWorld()->SpawnActor<AIGPlayerComboProjectile3>(SpawnLocation, GetActorRotation());
+		break;
+		default:
+		checkNoEntry();
+	}
+	SpawnedActor->Init(Damage, GetActorForwardVector(), 3000.f, 10.f, EProjectileSpawnType::SpawnedByPlayer);
 	SpawnedActor->OnHitProjectile.AddUObject(this, &AIGPlayerCharacter::OnHitProjectile);
-	// ----
+	
 	UGameplayStatics::PlaySound2D(this, TestSoundDataAsset->PlayerAttackSoundCue);
 }
 

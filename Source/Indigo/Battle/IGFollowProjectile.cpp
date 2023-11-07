@@ -13,8 +13,6 @@ AIGFollowProjectile::AIGFollowProjectile()
 		TEXT("/Script/Niagara.NiagaraSystem'/Game/_GorillaJiphyunjeon/Effect/NS_Boss_Attack_LongRange_Projectile03.NS_Boss_Attack_LongRange_Projectile03'"),
 		EAssertionLevel::Check);
 	NiagaraComp->SetAsset(NiagaraSystem);
-	// NiagaraComp->SetAutoActivate(false);
-	// NiagaraComp->SetActive(false);
 	RootComponent = NiagaraComp;
 }
 

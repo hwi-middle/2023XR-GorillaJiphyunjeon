@@ -216,6 +216,7 @@ public:
 	FORCEINLINE UIGShinmyophil* GetShinmyophil() const { return Shinmyophil; }
 	FORCEINLINE UIGPlayerInventory* GetInventory() const { return PlayerInventory; }
 	FORCEINLINE EPlayerState GetCurrentState() const { return CurrentState; }
+	FORCEINLINE int32 GetCurrentCombo() const { return CurrentCombo; }
 
 private:
 	// 플레이어 능력치
