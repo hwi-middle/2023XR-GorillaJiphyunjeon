@@ -600,7 +600,9 @@ void AIGPlayerCharacter::ComboActionEnd(UAnimMontage* TargetMontage, bool IsProp
 }
 
 void AIGPlayerCharacter::NotifyComboActionEnd()
-{}
+{
+	RemovePlayerState(EPlayerState::Attacking);
+}
 
 void AIGPlayerCharacter::StartRolling()
 {
