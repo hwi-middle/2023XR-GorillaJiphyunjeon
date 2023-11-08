@@ -20,6 +20,11 @@ void UIGCrystalSlot::NativeConstruct()
 	CrystalSlot[0] = Cast<UImage>(GetWidgetFromName(TEXT("Crystal1")));	
 	CrystalSlot[1] = Cast<UImage>(GetWidgetFromName(TEXT("Crystal2")));
 	CrystalSlot[2] = Cast<UImage>(GetWidgetFromName(TEXT("Crystal3")));
+
+	CrystalSlot[0]->SetVisibility(ESlateVisibility::Hidden);
+	CrystalSlot[1]->SetVisibility(ESlateVisibility::Hidden);
+	CrystalSlot[2]->SetVisibility(ESlateVisibility::Hidden);
+	
 	CrystalFragCount = 0;
 }
 
@@ -32,18 +37,28 @@ void UIGCrystalSlot::AddCrystal(AIGCrystalBase* InCrystal)
 	
 	if(Cast<AIGTreeCrystal>(InCrystal) != nullptr)
 	{
-		CrystalSlot[CrystalFragCount]->SetColorAndOpacity(FLinearColor(0.0f, 1.0f, 0.0f));	
 		CrystalFragCount++;
+		if(CrystalFragCount >= 3)
+		{
+			CrystalSlot[1]->SetVisibility(ESlateVisibility::Visible);
+		}
 	}
 	else if(Cast<AIGWaveCrystal>(InCrystal) != nullptr)
 	{
-		CrystalSlot[CrystalFragCount]->SetColorAndOpacity(FLinearColor(0.0f, 0.0f, 1.0f));
+		
 		CrystalFragCount++;
+		if(CrystalFragCount >= 3)
+		{
+			CrystalSlot[2]->SetVisibility(ESlateVisibility::Visible);
+		}
 	}	
 	else if(Cast<AIGMountainCrystal>(InCrystal) != nullptr)
-	{
-		CrystalSlot[CrystalFragCount]->SetColorAndOpacity(FLinearColor(0.6f, 0.3f, 0.0f));
+	{		
 		CrystalFragCount++;
+		if(CrystalFragCount >= 3)
+		{
+			CrystalSlot[0]->SetVisibility(ESlateVisibility::Visible);
+		}
 	}
 }
 		
