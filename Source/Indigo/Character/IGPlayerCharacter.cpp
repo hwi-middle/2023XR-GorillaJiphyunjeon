@@ -403,8 +403,8 @@ void AIGPlayerCharacter::Look(const FInputActionValue& Value)
 		return;
 	}
 
-	AddControllerYawInput(LookAxisVector.X);
-	AddControllerPitchInput(LookAxisVector.Y);
+	AddControllerYawInput(LookAxisVector.X * PlayerDataAsset->MouseYawScale);
+	AddControllerPitchInput(LookAxisVector.Y * PlayerDataAsset->MousePitchScale);
 }
 
 void AIGPlayerCharacter::SetIsIdling()

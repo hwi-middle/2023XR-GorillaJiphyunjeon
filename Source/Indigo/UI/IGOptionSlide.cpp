@@ -4,6 +4,7 @@
 #include "Indigo/UI/IGOptionSlide.h"
 #include "Components/Slider.h"
 #include "Indigo/DataAsset/IGSoundDataAsset.h"
+#include "Indigo/DataAsset/IGPlayerDataAsset.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
@@ -12,13 +13,12 @@
 
 UIGOptionSlide::UIGOptionSlide(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
 {
-	SoundDataAsset = FIGConstructorHelper::FindAndGetObject<UIGSoundDataAsset>(TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"));
 
 }
 
 void UIGOptionSlide::SetSliderType(const ESliderType InType)
 {
-	SoundSlider->SetMinValue(0.0f);
+	SoundSlider->SetMinValue(0.01f);
 	SoundSlider->SetMaxValue(2.0f);
 	SoundSlider->SetValue(1.0f);
 	if(InType == ESliderType::BGM)
@@ -30,7 +30,7 @@ void UIGOptionSlide::SetSliderType(const ESliderType InType)
 		SoundSlider->OnValueChanged.AddDynamic(this, &UIGOptionSlide::SetSFX);		
 	}
 	else if(InType == ESliderType::MouseSensitivity)
-	{
+	{		
 		SoundSlider->OnValueChanged.AddDynamic(this, &UIGOptionSlide::SetMouseSensitivity);		
 	}
 }
@@ -55,10 +55,11 @@ void UIGOptionSlide::SetSFX(const float InValue)
 
 void UIGOptionSlide::SetMouseSensitivity(const float InValue)
 {
-	if(PlayerController != nullptr)
-	{		
-		PlayerController->InputYawScale_DEPRECATED = InValue;
-		PlayerController->InputPitchScale_DEPRECATED = InValue;
+	if(PlayerDataAsset != nullptr)
+	{
+		PlayerDataAsset->MouseYawScale = InValue;
+		PlayerDataAsset->MousePitchScale = InValue;
+		
 		ValueText->SetText(FText::AsNumber(FMath::TruncToInt(InValue  * 50)));
 	}
 }
@@ -66,32 +67,32 @@ void UIGOptionSlide::SetMouseSensitivity(const float InValue)
 void UIGOptionSlide::NativeConstruct()
 {
 	Super::NativeConstruct();
+	SoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
+	PlayerDataAsset = LoadObject<UIGPlayerDataAsset>(nullptr, TEXT("/Script/Indigo.IGPlayerDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerData.DA_PlayerData'"), nullptr, LOAD_None, nullptr, nullptr);
 	SoundSlider = Cast<USlider>(GetWidgetFromName(TEXT("Slider")));
 	ValueText = Cast<UTextBlock>(GetWidgetFromName(TEXT("Value")));
 	ValueText->SetText(FText::AsNumber(50));
+	PlayerDataAsset->MouseYawScale = 1.0f;
+	PlayerDataAsset->MousePitchScale = 1.0f;
 
 	if (SoundDataAsset)
 	{
-		for (TFieldIterator<UProperty> It(SoundDataAsset->GetClass()); It; ++It)
+		for (TObjectIterator<USoundCue> It; It; ++It)
 		{
-			UProperty* Property = *It;
-			USoundCue* SoundCue = Cast<USoundCue>(Property);
-			if (SoundCue != nullptr)
+			if (It->IsA(USoundCue::StaticClass()))
 			{
-				FString Name = SoundCue->GetName();
-				TArray<FString> NameArray;
-				Name.ParseIntoArray(NameArray, TEXT("_"));
-
-				if(NameArray[0] == TEXT("BGM"))
+				USoundCue* SoundCue = Cast<USoundCue>(*It);
+				SoundCue->VolumeMultiplier = 1.0f;
+				
+				if (SoundCue != nullptr && SoundCue->GetName().StartsWith(TEXT("BGM")))
 				{
 					BGMSoundsData.Add(SoundCue);
 				}
-				else if(NameArray[0] == TEXT("SFX"))
+				else if (SoundCue != nullptr && SoundCue->GetName().StartsWith(TEXT("SFX")))
 				{
 					SFXSoundsData.Add(SoundCue);
-				}				
+				}
 			}
 		}
 	}
-	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 }
