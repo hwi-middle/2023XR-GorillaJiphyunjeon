@@ -10,6 +10,7 @@
 class USlider;
 class USoundCue;
 class UIGSoundDataAsset;
+class UIGPlayerDataAsset;
 class UTextBlock;
 enum class ESliderType : int8
 {
@@ -51,15 +52,15 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UIGPlayerDataAsset> PlayerDataAsset;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TArray<USoundCue*> SFXSoundsData;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TArray<USoundCue*> BGMSoundsData;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<APlayerController> PlayerController;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UTextBlock> ValueText;

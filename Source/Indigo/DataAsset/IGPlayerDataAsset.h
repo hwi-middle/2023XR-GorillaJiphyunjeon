@@ -70,4 +70,11 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Misc", DisplayName = "죽음 기준 높이")
 	float DieZLocation;
+
+	//마우스 감도
+	UPROPERTY(EditAnywhere, Category = "Mouse", DisplayName = "마우스 X감도")
+	float MouseYawScale;
+
+	UPROPERTY(EditAnywhere, Category = "Mouse", DisplayName = "마우스 Y감도")
+	float MousePitchScale;	
 };
