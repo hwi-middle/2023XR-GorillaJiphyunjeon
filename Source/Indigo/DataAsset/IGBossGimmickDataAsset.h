@@ -37,15 +37,19 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "2페이즈 확률", DisplayName = "2페이즈 장판 공격 확률")
 	float Floor_Phase2Probability;
-	
+
+	// 근거리 패턴
+	UPROPERTY(EditAnywhere, Category = "근거리 패턴", DisplayName = "근거리 패턴 공격영역 피해량")
+	float CloseAttack_Damage;
+
+	UPROPERTY(EditAnywhere, Category = "근거리 패턴", DisplayName = "근거리 패턴 주먹 피해량")
+	float CloseAttack_HandDamage;
+
 	UPROPERTY(EditAnywhere, Category = "근거리 패턴", DisplayName = "주먹 충돌판정 반지름")
 	float CloseAttack_HandRadius;
 	
 	UPROPERTY(EditAnywhere, Category = "근거리 패턴", DisplayName = "근거리 패턴 가시 개수")
 	uint32 CloseAttack_SpikeNum;
-
-	UPROPERTY(EditAnywhere, Category = "근거리 패턴", DisplayName = "근거리 패턴 피해량")
-	float CloseAttack_Damage;
 
 	UPROPERTY(EditAnywhere, Category = "근거리 패턴", DisplayName = "근거리 패턴 가시 생성 시간 간격")
 	float CloseAttack_SpikeTimeGap;
@@ -61,4 +65,27 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "근거리 패턴", DisplayName = "근거리 패턴 가시 생성 Z축 오프셋")
 	float CloseAttack_SpikeGroundOffset;
+
+	// 원거리 패턴
+	UPROPERTY(EditAnywhere, Category = "원거리 패턴", DisplayName = "원거리 패턴 피해량")
+	float FarAttack_Damage;
+
+	UPROPERTY(EditAnywhere, Category = "원거리 패턴", DisplayName = "원거리 패턴 발사체 속도")
+	float FarAttack_ProjectileSpeed;
+	
+	UPROPERTY(EditAnywhere, Category = "원거리 패턴", DisplayName = "원거리 패턴 수명(초)")
+	float FarAttack_ProjectileDuration;
+
+	// 장판 패턴
+	UPROPERTY(EditAnywhere, Category = "장판 패턴", DisplayName = "장판 패턴 피해량")
+	float FloorAttack_Damage;
+
+	UPROPERTY(EditAnywhere, Category = "장판 패턴", DisplayName = "장판 패턴 투사체 발사 거리(m)")
+	float FloorAttack_ProjectileDistance;
+	
+	UPROPERTY(EditAnywhere, Category = "장판 패턴", DisplayName = "장판 패턴 투사체 개수")
+	float FloorAttack_ProjectileNum;
+		
+	UPROPERTY(EditAnywhere, Category = "장판 패턴", DisplayName = "장판 패턴 발사체 속도")
+	float FloorAttack_ProjectileSpeed;
 };

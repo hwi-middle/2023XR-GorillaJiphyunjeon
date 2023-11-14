@@ -100,13 +100,34 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	float CloseAttack_SpikeDestroyDelay;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UBoxComponent> InteractCollider; 
 	
 	UPROPERTY(VisibleAnywhere)
 	float CloseAttack_SpikeGroundOffset;
 
+	// 원거리 패턴
+	UPROPERTY(VisibleAnywhere)
+	float FarAttack_Damage;
+
+	UPROPERTY(VisibleAnywhere)
+	float FarAttack_ProjectileSpeed;
+	
+	UPROPERTY(VisibleAnywhere)
+	float FarAttack_ProjectileDuration;
+
+	// 장판 패턴
+	UPROPERTY(VisibleAnywhere)
+	float FloorAttack_Damage;
+
+	UPROPERTY(VisibleAnywhere)
+	float FloorAttack_ProjectileDistance;
+	
+	UPROPERTY(VisibleAnywhere)
+	float FloorAttack_ProjectileNum;
+		
+	UPROPERTY(VisibleAnywhere)
+	float FloorAttack_ProjectileSpeed;
+
+	// 
 	UPROPERTY(VisibleAnywhere)
 	uint32 bIsInRange : 1;
 
@@ -125,6 +146,9 @@ private:
 	//죽었을 때 상호작용
 	UPROPERTY(VisibleAnywhere)
 	uint8 bIsFirstDeadInteract : 1;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UBoxComponent> InteractCollider; 
 	
 public:
 	FOnFinishBossAttackDelegate OnFinishBossAttack;

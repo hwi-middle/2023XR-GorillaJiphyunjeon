@@ -96,6 +96,14 @@ void AIGBoss::BeginPlay()
 	CloseAttack_SpikeDestroyDelay = GimmickDataAsset->CloseAttack_SpikeDestroyDelay;
 	CloseAttack_SpikeGroundOffset = GimmickDataAsset->CloseAttack_SpikeGroundOffset;
 
+	FarAttack_Damage = GimmickDataAsset->FarAttack_Damage;
+	FarAttack_ProjectileSpeed = GimmickDataAsset->FarAttack_ProjectileSpeed;
+	FarAttack_ProjectileDuration = GimmickDataAsset->FarAttack_ProjectileDuration;
+
+	FloorAttack_Damage = GimmickDataAsset->FloorAttack_Damage;
+	FloorAttack_ProjectileDistance = GimmickDataAsset->FloorAttack_ProjectileDistance;
+	FloorAttack_ProjectileNum = GimmickDataAsset->FloorAttack_ProjectileNum;
+	FloorAttack_ProjectileSpeed = GimmickDataAsset->FloorAttack_ProjectileSpeed;
 }
 
 void AIGBoss::Tick(float DeltaSeconds)
@@ -237,24 +245,19 @@ void AIGBoss::GenerateCloseAttack()
 
 void AIGBoss::GenerateFloorAttack()
 {
-	const uint32 ProjectileCount = 15;
 	float Angle = 0.f;
-	for (uint32 i = 0; i < ProjectileCount; ++i)
+	for (uint32 i = 0; i < FloorAttack_ProjectileNum; ++i)
 	{
 		AIGStraightProjectile* SpawnedProjectile = GWorld->SpawnActor<AIGBossFlooringProjectile>(GetActorLocation(), FRotator(0.f, Angle, 0.f));
-		SpawnedProjectile->Init(10.f, SpawnedProjectile->GetActorForwardVector(), 10000.f, 10.f, EProjectileSpawnType::SpawnedByEnemy);
-		Angle += 360.f / ProjectileCount;
+		SpawnedProjectile->Init(FloorAttack_Damage, SpawnedProjectile->GetActorForwardVector(), FloorAttack_ProjectileDistance, FloorAttack_ProjectileSpeed, EProjectileSpawnType::SpawnedByEnemy);
+		Angle += 360.f / FloorAttack_ProjectileNum;
 	}
-
-
-	// AIGTreeTorus* SpawnedTorus = GWorld->SpawnActor<AIGTreeTorus>(GetActorLocation(), FRotator::ZeroRotator);
-	// SpawnedTorus->Init(10.f, 3.f);
 }
 
 void AIGBoss::GenerateFarAttack()
 {
 	AIGFollowProjectile* SpawnedProjectile = GWorld->SpawnActor<AIGFollowProjectile>(GetMesh()->GetSocketLocation(TEXT("LeftHand")), FRotator::ZeroRotator);
-	SpawnedProjectile->Init(10.f, PlayerActor, 10000.f, 6.f, 3.f, EProjectileSpawnType::SpawnedByEnemy);
+	SpawnedProjectile->Init(FarAttack_Damage, PlayerActor, FarAttack_ProjectileSpeed, FarAttack_ProjectileDuration, EProjectileSpawnType::SpawnedByEnemy);
 }
 
 void AIGBoss::EndAttack()
