@@ -87,6 +87,15 @@ void AIGBoss::BeginPlay()
 	MaxHp = BossDataAsset->MaxHp;
 	Hp = MaxHp;
 
+	Normal_Phase1Probability = GimmickDataAsset->Normal_Phase1Probability;
+	CloseAttack_Phase1Probability = GimmickDataAsset->CloseAttack_Phase1Probability;
+	FarAttack_Phase1Probability = GimmickDataAsset->FarAttack_Phase1Probability;
+	FloorAttack_Phase1Probability = GimmickDataAsset->Floor_Phase1Probability;
+	Normal_Phase2Probability = GimmickDataAsset->NormalAttack_Phase2Probability;
+	CloseAttack_Phase2Probability = GimmickDataAsset->CloseAttack_Phase2Probability;
+	FarAttack_Phase2Probability = GimmickDataAsset->FarAttack_Phase2Probability;
+	FloorAttack_Phase2Probability = GimmickDataAsset->FloorAttack_Phase2Probability;
+
 	CloseAttack_SpikeNum = GimmickDataAsset->CloseAttack_SpikeNum;
 	CloseAttack_HandRadius = GimmickDataAsset->CloseAttack_HandRadius;
 	CloseAttack_Damage = GimmickDataAsset->CloseAttack_Damage;
@@ -149,6 +158,65 @@ void AIGBoss::Interact()
 		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleRemakeInteractBossDeadBody();
 		bIsFirstDeadInteract = true;
 	}
+}
+
+EAttackPattern AIGBoss::GetRandomAttackPatternByProbability()
+{
+	// 백분율로 계산
+	const uint32 RandNum = FMath::RandRange(1, 100);
+	const bool IsPhase1 = Hp > MaxHp / 2;
+
+	// 검출 순서: 일반 공격 - 근거리 - 원거리 - 장판
+	const float Normal_Phase1Check = Normal_Phase1Probability;
+	const float CloseAttack_Phase1Check = Normal_Phase1Check + CloseAttack_Phase1Probability;
+	const float FarAttack_Phase1Check = CloseAttack_Phase1Check + FarAttack_Phase1Probability;
+	const float FloorAttack_Phase1Check = FarAttack_Phase1Check + FloorAttack_Phase1Probability;
+
+	const float Normal_Phase2Check = Normal_Phase2Probability;
+	const float CloseAttack_Phase2Check = Normal_Phase2Check + CloseAttack_Phase2Probability;
+	const float FarAttack_Phase2Check = CloseAttack_Phase2Check + FarAttack_Phase2Probability;
+	const float FloorAttack_Phase2Check = FarAttack_Phase2Check + FloorAttack_Phase2Probability;
+
+	if (IsPhase1)
+	{
+		if (RandNum <= Normal_Phase1Check)
+		{
+			return static_cast<bool>(FMath::RandRange(0, 1)) ? EAttackPattern::NormalWeak : EAttackPattern::NormalStrong;
+		}
+		if (RandNum <= CloseAttack_Phase1Check)
+		{
+			return EAttackPattern::Close;
+		}
+		if (RandNum <= FarAttack_Phase1Check)
+		{
+			return EAttackPattern::Far;
+		}
+		if (RandNum <= FloorAttack_Phase1Check)
+		{
+			return EAttackPattern::Floor;
+		}
+	}
+	else
+	{
+		if (RandNum <= Normal_Phase2Check)
+		{
+			return static_cast<bool>(FMath::RandRange(0, 1)) ? EAttackPattern::NormalWeak : EAttackPattern::NormalStrong;
+		}
+		if (RandNum <= CloseAttack_Phase2Check)
+		{
+			return EAttackPattern::Close;
+		}
+		if (RandNum <= FarAttack_Phase2Check)
+		{
+			return EAttackPattern::Far;
+		}
+		if (RandNum <= FloorAttack_Phase2Check)
+		{
+			return EAttackPattern::Floor;
+		}
+	}
+
+	return EAttackPattern::None;
 }
 
 void AIGBoss::EnableHUD()

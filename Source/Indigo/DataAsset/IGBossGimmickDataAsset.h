@@ -27,7 +27,7 @@ public:
 	float Floor_Phase1Probability;
 	
 	UPROPERTY(EditAnywhere, Category = "2페이즈 확률", DisplayName = "2페이즈 평타 확률")
-	float Normal_Phase2Probability;
+	float NormalAttack_Phase2Probability;
 
 	UPROPERTY(EditAnywhere, Category = "2페이즈 확률", DisplayName = "2페이즈 근거리 공격 확률")
 	float CloseAttack_Phase2Probability;
@@ -36,7 +36,7 @@ public:
 	float FarAttack_Phase2Probability;
 
 	UPROPERTY(EditAnywhere, Category = "2페이즈 확률", DisplayName = "2페이즈 장판 공격 확률")
-	float Floor_Phase2Probability;
+	float FloorAttack_Phase2Probability;
 
 	// 근거리 패턴
 	UPROPERTY(EditAnywhere, Category = "근거리 패턴", DisplayName = "근거리 패턴 공격영역 피해량")
@@ -80,7 +80,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "장판 패턴", DisplayName = "장판 패턴 피해량")
 	float FloorAttack_Damage;
 
-	UPROPERTY(EditAnywhere, Category = "장판 패턴", DisplayName = "장판 패턴 투사체 발사 거리(m)")
+	UPROPERTY(EditAnywhere, Category = "장판 패턴", DisplayName = "장판 패턴 투사체 발사 거리(cm)")
 	float FloorAttack_ProjectileDistance;
 	
 	UPROPERTY(EditAnywhere, Category = "장판 패턴", DisplayName = "장판 패턴 투사체 개수")

@@ -76,6 +76,31 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UIGBossGimmickDataAsset> GimmickDataAsset;
 
+	// 확률
+	UPROPERTY(VisibleAnywhere)
+	float Normal_Phase1Probability;
+
+	UPROPERTY(VisibleAnywhere)
+	float CloseAttack_Phase1Probability;
+
+	UPROPERTY(VisibleAnywhere)
+	float FarAttack_Phase1Probability;
+
+	UPROPERTY(VisibleAnywhere)
+	float FloorAttack_Phase1Probability;
+	
+	UPROPERTY(VisibleAnywhere)
+	float Normal_Phase2Probability;
+
+	UPROPERTY(VisibleAnywhere)
+	float CloseAttack_Phase2Probability;
+
+	UPROPERTY(VisibleAnywhere)
+	float FarAttack_Phase2Probability;
+
+	UPROPERTY(VisibleAnywhere)
+	float FloorAttack_Phase2Probability;
+	
 	// 평타
 	// TODO: 평타 관련 구현
 	
@@ -157,6 +182,7 @@ public:
 	FORCEINLINE float GetStoppingDistance() const { return StoppingDistance; }
 	FORCEINLINE EAttackPattern GetCurrentGimmick() const { return CurrentGimmick; }
 
+	EAttackPattern GetRandomAttackPatternByProbability();
 	void EnableHUD();
 	void DisableHUD();
 	void PerformCloseAttack();
