@@ -22,6 +22,7 @@ AIGMountainSpike::AIGMountainSpike()
 	}, EAssertionLevel::Check);
 
 	ElapsedTime = 0.f;
+	DamageRadius = 150.f;
 	bIsInitialized = false;
 	bHasDamagedPlayer = false;
 }
@@ -71,7 +72,7 @@ void AIGMountainSpike::Tick(float DeltaTime)
 
 	FHitResult Result;
 	FCollisionQueryParams CollisionParams;
-	float DamageRadius = 150.f;
+	DamageRadius = 150.f;
 	CollisionParams.AddIgnoredActor(this);
 
 	DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 16, FColor::Green, false, 1.f);
@@ -100,7 +101,7 @@ void AIGMountainSpike::Tick(float DeltaTime)
 	}
 }
 
-void AIGMountainSpike::Init(const float InDamage, const float InHeight, const float InGenerationDelay, const float InDuration, const float InDestroyDelay)
+void AIGMountainSpike::Init(const float InDamage, const float InHeight, const float InGenerationDelay, const float InDuration, const float InDestroyDelay, const float InDamageRadius)
 {
 	OriginPos = GetActorLocation();
 	Damage = InDamage;
@@ -108,5 +109,6 @@ void AIGMountainSpike::Init(const float InDamage, const float InHeight, const fl
 	GenerationDelay = InGenerationDelay;
 	Duration = InDuration;
 	DestroyDelay = InDestroyDelay;
+	DamageRadius = InDamageRadius;
 	bIsInitialized = true;
 }

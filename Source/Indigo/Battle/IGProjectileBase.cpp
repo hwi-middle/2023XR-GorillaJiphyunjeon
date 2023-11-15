@@ -23,6 +23,8 @@ AIGProjectileBase::AIGProjectileBase()
 			Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			RootComponent = Mesh;
 		}, EAssertionLevel::None);
+
+	Radius = 50.f;
 }
 
 // Called when the game starts or when spawned
@@ -45,7 +47,6 @@ void AIGProjectileBase::Tick(float DeltaTime)
 
 	FHitResult Result;
 	FCollisionQueryParams CollisionParams;
-	float Radius = 50.f;
 	CollisionParams.AddIgnoredActor(this);
 
 	// DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 16, FColor::Green, false, 0.f);

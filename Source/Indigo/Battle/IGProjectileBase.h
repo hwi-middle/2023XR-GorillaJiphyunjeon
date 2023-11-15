@@ -32,6 +32,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void SetDamageRadius(const float InRadius) {Radius = InRadius;}
+	
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UStaticMeshComponent> Mesh;
@@ -47,6 +49,9 @@ protected:
 
 	UPROPERTY()
 	float ElapsedTime;
+	
+	UPROPERTY()
+	float Radius;
 	
 public:
 	FOnHitProjectile OnHitProjectile;

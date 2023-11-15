@@ -19,13 +19,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY()
+	TObjectPtr<UStaticMeshComponent> Mesh;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	UPROPERTY()
-	TObjectPtr<UStaticMeshComponent> Mesh;
+
 
 	UPROPERTY()
 	uint32 bIsInitialized : 1;
@@ -47,6 +48,9 @@ private:
 	
 	UPROPERTY()
 	float DestroyDelay;
+	
+	UPROPERTY()
+	float DamageRadius;
 
 	UPROPERTY()
 	FVector OriginPos;
@@ -55,5 +59,5 @@ private:
 	FVector TargetPos;
 
 public:
-	void Init(const float InDamage, const float InHeight, const float InGenerationDelay, const float InDuration, const float InDestroyDelay);
+	void Init(const float InDamage, const float InHeight, const float InGenerationDelay, const float InDuration, const float InDestroyDelay, const float InDamageRadius = 150.f);
 };

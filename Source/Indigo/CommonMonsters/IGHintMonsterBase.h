@@ -31,8 +31,13 @@ public:
 	FORCEINLINE	bool GetIsHit() const {return bIsHit;}
 	FORCEINLINE	void IsHitFinish() { bIsHit = false;}
 
-	
+	//공격
 	void PerformCloseAttack();
+
+	void PerformMountainAttack();
+	void PerformWaveAttack();
+	void PerformTreeAttack();
+
 	void EndAttack();
 	
 	FOnFinishWispAttackDelegate OnFinishWispAttack;
@@ -47,6 +52,9 @@ protected:
 private:
 	UPROPERTY()
 	TObjectPtr<UIGWispAnimInstance> AnimInstance;
+
+	UPROPERTY()
+	TObjectPtr<AActor> PlayerActor;
 	
 	UPROPERTY(EditAnywhere)
 	ECrystal CrystalType;

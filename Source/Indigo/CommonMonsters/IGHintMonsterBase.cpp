@@ -14,7 +14,13 @@
 #include "Indigo/Interactable/IGMountainCrystal.h"
 #include "Indigo/Interactable/IGWaveCrystal.h"
 #include "Indigo/Interactable/IGTreeCrystal.h"
+#include "Indigo/Battle/IGBossFlooringProjectile.h"
+#include "Indigo/Battle/IGMountainSpike.h"
+#include "Indigo/Battle/IGProjectileBase.h"
+#include "Indigo/Battle/IGStraightProjectile.h"
 #include "Indigo/Animation/IGWispAnimInstance.h"
+#include "Indigo/Battle/IGStraightWaveProjectile.h"
+#include "Indigo/Battle/IGWispMountainAttackStone.h"
 #include "Indigo/Interactable/IGHealKit.h"
 
 // Sets default values
@@ -41,6 +47,8 @@ AIGHintMonsterBase::AIGHintMonsterBase()
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	bUseControllerRotationYaw = false;
 
+	PlayerActor = UGameplayStatics::GetPlayerPawn(GWorld, 0);
+	
 	bIsHit = false;
 	bIsAttack = false;
 	bIsDelay = false;
@@ -50,9 +58,9 @@ AIGHintMonsterBase::AIGHintMonsterBase()
 	ElapsedTime = 0.0f;
 	AttackTime  = 0.0f;
 	RetreatTime = 0.0f;
-	StoppingDistance = 200.0f;
+	StoppingDistance = 500.0f;
 	AttackSpeed = 800.0f;
-	
+
 }
 
 // Called when the game starts or when spawned
@@ -221,6 +229,56 @@ void AIGHintMonsterBase::PerformCloseAttack()
 	bIsAttack = true;
 	DashStartLocation = TargetVector;
 	DashEndLocation = TargetVector * StoppingDistance;
+}
+
+void AIGHintMonsterBase::PerformMountainAttack()
+{
+	AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GWorld, 0));
+	FVector TargetVector = Player->GetActorLocation() - GetActorLocation();
+	TargetVector.Normalize();
+
+	FVector RotatedVector = TargetVector.RotateAngleAxis(-90, FVector::UpVector);
+	constexpr float Height = 300.f;
+	FVector GenerationLocation = GetActorLocation() + TargetVector* 150;
+	GenerationLocation.Z = -Height;
+	AIGMountainSpike* SpawnedSpike = GWorld->SpawnActor<AIGWispMountainAttackStone>(GenerationLocation, FRotator(0.f, RotatedVector.Rotation().Yaw, 0.f));
+	SpawnedSpike->Init(10.0f, 300.f, 0.0f, 0.5f, 1.5f, 50.0f);
+	EndAttack();
+}
+
+void AIGHintMonsterBase::PerformWaveAttack() 
+{
+	AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GWorld, 0));
+	FVector TargetVector = Player->GetActorLocation() - GetActorLocation();
+	TargetVector.Normalize();
+
+	FVector RotatedVector = TargetVector.RotateAngleAxis(-90, FVector::UpVector);
+	AIGStraightProjectile* SpawnedProjectile = GWorld->SpawnActor<AIGStraightWaveProjectile>(GetActorLocation(), FRotator(0.f, RotatedVector.Rotation().Yaw, 0.f));
+	SpawnedProjectile->SetActorScale3D(SpawnedProjectile->GetActorScale() / 5);
+	SpawnedProjectile->SetDamageRadius(10.0f);
+	SpawnedProjectile->Init(10.f, TargetVector, 750.0f, 10.f, EProjectileSpawnType::SpawnedByEnemy);
+	EndAttack();
+}
+
+void AIGHintMonsterBase::PerformTreeAttack()
+{
+	AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GWorld, 0));
+	FVector TargetVector = Player->GetActorLocation() - GetActorLocation();
+	TargetVector.Normalize();
+	
+	const uint32 ProjectileCount = 3;
+	float Angle = -30.0f;
+	for (uint32 i = 0; i < ProjectileCount; ++i)
+	{
+		FVector RotatedVector = TargetVector.RotateAngleAxis(Angle, FVector::UpVector);
+		AIGStraightProjectile* SpawnedProjectile = GWorld->SpawnActor<AIGBossFlooringProjectile>(GetActorLocation(), FRotator(0.f, RotatedVector.Rotation().Yaw, 0.f));
+		SpawnedProjectile->SetActorScale3D(SpawnedProjectile->GetActorScale() / 5);
+		SpawnedProjectile->SetDamageRadius(10.0f);
+		SpawnedProjectile->Init(10.f, RotatedVector, 750.f, 3.f, EProjectileSpawnType::SpawnedByEnemy);
+				
+		Angle += 30.f;
+	}
+	EndAttack();
 }
 
 void AIGHintMonsterBase::EndAttack()
