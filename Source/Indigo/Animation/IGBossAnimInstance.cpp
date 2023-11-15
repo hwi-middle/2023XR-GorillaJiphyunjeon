@@ -28,6 +28,8 @@ void UIGBossAnimInstance::AnimNotify_GenerateFarAttack()
 void UIGBossAnimInstance::AnimNotify_FinishAttack()
 {
 	OnFinishAttack.Broadcast();
+	bShouldPerformWeakNormalAttack = false;
+	bShouldPerformStrongNormalAttack = false;
 	bShouldPerformCloseAttack = false;
 	bShouldPerformFloorAttack = false;
 	bShouldPerformFarAttack = false;

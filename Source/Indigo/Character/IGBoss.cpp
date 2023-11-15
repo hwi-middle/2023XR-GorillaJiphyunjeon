@@ -245,6 +245,28 @@ void AIGBoss::DisableHUD()
 	HudWidget = nullptr;
 }
 
+void AIGBoss::PerformNormalWeakAttack()
+{
+	CurrentGimmick = EAttackPattern::NormalWeak;
+	AnimInstance->StartWeakNormalAttack();
+	if (!bIsFirstAttack)
+	{
+		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleRemakeBossFirstAttack();
+		bIsFirstAttack = true;
+	}
+}
+
+void AIGBoss::PerformNormalStrongAttack()
+{
+	CurrentGimmick = EAttackPattern::NormalStrong;
+	AnimInstance->StartStrongNormalAttack();
+	if (!bIsFirstAttack)
+	{
+		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleRemakeBossFirstAttack();
+		bIsFirstAttack = true;
+	}
+}
+
 void AIGBoss::PerformCloseAttack()
 {
 	CurrentGimmick = EAttackPattern::Close;

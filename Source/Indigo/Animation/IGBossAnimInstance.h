@@ -34,6 +34,12 @@ protected:
 	TEnumAsByte<EAttackPattern> CurrentAttackPattern;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
+	uint8 bShouldPerformWeakNormalAttack : 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
+	uint8 bShouldPerformStrongNormalAttack : 1;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
 	uint8 bShouldPerformCloseAttack : 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
@@ -55,6 +61,8 @@ public:
 public:
 	FORCEINLINE void SetSpeed(const float InValue) { Speed = InValue; }
 	FORCEINLINE void Die() { bIsDead = true; }
+	FORCEINLINE void StartWeakNormalAttack() { bShouldPerformWeakNormalAttack = true; }
+	FORCEINLINE void StartStrongNormalAttack() { bShouldPerformStrongNormalAttack = true; }
 	FORCEINLINE void StartCloseAttack() { bShouldPerformCloseAttack = true; }
 	FORCEINLINE void StartFloorAttack() { bShouldPerformFloorAttack = true; }
 	FORCEINLINE void StartFarAttack() { bShouldPerformFarAttack = true; }

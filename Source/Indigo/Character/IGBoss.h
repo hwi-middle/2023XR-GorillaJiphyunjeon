@@ -185,6 +185,8 @@ public:
 	EAttackPattern GetRandomAttackPatternByProbability();
 	void EnableHUD();
 	void DisableHUD();
+	void PerformNormalWeakAttack();
+	void PerformNormalStrongAttack();
 	void PerformCloseAttack();
 	void PerformFloorAttack();
 	void PerformFarAttack();
