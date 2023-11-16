@@ -23,7 +23,7 @@ Mesh->SetStaticMesh(MeshRef);
 Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
 RootComponent = Mesh;
 Mesh->SetCollisionProfileName(TEXT("Evidence"));
-}, EAssertionLevel::Check);	
+}, EAssertionLevel::None);	
 }
 
 // Called when the game starts or when spawned
