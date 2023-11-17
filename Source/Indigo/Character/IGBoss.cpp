@@ -132,13 +132,20 @@ void AIGBoss::Tick(float DeltaSeconds)
 float AIGBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	HudWidget->UpdateHpGauge(Hp);
+
+	if (HudWidget)
+	{
+		HudWidget->UpdateHpGauge(Hp);
+	}
 
 	if (Hp <= 0 && !bIsDead)
 	{
 		AnimInstance->Die();
 		AnimInstance->OnFinishDead.AddUObject(this, &AIGBoss::FadeOut);
-		HudWidget->UpdateHpGauge(0.f);
+		if (HudWidget)
+		{
+			HudWidget->UpdateHpGauge(0.f);
+		}
 		bIsDead = true;
 		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleRemakeBossDie();
 		return DamageAmount;

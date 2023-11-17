@@ -41,6 +41,7 @@
 #include "Sound/SoundCue.h"
 #include "Indigo/Inventory/IGShinmyophil.h"
 #include "Indigo/Interactable/IGHintBase.h"
+#include "GameFramework/PlayerController.h"
 
 AIGPlayerCharacter::AIGPlayerCharacter()
 {
@@ -98,7 +99,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 		WeaponMesh->SetWorldLocation(GetMesh()->GetSocketLocation(TEXT("RightHand")));
 		WeaponMesh->SetupAttachment(GetMesh());
 	}, EAssertionLevel::Check);
-	
+
 	PlayerControlDataAsset = FIGConstructorHelper::FindAndGetObject<UIGPlayerControlDataAsset>(TEXT("/Script/Indigo.IGPlayerControlDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerControlData.DA_PlayerControlData'"));
 	DefaultMappingContext = PlayerControlDataAsset->DefaultMappingContext;
 	MoveAction = PlayerControlDataAsset->MoveAction;
@@ -185,7 +186,7 @@ void AIGPlayerCharacter::BeginPlay()
 	ElapsedFadeSequenceTime = 0.f;
 
 	// WeaponAnimInstance = CastChecked<UIGPlayerWeaponAnimInstance>(WeaponMesh->GetAnimInstance());
-	
+
 	PlayerAnimInstance = CastChecked<UIGPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	PlayerAnimInstance->SetSpeed(0.f);
 	PlayerAnimInstance->OnFinishRoll.AddUObject(this, &AIGPlayerCharacter::FinishRolling);
@@ -487,7 +488,7 @@ void AIGPlayerCharacter::Attack()
 	{
 		return;
 	}
-	
+
 	ProcessComboCommand();
 }
 
@@ -500,7 +501,51 @@ void AIGPlayerCharacter::GenerateProjectile()
 	AddPlayerState(EPlayerState::Attacking);
 
 	const float Damage = ComputeDamage();
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::White, FString::Printf(TEXT("데미지: [%f]"), Damage));
+	FVector WorldLocation;
+	FVector WorldDirection;
+
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	int32 ViewportSizeX, ViewportSizeY;
+	PlayerController->GetViewportSize(ViewportSizeX, ViewportSizeY);
+	FVector2D ScreenCenter(ViewportSizeX / 2.0f, ViewportSizeY / 2.0f);
+
+	GetWorld()->GetFirstPlayerController()->DeprojectScreenPositionToWorld(
+		ScreenCenter.X,
+		ScreenCenter.Y,
+		WorldLocation,
+		WorldDirection
+	);
+
+	FHitResult HitResult;
+	FVector Start = WorldLocation;
+	FVector End = WorldLocation + WorldDirection * 10000.0f; // 최대 거리를 지정합니다.
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(
+		HitResult,
+		Start,
+		End,
+		ECC_PROJECTILE
+	);
+
+	FVector SpawnDirection = GetActorForwardVector().GetSafeNormal();
+	if (bHit)
+	{
+		AActor* HitActor = HitResult.GetActor();
+		if (HitActor)
+		{
+			SpawnDirection = (HitResult.ImpactPoint - GetActorLocation()).GetSafeNormal();
+			DrawDebugLine(
+				GetWorld(),
+				Start,
+				HitResult.ImpactPoint,
+				FColor::Red,
+				true,
+				2.0f,
+				0,
+				1.0f
+			);
+		}
+	}
 
 	const FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
 	AIGStraightProjectile* SpawnedActor = nullptr;
@@ -515,12 +560,12 @@ void AIGPlayerCharacter::GenerateProjectile()
 	case 3:
 		SpawnedActor = GetWorld()->SpawnActor<AIGPlayerComboProjectile3>(SpawnLocation, GetActorRotation());
 		break;
-		default:
+	default:
 		checkNoEntry();
 	}
-	SpawnedActor->Init(Damage, GetActorForwardVector(), 3000.f, 10.f, EProjectileSpawnType::SpawnedByPlayer);
+	SpawnedActor->Init(Damage, SpawnDirection, 3000.f, 10.f, EProjectileSpawnType::SpawnedByPlayer);
 	SpawnedActor->OnHitProjectile.AddUObject(this, &AIGPlayerCharacter::OnHitProjectile);
-	
+
 	UGameplayStatics::PlaySound2D(this, TestSoundDataAsset->PlayerAttackSoundCue);
 }
 
@@ -566,11 +611,9 @@ void AIGPlayerCharacter::SetComboCheckTimer()
 	const int32 FrameCount = GetComboAnimationFrameCount();
 	constexpr float AnimationFrameRate = 30.f;
 	const float ComboDelayTime = FrameCount / AnimationFrameRate;
-	UE_LOG(LogTemp, Log, TEXT("SetComboCheckTimer"));
 
 	if (ComboDelayTime > 0.0f)
 	{
-		UE_LOG(LogTemp, Log, TEXT("ComboCheckSet"));
 		GetWorld()->GetTimerManager().SetTimer(ComboTimerHandle, this, &AIGPlayerCharacter::ComboCheck, ComboDelayTime, false);
 	}
 }
@@ -593,14 +636,12 @@ int32 AIGPlayerCharacter::GetComboAnimationFrameCount() const
 
 void AIGPlayerCharacter::ComboCheck()
 {
-	UE_LOG(LogTemp, Log, TEXT("ComboCheckCalled"));
 	ComboTimerHandle.Invalidate();
 	if (!HasNextComboCommand)
 	{
 		return;
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("HasNextComboCommand"));
 	CurrentCombo = FMath::Clamp(CurrentCombo + 1, 1, 3);
 	const FName NextSection = *FString::Printf(TEXT("PlayerAttack%d"), CurrentCombo);
 	PlayerAnimInstance->Montage_JumpToSection(NextSection, ComboActionMontage);
