@@ -55,7 +55,7 @@ void AIGProjectileBase::Tick(float DeltaTime)
 		GetActorLocation(),
 		GetActorLocation(),
 		FQuat::Identity,
-		ECC_CHECK_PAWN,
+		ECC_PROJECTILE,
 		FCollisionShape::MakeSphere(Radius),
 		CollisionParams
 	);
