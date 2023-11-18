@@ -58,7 +58,8 @@ AIGHintMonsterBase::AIGHintMonsterBase()
 	ElapsedTime = 0.0f;
 	AttackTime  = 0.0f;
 	RetreatTime = 0.0f;
-	StoppingDistance = 500.0f;
+	StoppingDistance = 250.0f;
+	CloseAttackDistance = 250.0f;
 	AttackSpeed = 800.0f;
 
 }
@@ -118,17 +119,16 @@ void AIGHintMonsterBase::Tick(float DeltaTime)
 				RetreatStartLocation = GetActorLocation();
 				RetreatEndLocation = DashStartLocation;
 				AttackTime = 0.0f;
-				EndAttack();
 			}
 		}
-		if((GetActorLocation() - AttackStartLocation).Size() >= StoppingDistance || AttackTime >= 0.5f)
+		if((GetActorLocation() - AttackStartLocation).Size() >= CloseAttackDistance || AttackTime >= 0.5f)
 		{
 			bIsAttack = false;
 			bIsRetreating = true;
 			RetreatStartLocation = GetActorLocation();
 			RetreatEndLocation = DashStartLocation;
 			AttackTime = 0.0f;
-			EndAttack();
+			
 		}
 	}
 	if (bIsRetreating)
@@ -136,10 +136,11 @@ void AIGHintMonsterBase::Tick(float DeltaTime)
 		FVector TargetPos = (AttackStartLocation - GetActorLocation()).GetSafeNormal();
 		AddActorLocalOffset(TargetPos * DeltaTime * AttackSpeed);
 		RetreatTime += DeltaTime;
-		if ((GetActorLocation() - RetreatStartLocation).Size() >= StoppingDistance / 3 || RetreatTime >= 0.5f)
+		if ((GetActorLocation() - RetreatStartLocation).Size() >= StoppingDistance / 2 || RetreatTime >= 0.5f)
 		{
 			bIsRetreating = false;
-			RetreatTime = 0.0f;			
+			RetreatTime = 0.0f;
+			EndAttack();
 		}
 	}
 }

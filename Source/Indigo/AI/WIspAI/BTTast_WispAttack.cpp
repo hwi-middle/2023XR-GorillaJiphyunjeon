@@ -37,7 +37,7 @@ EBTNodeResult::Type UBTTast_WispAttack::ExecuteTask(UBehaviorTreeComponent& Owne
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		}
 	);
-
+	
 		ControllingWisp->PerformCloseAttack();	
 		return EBTNodeResult::InProgress;			
 }

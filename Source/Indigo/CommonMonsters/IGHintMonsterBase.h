@@ -30,6 +30,7 @@ public:
 
 	FORCEINLINE	bool GetIsHit() const {return bIsHit;}
 	FORCEINLINE	void IsHitFinish() { bIsHit = false;}
+	FORCEINLINE	ECrystal GetCrystalType() const { return CrystalType;}
 
 	//공격
 	void PerformCloseAttack();
@@ -64,6 +65,9 @@ private:
 
 	UPROPERTY()
 	float StoppingDistance;
+	
+	UPROPERTY()
+	float CloseAttackDistance;
 
 	UPROPERTY()
 	float AttackDelay;

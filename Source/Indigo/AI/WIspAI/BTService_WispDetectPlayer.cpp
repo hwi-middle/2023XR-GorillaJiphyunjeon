@@ -37,7 +37,7 @@ void UBTService_WispDetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 	}
 
 	const FVector Origin = Wisp->GetActorLocation();
-	const float DetectRadius = 1000.0f;
+	const float DetectRadius = 500.0f;
 
 	FHitResult Result;
 	FCollisionQueryParams CollisionParams;
