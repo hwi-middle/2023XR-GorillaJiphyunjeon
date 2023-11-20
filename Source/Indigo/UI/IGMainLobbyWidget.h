@@ -26,8 +26,17 @@ protected:
 	virtual void NativeConstruct() override;
 
 	UFUNCTION(BlueprintCallable)
-	void OpenCloseOptionWidget(); 
-	
+	void OpenCloseOptionWidget();
+
+	UFUNCTION(BlueprintCallable)
+	void OpenGrayBoxTestLevel();
+
+	UFUNCTION(BlueprintCallable)
+	void OpenBossTestLevel();
+
+	UFUNCTION(BlueprintCallable)
+	void OpenWispTestLevel();
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UIGLevelButton> GameStartButton;
@@ -40,6 +49,14 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UIGOptionWidget> OptionWidget;
-	
-	
+
+	// 테스트용
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UButton> TEST_GrayBoxButton;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UButton> TEST_BossButton;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UButton> TEST_WispButton;
 };

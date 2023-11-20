@@ -20,5 +20,5 @@ void UIGLevelButton::NativeConstruct()
 
 void UIGLevelButton::MoveLevel()
 {
-	UGameplayStatics::OpenLevel(this, TEXT("Test"));
+	UGameplayStatics::OpenLevel(this, TEXT("AD_GrayBox"));
 }
