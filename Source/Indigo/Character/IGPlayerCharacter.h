@@ -171,6 +171,34 @@ private:
 	UPROPERTY()
 	TObjectPtr<UStaticMeshComponent> WeaponMesh;
 
+	// 조준
+	UPROPERTY()
+	APlayerController* PlayerController;
+
+	UPROPERTY()
+	uint8 bIsAimingHit : 1;
+
+	UPROPERTY()
+	FHitResult AimingHitResult;
+	
+	UPROPERTY()
+	uint8 bIsAimingProperActor : 1;
+
+	UPROPERTY()
+	FVector AimingStartPoint;
+
+	UPROPERTY()
+	FVector AimingEndPoint;
+
+	UPROPERTY()
+	FVector AimingWorldDirection;
+
+	UPROPERTY()
+	float AimingOriginalYaw;
+
+	UPROPERTY()
+	float AimingTargetYaw;
+
 private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
@@ -179,6 +207,7 @@ private:
 	void Interact();
 	void Attack();
 	void GenerateProjectile();
+	void RotateToAimingTarget();
 	void ProcessComboCommand();
 	void ComboActionBegin();
 	void SetComboCheckTimer();
@@ -312,6 +341,12 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	float ElapsedCrystalCooldownTime;
 
+	UPROPERTY(VisibleAnywhere)
+	float RotateToAimingTargetDuration;
+	
+	UPROPERTY(VisibleAnywhere)
+	float ElapsedRotateToAimingTargetTime;
+	
 	UPROPERTY(VisibleAnywhere)
 	float DieZLocation;
 

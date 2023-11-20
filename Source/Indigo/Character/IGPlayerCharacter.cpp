@@ -42,6 +42,7 @@
 #include "Indigo/Inventory/IGShinmyophil.h"
 #include "Indigo/Interactable/IGHintBase.h"
 #include "GameFramework/PlayerController.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AIGPlayerCharacter::AIGPlayerCharacter()
 {
@@ -160,7 +161,9 @@ void AIGPlayerCharacter::RemovePlayerState(const EPlayerState InState)
 void AIGPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	if (const APlayerController* PlayerController = Cast<APlayerController>(Controller))
+
+	PlayerController = Cast<APlayerController>(Controller);
+	if (PlayerController)
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
@@ -179,6 +182,7 @@ void AIGPlayerCharacter::BeginPlay()
 	StaminaConsumptionAmountPerSecondOnRunning = PlayerDataAsset->StaminaConsumptionAmountPerSecondOnRunning;
 	StaminaConsumptionAmountOnRoll = PlayerDataAsset->StaminaConsumptionAmountOnRoll;
 	ActivatedCrystal = ECrystal::None;
+	RotateToAimingTargetDuration = 0.2f;
 
 	// TODO: 3타 데미지 적용
 	DieZLocation = PlayerDataAsset->DieZLocation;
@@ -300,7 +304,43 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, *DebugMessage);
 #endif
 
+	// 조준
+	int32 ViewportSizeX, ViewportSizeY;
+	PlayerController->GetViewportSize(ViewportSizeX, ViewportSizeY);
+	FVector2D ScreenCenter(ViewportSizeX / 2.0f, ViewportSizeY / 2.0f);
+
+	FVector WorldLocation;
+	PlayerController->DeprojectScreenPositionToWorld(
+		ScreenCenter.X,
+		ScreenCenter.Y,
+		WorldLocation,
+		AimingWorldDirection
+	);
+
+	AimingStartPoint = WorldLocation;
+	AimingEndPoint = WorldLocation + AimingWorldDirection * 3000.0f;
+
+	bIsAimingHit = GetWorld()->LineTraceSingleByChannel(
+		AimingHitResult,
+		AimingStartPoint,
+		AimingEndPoint,
+		ECC_PROJECTILE
+	);
+	
+	if (bIsAimingHit)
+	{
+		const AActor* HitActor = AimingHitResult.GetActor();
+		bIsAimingProperActor = HitActor != nullptr;
+	}
+	else
+	{
+		bIsAimingProperActor = false;
+	}
+
+	// 애니메이션 관련 처리
 	PlayerAnimInstance->SetSpeed(GetVelocity().Size2D());
+
+	// 바닥에 떨어지면 사망
 	if (GetActorLocation().Z <= DieZLocation)
 	{
 		if (!CheckPlayerState(EPlayerState::Dead))
@@ -315,6 +355,8 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 		AdjustedLocation.Z = DieZLocation;
 		SetActorLocation(AdjustedLocation);
 	}
+
+	// 무기 손에 붙이기
 	WeaponMesh->SetWorldLocation(GetMesh()->GetSocketLocation(TEXT("RightHand")));
 	WeaponMesh->SetWorldRotation(GetMesh()->GetSocketRotation(TEXT("RightHand")));
 }
@@ -501,53 +543,19 @@ void AIGPlayerCharacter::GenerateProjectile()
 	AddPlayerState(EPlayerState::Attacking);
 
 	const float Damage = ComputeDamage();
-	FVector WorldLocation;
-	FVector WorldDirection;
 
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	int32 ViewportSizeX, ViewportSizeY;
-	PlayerController->GetViewportSize(ViewportSizeX, ViewportSizeY);
-	FVector2D ScreenCenter(ViewportSizeX / 2.0f, ViewportSizeY / 2.0f);
+	// 타겟 방향으로 회전시키기
+	const FVector LookAtTarget = bIsAimingProperActor ? AimingHitResult.ImpactPoint : AimingEndPoint;
+	const FVector SpawnDirection = ((bIsAimingProperActor ? AimingHitResult.ImpactPoint : AimingEndPoint) - GetActorLocation()).GetSafeNormal();
 
-	GetWorld()->GetFirstPlayerController()->DeprojectScreenPositionToWorld(
-		ScreenCenter.X,
-		ScreenCenter.Y,
-		WorldLocation,
-		WorldDirection
-	);
+	AimingOriginalYaw = GetActorRotation().Yaw;
+	AimingTargetYaw = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), LookAtTarget).Yaw;
+	// 카메라 떨림 현상으로 인해 임시 처리
+	const FRotator ActorRot = GetActorRotation();
+	SetActorRotation(FRotator(ActorRot.Pitch, AimingTargetYaw, ActorRot.Roll));
+	//RotateToAimingTarget();
 
-	FHitResult HitResult;
-	FVector Start = WorldLocation;
-	FVector End = WorldLocation + WorldDirection * 10000.0f; // 최대 거리를 지정합니다.
-
-	bool bHit = GetWorld()->LineTraceSingleByChannel(
-		HitResult,
-		Start,
-		End,
-		ECC_PROJECTILE
-	);
-
-	FVector SpawnDirection = GetActorForwardVector().GetSafeNormal();
-	if (bHit)
-	{
-		AActor* HitActor = HitResult.GetActor();
-		if (HitActor)
-		{
-			SpawnDirection = (HitResult.ImpactPoint - GetActorLocation()).GetSafeNormal();
-			DrawDebugLine(
-				GetWorld(),
-				Start,
-				HitResult.ImpactPoint,
-				FColor::Red,
-				true,
-				2.0f,
-				0,
-				1.0f
-			);
-		}
-	}
-
-	const FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
+	const FVector SpawnLocation = GetActorLocation() + AimingWorldDirection * 100.f;
 	AIGStraightProjectile* SpawnedActor = nullptr;
 	switch (CurrentCombo)
 	{
@@ -562,11 +570,30 @@ void AIGPlayerCharacter::GenerateProjectile()
 		break;
 	default:
 		checkNoEntry();
+		break;
 	}
 	SpawnedActor->Init(Damage, SpawnDirection, 3000.f, 10.f, EProjectileSpawnType::SpawnedByPlayer);
 	SpawnedActor->OnHitProjectile.AddUObject(this, &AIGPlayerCharacter::OnHitProjectile);
 
 	UGameplayStatics::PlaySound2D(this, TestSoundDataAsset->PlayerAttackSoundCue);
+}
+
+void AIGPlayerCharacter::RotateToAimingTarget()
+{
+	const float DeltaTime = GWorld->DeltaTimeSeconds;
+	ElapsedRotateToAimingTargetTime += DeltaTime;
+	const float CurrentYaw = FMath::Lerp(AimingOriginalYaw, AimingTargetYaw, ElapsedRotateToAimingTargetTime / RotateToAimingTargetDuration);
+	const FRotator ActorRot = GetActorRotation();
+	SetActorRotation(FRotator(ActorRot.Pitch, CurrentYaw, ActorRot.Roll));
+	UE_LOG(LogTemp, Log, TEXT("회전 (%.3f/%.3f)"), ElapsedRotateToAimingTargetTime, RotateToAimingTargetDuration);
+	if (ElapsedRotateToAimingTargetTime >= RotateToAimingTargetDuration)
+	{
+		//SetActorRotation(FRotator(ActorRot.Pitch, AimingTargetYaw, ActorRot.Roll));
+		ElapsedRotateToAimingTargetTime = 0.f;
+		return;
+	}
+
+	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::RotateToAimingTarget);
 }
 
 void AIGPlayerCharacter::ProcessComboCommand()
@@ -589,13 +616,10 @@ void AIGPlayerCharacter::ProcessComboCommand()
 
 void AIGPlayerCharacter::ComboActionBegin()
 {
-	// Combo Status
 	CurrentCombo = 1;
 
-	// Movement Setting
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 
-	// Animation Setting
 	PlayerAnimInstance->Montage_Play(ComboActionMontage);
 
 	FOnMontageEnded EndDelegate;
@@ -651,7 +675,6 @@ void AIGPlayerCharacter::ComboCheck()
 
 void AIGPlayerCharacter::ComboActionEnd(UAnimMontage* TargetMontage, bool IsProperlyEnded)
 {
-	UE_LOG(LogTemp, Log, TEXT("ComboActionEnd"));
 	CurrentCombo = 0;
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 
