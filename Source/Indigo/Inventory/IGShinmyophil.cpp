@@ -3,7 +3,6 @@
 
 #include "IGShinmyophil.h"
 
-#include "IAutomationControllerManager.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Indigo/Character/IGPlayerCharacter.h"
