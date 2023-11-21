@@ -44,7 +44,8 @@ public:
 	virtual FORCEINLINE float GetStaminaValue() const override { return StaminaValue; }
 	virtual FORCEINLINE void SetStaminaValue(const float InValue) override { StaminaValue = InValue; }
 	virtual FORCEINLINE bool IsDead() const override { return bIsDead; }
-
+	FORCEINLINE void SetIsEnforcedDamage(const bool InValue){ bIsEnforcedDamage = InValue;}
+	
 	// Getter/Setter
 	FORCEINLINE float GetDetectRange() const { return 3000.f; }
 	FORCEINLINE FVector GetOrigin() const { return Origin; }
@@ -76,4 +77,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	FVector Origin;
+		
+	UPROPERTY(VisibleAnywhere)
+	uint8 bIsEnforcedDamage : 1;
 };

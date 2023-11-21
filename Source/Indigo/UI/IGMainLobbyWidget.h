@@ -14,6 +14,7 @@ class UIGLevelButton;
 class UIGExitButton;
 class UIGOptionWidget;
 class UButton;
+class UIGSoundDataAsset;
 
 UCLASS()
 class INDIGO_API UIGMainLobbyWidget : public UUserWidget
@@ -59,4 +60,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UButton> TEST_WispButton;
+	
+private:
+	// 사운드
+	UPROPERTY()
+	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;
+	
 };

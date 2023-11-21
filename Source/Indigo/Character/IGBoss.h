@@ -11,6 +11,7 @@ class UIGIngameHUDWidget;
 class UIGBossDataAsset;
 class UIGBossGimmickDataAsset;
 class UBoxComponent;
+class UIGSoundDataAsset;
 DECLARE_MULTICAST_DELEGATE(FOnFinishBossAttackDelegate)
 
 class UIGBossAnimInstance;
@@ -173,7 +174,12 @@ private:
 	uint8 bIsFirstDeadInteract : 1;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UBoxComponent> InteractCollider; 
+	TObjectPtr<UBoxComponent> InteractCollider;
+	
+	// 사운드
+	UPROPERTY()
+	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;
+
 	
 public:
 	FOnFinishBossAttackDelegate OnFinishBossAttack;
@@ -181,6 +187,7 @@ public:
 public:
 	FORCEINLINE float GetStoppingDistance() const { return StoppingDistance; }
 	FORCEINLINE EAttackPattern GetCurrentGimmick() const { return CurrentGimmick; }
+
 
 	EAttackPattern GetRandomAttackPatternByProbability();
 	void EnableHUD();
@@ -194,4 +201,5 @@ public:
 	void GenerateFloorAttack();
 	void GenerateFarAttack();
 	void EndAttack();
+
 };

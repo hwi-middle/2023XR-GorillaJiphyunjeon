@@ -24,6 +24,8 @@
 #include "Indigo/UI/IGIngameHUDWidget.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Kismet/GameplayStatics.h"
+#include "Indigo/DataAsset/IGSoundDataAsset.h"
+#include "Sound/SoundCue.h"
 
 AIGBoss::AIGBoss()
 {
@@ -64,10 +66,13 @@ AIGBoss::AIGBoss()
 		EyeMesh->SetupAttachment(GetMesh());
 	}, EAssertionLevel::Check);
 
+	SoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
+		
 	bIsFirstAttack = false;
 	bIsFirstRangeAttack = false;
 	bIsFirstFloorAttack = false;
 	bIsFirstDeadInteract = false;
+	bIsEnforcedDamage = false;
 }
 
 void AIGBoss::BeginPlay()
@@ -138,6 +143,16 @@ float AIGBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 		HudWidget->UpdateHpGauge(Hp);
 	}
 
+	if(bIsEnforcedDamage)
+	{
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->BossGetEnforceDamageSoundCue);		
+	}
+	else
+	{
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->BossGetDamageSoundCue);
+	}
+	bIsEnforcedDamage = false;
+	
 	if (Hp <= 0 && !bIsDead)
 	{
 		AnimInstance->Die();
@@ -359,6 +374,7 @@ void AIGBoss::GenerateCloseAttack()
 void AIGBoss::GenerateFloorAttack()
 {
 	float Angle = 0.f;
+	UGameplayStatics::PlaySound2D(this,	SoundDataAsset->BossShotTreeSoundCue);
 	for (uint32 i = 0; i < FloorAttack_ProjectileNum; ++i)
 	{
 		AIGStraightProjectile* SpawnedProjectile = GWorld->SpawnActor<AIGBossFlooringProjectile>(GetActorLocation(), FRotator(0.f, Angle, 0.f));

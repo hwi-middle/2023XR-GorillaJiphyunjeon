@@ -7,6 +7,8 @@
 #include "IGOptionWidget.h"
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
+#include "Indigo/DataAsset/IGSoundDataAsset.h"
+#include "Sound/SoundCue.h"
 
 UIGMainLobbyWidget::UIGMainLobbyWidget(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
 {}
@@ -15,6 +17,9 @@ void UIGMainLobbyWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	SoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
+	UGameplayStatics::PlaySound2D(this, SoundDataAsset->BGMMainSoundCue);
+	
 	GameStartButton = Cast<UIGLevelButton>(GetWidgetFromName(TEXT("GameStartButton")));
 	OptionButton = Cast<UButton>(GetWidgetFromName(TEXT("Option")));
 	ExitButton = Cast<UIGExitButton>(GetWidgetFromName(TEXT("Exit")));

@@ -367,7 +367,7 @@ private:
 
 	// 사운드
 	UPROPERTY()
-	TObjectPtr<UIGSoundDataAsset> TestSoundDataAsset;
+	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;
 
 	// 사망연출
 	UPROPERTY()

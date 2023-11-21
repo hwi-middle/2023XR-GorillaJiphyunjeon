@@ -23,6 +23,7 @@ AIGProjectileBase::AIGProjectileBase()
 			Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			RootComponent = Mesh;
 		}, EAssertionLevel::None);
+	bIsEnforced = false;
 }
 
 // Called when the game starts or when spawned
@@ -77,6 +78,7 @@ void AIGProjectileBase::Tick(float DeltaTime)
 
 			FDamageEvent DamageEvent;
 			Enemy->TakeDamage(Damage, DamageEvent, GetInstigatorController(), this);
+			Enemy->SetIsEnforcedDamage(bIsEnforced);
 			break;
 		}
 	case SpawnedByEnemy:

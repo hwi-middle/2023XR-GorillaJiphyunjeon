@@ -8,6 +8,7 @@
 #include "Indigo/Interactable/IGCrystalBase.h"
 #include "IGHintMonsterBase.generated.h"
 
+class UIGSoundDataAsset;
 class AIGProvisoWispPlace;
 class AIGWispAIController;
 class UIGWispAnimInstance;
@@ -33,6 +34,7 @@ public:
 
 	
 	void PerformCloseAttack();
+	void PerformBombAttack();
 	void EndAttack();
 	
 	FOnFinishWispAttackDelegate OnFinishWispAttack;
@@ -103,5 +105,9 @@ private:
 	
 	UPROPERTY()
 	FVector SpawnPos;
+
+	// 사운드
+	UPROPERTY()
+	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;
 	
 };
