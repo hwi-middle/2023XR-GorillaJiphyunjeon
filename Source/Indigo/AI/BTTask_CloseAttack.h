@@ -16,15 +16,18 @@ class INDIGO_API UBTTask_CloseAttack : public UBTTaskNode
 	GENERATED_BODY()
 
 protected:
+	UBTTask_CloseAttack();
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-
+	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+	
 private:
 	UPROPERTY()
 	TObjectPtr<AIGBoss> ControllingBoss;
 	
-	FDelegateHandle CheckEndDelegateHandle;
+	UPROPERTY()
+	uint8 bIsFinished : 1;
 	
 private:
-	void DeleteLambda();
+	void SetFinished();
 };
 	

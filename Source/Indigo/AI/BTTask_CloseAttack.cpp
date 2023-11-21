@@ -9,6 +9,12 @@
 #include "Indigo/Character/IGPlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
+UBTTask_CloseAttack::UBTTask_CloseAttack()
+{
+	bNotifyTick = true;
+	bIsFinished = false;
+}
+
 EBTNodeResult::Type UBTTask_CloseAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
@@ -17,7 +23,7 @@ EBTNodeResult::Type UBTTask_CloseAttack::ExecuteTask(UBehaviorTreeComponent& Own
 	{
 		return EBTNodeResult::Failed;
 	}
-	
+
 	APawn* ControllingPawn = Cast<APawn>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!ControllingPawn)
 	{
@@ -30,24 +36,28 @@ EBTNodeResult::Type UBTTask_CloseAttack::ExecuteTask(UBehaviorTreeComponent& Own
 		return EBTNodeResult::Failed;
 	}
 
-	if(Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->IsDead())
+	if (Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->IsDead())
 	{
 		return EBTNodeResult::Aborted;
 	}
-
-	CheckEndDelegateHandle = ControllingBoss->OnFinishBossAttack.AddLambda(
-		[&]()
-		{
-			DeleteLambda();
-			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-		}
-	);
+	
+	ControllingBoss->OnFinishBossAttack.AddUObject(this, &UBTTask_CloseAttack::SetFinished);
 	ControllingBoss->PerformCloseAttack();
 	return EBTNodeResult::InProgress;
 }
 
-void UBTTask_CloseAttack::DeleteLambda()
+void UBTTask_CloseAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-	Cast<AIGBoss>(ControllingBoss)->OnFinishBossAttack.Remove(CheckEndDelegateHandle);
+	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
+
+	if (bIsFinished)
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		bIsFinished = false;
+	}
 }
 
+void UBTTask_CloseAttack::SetFinished()
+{
+	bIsFinished = true;
+}

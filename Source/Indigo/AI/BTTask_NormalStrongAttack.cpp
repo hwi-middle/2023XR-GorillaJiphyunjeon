@@ -10,6 +10,12 @@
 #include "Indigo/Character/IGPlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
+UBTTask_NormalStrongAttack::UBTTask_NormalStrongAttack()
+{
+	bNotifyTick = true;
+	bIsFinished = false;
+}
+
 EBTNodeResult::Type UBTTask_NormalStrongAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
@@ -36,18 +42,23 @@ EBTNodeResult::Type UBTTask_NormalStrongAttack::ExecuteTask(UBehaviorTreeCompone
 		return EBTNodeResult::Aborted;
 	}
 
-	CheckEndDelegateHandle = ControllingBoss->OnFinishBossAttack.AddLambda(
-		[&]()
-		{
-			DeleteLambda();
-			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-		}
-	);
+	ControllingBoss->OnFinishBossAttack.AddUObject(this, &UBTTask_NormalStrongAttack::SetFinished);
 	ControllingBoss->PerformNormalStrongAttack();
 	return EBTNodeResult::InProgress;
 }
 
-void UBTTask_NormalStrongAttack::DeleteLambda()
+void UBTTask_NormalStrongAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-	Cast<AIGBoss>(ControllingBoss)->OnFinishBossAttack.Remove(CheckEndDelegateHandle);
+	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
+
+	if (bIsFinished)
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		bIsFinished = false;
+	}
+}
+
+void UBTTask_NormalStrongAttack::SetFinished()
+{
+	bIsFinished = true;
 }
