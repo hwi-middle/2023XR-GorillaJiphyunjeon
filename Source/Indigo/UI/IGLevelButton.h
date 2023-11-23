@@ -10,16 +10,21 @@
  * 
  */
 
+
+
 class UButton;
 class UTextBlock;
+class UIGSoundDataAsset;
 
 UCLASS()
 class INDIGO_API UIGLevelButton : public UUserWidget
 {
 	GENERATED_BODY()
-protected:
+public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UButton> LevelButton;
+	
+protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UTextBlock> ButtonText;
@@ -30,5 +35,15 @@ protected:
 private:
 	UFUNCTION(BlueprintCallable)
 	void MoveLevel();
+	UFUNCTION(BlueprintCallable)
+	void OnTargetLevelLoaded();
+	UFUNCTION(BlueprintCallable)
+	void AsyncLevelLoad(const FString LevelDir, const FString& LevelName);
+	UFUNCTION(BlueprintCallable)
+	void AsyncLevelLoadFinished(const FString LevelName);
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;
+
 	
 };

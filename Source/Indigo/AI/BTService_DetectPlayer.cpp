@@ -14,6 +14,7 @@ UBTService_DetectPlayer::UBTService_DetectPlayer()
 {
 	NodeName = TEXT("Detect Player");
 	Interval = 0.1f;
+	bFirstDetectPlayer = false;
 }
 
 void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -72,7 +73,14 @@ void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		if (!IsCloseEnough)
 		{
 			DrawDebugLine(World, ControllingPawn->GetActorLocation(), Player->GetActorLocation(), FColor::Green, false, 0.f);
+			if(!bFirstDetectPlayer)
+			{
+				Player->SetBossBGM();
+				bFirstDetectPlayer = true;
+			}
 		}
+
+		
 		return;
 	}
 

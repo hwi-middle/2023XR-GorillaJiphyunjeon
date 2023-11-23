@@ -94,6 +94,10 @@ public:
 
 	//체력템 획득
 	void AddHealKit();
+
+	//BGM 변경
+	void SetVillageBGM();
+	void SetBossBGM();
 	
 public:
 	//인터페이스 함수
@@ -198,6 +202,9 @@ private:
 
 	UPROPERTY()
 	float AimingTargetYaw;
+	
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> AudioComponent;
 
 private:
 	void Move(const FInputActionValue& Value);
@@ -360,6 +367,10 @@ private:
 	
 	UPROPERTY()
 	ECrystal ActivatedCrystal;
+
+	//BGM
+	UPROPERTY()
+	TObjectPtr<USoundCue> CurrentBGM;
 
 	//체력가능 횟수
 	UPROPERTY()

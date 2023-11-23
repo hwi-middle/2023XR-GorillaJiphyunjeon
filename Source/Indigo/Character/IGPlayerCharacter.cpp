@@ -7,7 +7,9 @@
 #include "InputAction.h"
 #include "InputActionValue.h"
 #include "InputMappingContext.h"
+#include "Audio/AudioDebug.h"
 #include "Camera/CameraComponent.h"
+#include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/PostProcessVolume.h"
@@ -43,6 +45,7 @@
 #include "Indigo/Interactable/IGHintBase.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Sound/AmbientSound.h"
 
 AIGPlayerCharacter::AIGPlayerCharacter()
 {
@@ -139,7 +142,6 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 
 	SoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
 	PlayerDataAsset = FIGConstructorHelper::FindAndGetObject<UIGPlayerDataAsset>(TEXT("/Script/Indigo.IGPlayerDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerData.DA_PlayerData'"));
-
 	
 	HealCount = 0;
 }
@@ -248,6 +250,8 @@ void AIGPlayerCharacter::BeginPlay()
 		DMI_Fade = FadeMaterial;
 		PlayFadeInSequence();
 	}
+
+	SetVillageBGM();
 }
 
 void AIGPlayerCharacter::Tick(float DeltaTime)
@@ -996,6 +1000,33 @@ void AIGPlayerCharacter::AddHealKit()
 	{
 		HudWidget->SetHealKit(HealCount);
 	}
+}
+
+void AIGPlayerCharacter::SetVillageBGM()
+{
+	if(AudioComponent != nullptr)
+	{
+		AudioComponent->Stop();
+		AudioComponent->RemoveFromRoot();		
+	}
+	CurrentBGM = SoundDataAsset->BGMVillageSoundCue;
+	AudioComponent = UGameplayStatics::SpawnSound2D(this, CurrentBGM);
+	AudioComponent->RegisterComponent();
+	AudioComponent->SetupAttachment(RootComponent);
+}
+
+void AIGPlayerCharacter::SetBossBGM()
+{
+	if(AudioComponent != nullptr)
+	{
+		AudioComponent->Stop();
+		AudioComponent->RemoveFromRoot();		
+	}
+	CurrentBGM = SoundDataAsset->BGMBossSoundCue;
+	UGameplayStatics::PlaySound2D(this, SoundDataAsset->BossAppearSoundCue);
+	AudioComponent = UGameplayStatics::SpawnSound2D(this, CurrentBGM);
+	AudioComponent->RegisterComponent();
+	AudioComponent->SetupAttachment(RootComponent);
 }
 
 

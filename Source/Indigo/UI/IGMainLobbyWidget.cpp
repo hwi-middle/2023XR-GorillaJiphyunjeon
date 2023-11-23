@@ -6,6 +6,7 @@
 #include "IGExitButton.h"
 #include "IGOptionWidget.h"
 #include "Components/Button.h"
+#include "Components/CanvasPanel.h"
 #include "Kismet/GameplayStatics.h"
 #include "Indigo/DataAsset/IGSoundDataAsset.h"
 #include "Sound/SoundCue.h"
@@ -24,9 +25,12 @@ void UIGMainLobbyWidget::NativeConstruct()
 	OptionButton = Cast<UButton>(GetWidgetFromName(TEXT("Option")));
 	ExitButton = Cast<UIGExitButton>(GetWidgetFromName(TEXT("Exit")));
 	OptionWidget = Cast<UIGOptionWidget>(GetWidgetFromName(TEXT("WBP_OptionWidget")));
+	Loading = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("LoadingCanvas")));
 
+	Loading->SetVisibility(ESlateVisibility::Hidden);
 	OptionWidget->SetVisibility(ESlateVisibility::Hidden);
 	OptionButton->OnClicked.AddDynamic(this, &UIGMainLobbyWidget::OpenCloseOptionWidget);
+	GameStartButton->LevelButton->OnClicked.AddDynamic(this, &UIGMainLobbyWidget::ShowLoading);
 
 	// 테스트
 	TEST_GrayBoxButton = CastChecked<UButton>(GetWidgetFromName(TEXT("TEST_GrayBox")));
@@ -47,6 +51,11 @@ void UIGMainLobbyWidget::OpenCloseOptionWidget()
 	{
 		OptionWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
+}
+
+void UIGMainLobbyWidget::ShowLoading()
+{
+	Loading->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UIGMainLobbyWidget::OpenGrayBoxTestLevel()
