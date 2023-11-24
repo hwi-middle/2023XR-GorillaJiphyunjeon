@@ -26,6 +26,7 @@ public:
 	virtual void DropCrystal(); 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	FORCEINLINE float GetStoppingDistance() const { return StoppingDistance; }
+	FORCEINLINE float GetExplosionDistance() const { return ExplosionDistance; }
 	FORCEINLINE	bool GetIsDelay() const {return bIsDelay;}
 
 	FORCEINLINE	bool GetIsHit() const {return bIsHit;}
@@ -33,6 +34,8 @@ public:
 
 	
 	void PerformCloseAttack();
+	void PerformBombAttack();
+	void Explosion();
 	void EndAttack();
 	
 	FOnFinishWispAttackDelegate OnFinishWispAttack;
@@ -56,6 +59,9 @@ private:
 
 	UPROPERTY()
 	float StoppingDistance;
+	
+	UPROPERTY()
+	float ExplosionDistance;
 
 	UPROPERTY()
 	float AttackDelay;

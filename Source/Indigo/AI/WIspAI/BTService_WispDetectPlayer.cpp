@@ -63,6 +63,7 @@ void UBTService_WispDetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, nullptr);
 		OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_CLOSE_ENOUGH, false);
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_EXPLOSION_DISTANCE, false);
 		DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Red, false, 0.f);
 		return;
 	}
@@ -72,7 +73,9 @@ void UBTService_WispDetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 		const FVector WispToTarget = Player->GetActorLocation() - Wisp->GetActorLocation();
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, Player);
 		const bool IsCloseEnough = WispToTarget.Length() <= Wisp->GetStoppingDistance();
+		const bool IsCExplosionDistance = WispToTarget.Length() <= Wisp->GetExplosionDistance();
 		OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_CLOSE_ENOUGH, IsCloseEnough);
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_EXPLOSION_DISTANCE, IsCExplosionDistance);
 
 		DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Green, false, 0.f);
 		if (!IsCloseEnough)
@@ -84,5 +87,6 @@ void UBTService_WispDetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 
 	OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, nullptr);
 	OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_CLOSE_ENOUGH, false);
+	OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_EXPLOSION_DISTANCE, false);
 	DrawDebugSphere(World, Wisp->GetActorLocation(), DetectRadius, 16, FColor::Red, false, 0.1f);
 }

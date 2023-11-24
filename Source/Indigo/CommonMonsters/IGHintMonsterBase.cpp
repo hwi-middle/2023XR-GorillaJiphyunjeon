@@ -21,14 +21,14 @@
 AIGHintMonsterBase::AIGHintMonsterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Monster/Mesh/SK_Monster.SK_Monster'"), [&](USkeletalMesh* MeshRef)
+	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Monster/Mesh/SM_Monster_A.SM_Monster_A'"), [&](USkeletalMesh* MeshRef)
 {
 	GetMesh()->SetSkeletalMesh(MeshRef);
 		GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -50.0f));
 }, EAssertionLevel::Check);
 	
 	const TSubclassOf<UIGWispAnimInstance> WispAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGWispAnimInstance>(
-	TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Monster/Animation/ABP_Monster.ABP_Monster_C"), EAssertionLevel::None);
+	TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Monster/Animation/Monster_A/ABP_Wisp.ABP_Wisp_C"), EAssertionLevel::Check);
 	GetMesh()->SetAnimInstanceClass(WispAnimInstanceClass);
 	
 	GetCapsuleComponent()->SetSimulatePhysics(false);
@@ -50,7 +50,8 @@ AIGHintMonsterBase::AIGHintMonsterBase()
 	ElapsedTime = 0.0f;
 	AttackTime  = 0.0f;
 	RetreatTime = 0.0f;
-	StoppingDistance = 200.0f;
+	StoppingDistance = 400.0f;
+	ExplosionDistance = 100.0f;
 	AttackSpeed = 800.0f;
 	
 }
@@ -65,6 +66,7 @@ void AIGHintMonsterBase::BeginPlay()
 
 	AnimInstance = CastChecked<UIGWispAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->OnFinishHit.AddUObject(this, &AIGHintMonsterBase::IsHitFinish);
+	AnimInstance->OnWispExplosion.AddUObject(this, &AIGHintMonsterBase::Explosion);
 }
 
 // Called every frame
@@ -110,6 +112,8 @@ void AIGHintMonsterBase::Tick(float DeltaTime)
 				RetreatStartLocation = GetActorLocation();
 				RetreatEndLocation = DashStartLocation;
 				AttackTime = 0.0f;
+				//강제 되돌림
+				AnimInstance->AnimNotify_FinishDash();
 				EndAttack();
 			}
 		}
@@ -214,6 +218,8 @@ void AIGHintMonsterBase::PerformCloseAttack()
 	{
 		return;
 	}
+
+	AnimInstance->OnDash();
 	
 	FVector TargetVector =  (Player->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 
@@ -221,6 +227,39 @@ void AIGHintMonsterBase::PerformCloseAttack()
 	bIsAttack = true;
 	DashStartLocation = TargetVector;
 	DashEndLocation = TargetVector * StoppingDistance;
+}
+
+void AIGHintMonsterBase::PerformBombAttack()
+{
+	AnimInstance->OnExplosion();	
+}
+
+void AIGHintMonsterBase::Explosion()
+{
+	FHitResult Result;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+	
+	bool bHit = GetWorld()->SweepSingleByChannel(
+	Result,
+	GetActorLocation(),
+	GetActorLocation(),
+	FQuat::Identity,
+	ECC_CHECK_PAWN,
+	FCollisionShape::MakeSphere(100),
+	CollisionParams
+);
+	DrawDebugSphere(GWorld, GetActorLocation(), 100, 16, FColor::Green, false, 0.f);
+		
+	if (bHit)
+	{
+		AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(Result.GetActor());
+		if (Player != nullptr)
+		{
+			FDamageEvent DamageEvent;
+			Player->TakeDamage(10.0f, DamageEvent, GetInstigatorController(), this);
+		}
+	}
 }
 
 void AIGHintMonsterBase::EndAttack()
