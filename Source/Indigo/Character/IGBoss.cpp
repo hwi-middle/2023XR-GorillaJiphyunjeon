@@ -322,21 +322,37 @@ void AIGBoss::GenerateCloseAttack()
 		if (Player)
 		{
 			FDamageEvent DamageEvent;
-			Player->TakeDamage(10.f, DamageEvent, GetInstigatorController(), this);
+			Player->TakeDamage(CloseAttack_Damage, DamageEvent, GetInstigatorController(), this);
 		}
 	}
 
 	// 산 생성 -> 보스 Front방향으로 변경!
 	FVector TargetVector = GetActorForwardVector();
-	TargetVector.Normalize();
 
-	for (uint32 i = 0; i < CloseAttack_SpikeNum; i++)
+	FVector StartLocation = GetActorLocation();
+	FVector EndLocation = StartLocation + TargetVector.GetSafeNormal2D() * 2500.f;
+	FVector BoxExtent(100.0f, 100.0f, 100.0f);
+
+	bHit = GetWorld()->SweepSingleByChannel(
+		Result,
+		StartLocation,
+		EndLocation,
+		FQuat::Identity,
+		ECC_CHECK_PAWN,
+		FCollisionShape::MakeBox(BoxExtent),
+		CollisionParams
+	);
+
+	DrawDebugBox(GetWorld(), StartLocation, BoxExtent, FQuat::Identity, FColor::Red, false, 3, 0, 1);
+	DrawDebugBox(GetWorld(), EndLocation, BoxExtent, FQuat::Identity, FColor::Red, false, 3, 0, 1);
+	if (bHit)
 	{
-		constexpr float Height = 300.f;
-		FVector GenerationLocation = GetActorLocation() + TargetVector * CloseAttack_SpikeDistanceGap * (i + 1);
-		GenerationLocation.Z = -Height + CloseAttack_SpikeGroundOffset;
-		AIGMountainSpike* SpawnedSpike = GWorld->SpawnActor<AIGMountainSpike>(GenerationLocation, FRotator::ZeroRotator);
-		SpawnedSpike->Init(CloseAttack_Damage, 300.f, CloseAttack_SpikeTimeGap * i, CloseAttack_SpikeDuration, CloseAttack_SpikeDestroyDelay);
+		AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(Result.GetActor());
+		if (Player)
+		{
+			FDamageEvent DamageEvent;
+			Player->TakeDamage(CloseAttack_Damage, DamageEvent, GetInstigatorController(), this);
+		}
 	}
 }
 
