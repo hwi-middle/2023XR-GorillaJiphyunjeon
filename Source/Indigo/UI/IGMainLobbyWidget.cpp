@@ -33,11 +33,11 @@ void UIGMainLobbyWidget::NativeConstruct()
 	GameStartButton->LevelButton->OnClicked.AddDynamic(this, &UIGMainLobbyWidget::ShowLoading);
 
 	// 테스트
-	TEST_GrayBoxButton = CastChecked<UButton>(GetWidgetFromName(TEXT("TEST_GrayBox")));
+	TEST_GrayBoxButton = Cast<UButton>(GetWidgetFromName(TEXT("TEST_GrayBox")));
 	TEST_GrayBoxButton->OnClicked.AddDynamic(this, &UIGMainLobbyWidget::OpenGrayBoxTestLevel);
-	TEST_BossButton = CastChecked<UButton>(GetWidgetFromName(TEXT("TEST_Boss")));
+	TEST_BossButton = Cast<UButton>(GetWidgetFromName(TEXT("TEST_Boss")));
 	TEST_BossButton->OnClicked.AddDynamic(this, &UIGMainLobbyWidget::OpenBossTestLevel);
-	TEST_WispButton = CastChecked<UButton>(GetWidgetFromName(TEXT("TEST_Wisp")));
+	TEST_WispButton = Cast<UButton>(GetWidgetFromName(TEXT("TEST_Wisp")));
 	TEST_WispButton->OnClicked.AddDynamic(this, &UIGMainLobbyWidget::OpenWispTestLevel);
 }
 
