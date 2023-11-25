@@ -4,6 +4,7 @@
 #include "IGPlayerCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "IGBoss.h"
 #include "InputAction.h"
 #include "InputActionValue.h"
 #include "InputMappingContext.h"
@@ -142,7 +143,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 
 	SoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
 	PlayerDataAsset = FIGConstructorHelper::FindAndGetObject<UIGPlayerDataAsset>(TEXT("/Script/Indigo.IGPlayerDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerData.DA_PlayerData'"));
-	
+
 	HealCount = 0;
 }
 
@@ -331,7 +332,7 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 		AimingEndPoint,
 		ECC_PROJECTILE
 	);
-	
+
 	if (bIsAimingHit)
 	{
 		const AActor* HitActor = AimingHitResult.GetActor();
@@ -391,10 +392,22 @@ void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 float AIGPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	UE_LOG(LogTemp, Log, TEXT("플레이어 TakeDamage"));
-	if (CheckPlayerState(EPlayerState::Rolling))
+
+	AIGBoss* Boss = Cast<AIGBoss>(DamageCauser);
+	if (Boss)
 	{
-		return 0.f;
+		EAttackPattern CurGimmick = Boss->GetCurrentGimmick();
+		
+		if ((ActivatedCrystal == ECrystal::Mountain && CurGimmick == EAttackPattern::Close) ||
+		(ActivatedCrystal == ECrystal::Wave && CurGimmick == EAttackPattern::Far) ||
+		(ActivatedCrystal == ECrystal::Tree && CurGimmick == EAttackPattern::Floor)
+		)
+		{
+			return 0.f;
+		}
 	}
+
+
 	UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerGetDamageSoundCue);
 	Hp -= DamageAmount;
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("Player HP: [%f]"), Hp));
@@ -520,7 +533,7 @@ void AIGPlayerCharacter::Interact()
 
 	if (Crystal != nullptr)
 	{
-		UGameplayStatics::PlaySound2D(this,	SoundDataAsset->ObjectGetCrystalSoundCue);
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->ObjectGetCrystalSoundCue);
 		PlayerInventory->AddCrystal(Crystal->GetCrystalType());
 		HudWidget->AddCrystal(Crystal);
 	}
@@ -791,7 +804,7 @@ void AIGPlayerCharacter::ManageStaminaByTime()
 	}
 
 	StaminaValue = FMath::Clamp(StaminaValue, 0.f, 100.f);
-	if(StaminaValue == 0.0f)
+	if (StaminaValue == 0.0f)
 	{
 		UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerLowStaminaSoundCue);
 	}
@@ -1004,10 +1017,10 @@ void AIGPlayerCharacter::AddHealKit()
 
 void AIGPlayerCharacter::SetVillageBGM()
 {
-	if(AudioComponent != nullptr)
+	if (AudioComponent != nullptr)
 	{
 		AudioComponent->Stop();
-		AudioComponent->RemoveFromRoot();		
+		AudioComponent->RemoveFromRoot();
 	}
 	CurrentBGM = SoundDataAsset->BGMVillageSoundCue;
 	AudioComponent = UGameplayStatics::SpawnSound2D(this, CurrentBGM);
@@ -1017,10 +1030,10 @@ void AIGPlayerCharacter::SetVillageBGM()
 
 void AIGPlayerCharacter::SetBossBGM()
 {
-	if(AudioComponent != nullptr)
+	if (AudioComponent != nullptr)
 	{
 		AudioComponent->Stop();
-		AudioComponent->RemoveFromRoot();		
+		AudioComponent->RemoveFromRoot();
 	}
 	CurrentBGM = SoundDataAsset->BGMBossSoundCue;
 	UGameplayStatics::PlaySound2D(this, SoundDataAsset->BossAppearSoundCue);
