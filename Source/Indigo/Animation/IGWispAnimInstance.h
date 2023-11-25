@@ -39,6 +39,8 @@ public:
 	FOnFinishWispBombDelegate OnWispExplosion;
 	FOnFinishWispRetreatDelegate OnFinishRetreat;
 	
+	FORCEINLINE bool GetIsExplosion() const { return bShouldExplosion; }
+	
 	FORCEINLINE void OnHit() { bShouldAttack = true; }
 	FORCEINLINE void OnExplosion() { bShouldExplosion = true; }
 	FORCEINLINE void OnDash() { bShouldDash = true; }

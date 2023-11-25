@@ -30,7 +30,7 @@ void UBTService_WispDetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 		return;
 	}
 
-	if(Wisp->IsDead() || Wisp->GetIsHit())
+	if(Wisp->IsDead() || Wisp->GetIsHit() || Wisp->GetIsExplosion())
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, nullptr);
 		return;
@@ -77,6 +77,11 @@ void UBTService_WispDetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 		OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_CLOSE_ENOUGH, IsCloseEnough);
 		OwnerComp.GetBlackboardComponent()->SetValueAsBool(BBKEY_IS_EXPLOSION_DISTANCE, IsCExplosionDistance);
 
+		FVector WispToTargetNormalized = WispToTarget.GetSafeNormal();
+		FRotator RotationToTarget = WispToTargetNormalized.ToOrientationRotator();
+		//액터 자체를 회전시키면 자꾸 이상한 버그 생겨서 그냥 메시를 회전시킴 ㅎㅎ
+		Wisp->GetMesh()->SetWorldRotation(FRotator(0, RotationToTarget.Yaw - 90, 0));
+		
 		DrawDebugSphere(World, Origin, DetectRadius, 16, FColor::Green, false, 0.f);
 		if (!IsCloseEnough)
 		{

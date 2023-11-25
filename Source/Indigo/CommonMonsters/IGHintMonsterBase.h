@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Indigo/Animation/IGWispAnimInstance.h"
 #include "Indigo/Character/IGEnemyBase.h"
 #include "Indigo/Interactable/IGCrystalBase.h"
 #include "IGHintMonsterBase.generated.h"
@@ -31,6 +32,7 @@ public:
 
 	FORCEINLINE	bool GetIsHit() const {return bIsHit;}
 	FORCEINLINE	void IsHitFinish() { bIsHit = false;}
+	FORCEINLINE	bool GetIsExplosion() const { return  AnimInstance->GetIsExplosion();}
 
 	
 	void PerformCloseAttack();
@@ -86,7 +88,7 @@ private:
 	
 	UPROPERTY()
 	uint8 bIsHit : 1;
-
+	
 	UPROPERTY()
 	FVector AttackStartLocation;
 	

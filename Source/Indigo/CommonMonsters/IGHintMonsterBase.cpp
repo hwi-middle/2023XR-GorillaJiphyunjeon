@@ -50,8 +50,8 @@ AIGHintMonsterBase::AIGHintMonsterBase()
 	ElapsedTime = 0.0f;
 	AttackTime  = 0.0f;
 	RetreatTime = 0.0f;
-	StoppingDistance = 400.0f;
-	ExplosionDistance = 100.0f;
+	StoppingDistance = 500.0f;
+	ExplosionDistance = 150.0f;
 	AttackSpeed = 800.0f;
 	
 }
@@ -67,6 +67,7 @@ void AIGHintMonsterBase::BeginPlay()
 	AnimInstance = CastChecked<UIGWispAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->OnFinishHit.AddUObject(this, &AIGHintMonsterBase::IsHitFinish);
 	AnimInstance->OnWispExplosion.AddUObject(this, &AIGHintMonsterBase::Explosion);
+	AnimInstance->OnFinishBomb.AddUObject(this, &AIGHintMonsterBase::EndAttack);
 }
 
 // Called every frame
@@ -117,7 +118,7 @@ void AIGHintMonsterBase::Tick(float DeltaTime)
 				EndAttack();
 			}
 		}
-		if((GetActorLocation() - AttackStartLocation).Size() >= StoppingDistance || AttackTime >= 0.5f)
+		if((GetActorLocation() - AttackStartLocation).Size() >= 500 || AttackTime >= 1.0f)
 		{
 			bIsAttack = false;
 			bIsRetreating = true;
@@ -130,9 +131,9 @@ void AIGHintMonsterBase::Tick(float DeltaTime)
 	if (bIsRetreating)
 	{
 		FVector TargetPos = (AttackStartLocation - GetActorLocation()).GetSafeNormal();
-		AddActorLocalOffset(TargetPos * DeltaTime * AttackSpeed);
+		AddActorLocalOffset(TargetPos * DeltaTime * AttackSpeed/2);
 		RetreatTime += DeltaTime;
-		if ((GetActorLocation() - RetreatStartLocation).Size() >= StoppingDistance / 3 || RetreatTime >= 0.5f)
+		if ((GetActorLocation() - RetreatStartLocation).Size() > ExplosionDistance/2 || RetreatTime >= 0.4f)
 		{
 			bIsRetreating = false;
 			RetreatTime = 0.0f;			
@@ -222,11 +223,12 @@ void AIGHintMonsterBase::PerformCloseAttack()
 	AnimInstance->OnDash();
 	
 	FVector TargetVector =  (Player->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-
+	//FVector TargetVector =  GetActorForwardVector().GetSafeNormal();
 	AttackStartLocation = GetActorLocation();
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("%f"), TargetVector.Y));
 	bIsAttack = true;
 	DashStartLocation = TargetVector;
-	DashEndLocation = TargetVector * StoppingDistance;
+	DashEndLocation = DashStartLocation * StoppingDistance;
 }
 
 void AIGHintMonsterBase::PerformBombAttack()
