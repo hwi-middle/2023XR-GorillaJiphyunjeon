@@ -824,11 +824,11 @@ void AIGPlayerCharacter::ActivateCrystalByIndex(uint32 Index)
 	const TArray<AIGTreeCrystal*> TreeCrystalArray = PlayerInventory->GetTreeCrystalArray();
 	const TArray<AIGWaveCrystal*> WaveCrystalArray = PlayerInventory->GetWaveCrystalArray();
 
-	if (Index == 1 && MountainCrystalArray.Num() >= 3)
+	if (Index == 0 && MountainCrystalArray.Num() >= 3)
 	{
 		Type = ECrystal::Mountain;
 	}
-	else if (Index == 2 && TreeCrystalArray.Num() >= 3)
+	else if (Index == 1 && TreeCrystalArray.Num() >= 3)
 	{
 		Type = ECrystal::Tree;
 	}
