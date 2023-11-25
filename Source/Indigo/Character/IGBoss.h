@@ -103,7 +103,11 @@ private:
 	float FloorAttack_Phase2Probability;
 	
 	// 평타
-	// TODO: 평타 관련 구현
+	UPROPERTY(VisibleAnywhere)
+	float NormalWeak_Damage;
+
+	UPROPERTY(VisibleAnywhere)
+	float NormalStrong_Damage;
 	
 	// 근거리 패턴
 	UPROPERTY(VisibleAnywhere)
@@ -114,6 +118,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	float CloseAttack_Damage;
+
+	UPROPERTY(VisibleAnywhere)
+	float CloseAttack_HandDamage;
 
 	UPROPERTY(VisibleAnywhere)
 	float CloseAttack_SpikeTimeGap;
@@ -197,6 +204,8 @@ public:
 	void PerformCloseAttack();
 	void PerformFloorAttack();
 	void PerformFarAttack();
+	void GenerateNormalWeakAttack();
+	void GenerateNormalStrongAttack();
 	void GenerateCloseAttack();
 	void GenerateFloorAttack();
 	void GenerateFarAttack();

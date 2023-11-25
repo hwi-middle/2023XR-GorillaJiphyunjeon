@@ -84,6 +84,8 @@ void AIGBoss::BeginPlay()
 
 	AnimInstance = CastChecked<UIGBossAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->SetSpeed(0.f);
+	AnimInstance->OnGenerateBossNormalWeakAttack.AddUObject(this, &AIGBoss::GenerateNormalWeakAttack);
+	AnimInstance->OnGenerateBossNormalStrongAttack.AddUObject(this, &AIGBoss::GenerateNormalStrongAttack);
 	AnimInstance->OnGenerateBossCloseAttack.AddUObject(this, &AIGBoss::GenerateCloseAttack);
 	AnimInstance->OnGenerateBossFloorAttack.AddUObject(this, &AIGBoss::GenerateFloorAttack);
 	AnimInstance->OnGenerateBossFarAttack.AddUObject(this, &AIGBoss::GenerateFarAttack);
@@ -101,9 +103,13 @@ void AIGBoss::BeginPlay()
 	FarAttack_Phase2Probability = GimmickDataAsset->FarAttack_Phase2Probability;
 	FloorAttack_Phase2Probability = GimmickDataAsset->FloorAttack_Phase2Probability;
 
+	NormalWeak_Damage = GimmickDataAsset->NormalWeak_Damage;
+	NormalStrong_Damage = GimmickDataAsset->NormalStrong_Damage;
+	
 	CloseAttack_SpikeNum = GimmickDataAsset->CloseAttack_SpikeNum;
 	CloseAttack_HandRadius = GimmickDataAsset->CloseAttack_HandRadius;
 	CloseAttack_Damage = GimmickDataAsset->CloseAttack_Damage;
+	CloseAttack_HandDamage = GimmickDataAsset->CloseAttack_HandDamage;
 	CloseAttack_SpikeTimeGap = GimmickDataAsset->CloseAttack_SpikeTimeGap;
 	CloseAttack_SpikeDistanceGap = GimmickDataAsset->CloseAttack_SpikeDistanceGap;
 	CloseAttack_SpikeDuration = GimmickDataAsset->CloseAttack_SpikeDuration;
@@ -312,6 +318,74 @@ void AIGBoss::PerformFarAttack()
 	AnimInstance->StartFarAttack();
 }
 
+void AIGBoss::GenerateNormalWeakAttack()
+{
+	FHitResult Result;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+
+	FVector TargetVector = GetActorForwardVector();
+	FVector StartLocation = GetActorLocation();
+	FVector EndLocation = StartLocation + TargetVector.GetSafeNormal2D() * 500.f;
+	FVector BoxExtent(100.0f, 100.0f, 100.0f);
+
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		Result,
+		StartLocation,
+		EndLocation,
+		FQuat::Identity,
+		ECC_CHECK_PAWN,
+		FCollisionShape::MakeBox(BoxExtent),
+		CollisionParams
+	);
+
+	DrawDebugBox(GetWorld(), StartLocation, BoxExtent, FQuat::Identity, FColor::Red, false, 3, 0, 1);
+	DrawDebugBox(GetWorld(), EndLocation, BoxExtent, FQuat::Identity, FColor::Red, false, 3, 0, 1);
+	if (bHit)
+	{
+		AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(Result.GetActor());
+		if (Player)
+		{
+			FDamageEvent DamageEvent;
+			Player->TakeDamage(NormalWeak_Damage, DamageEvent, GetInstigatorController(), this);
+		}
+	}
+}
+
+void AIGBoss::GenerateNormalStrongAttack()
+{
+	FHitResult Result;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+
+	FVector TargetVector = GetActorForwardVector();
+	FVector StartLocation = GetActorLocation();
+	FVector EndLocation = StartLocation + TargetVector.GetSafeNormal2D() * 500.f;
+	FVector BoxExtent(100.0f, 100.0f, 100.0f);
+
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		Result,
+		StartLocation,
+		EndLocation,
+		FQuat::Identity,
+		ECC_CHECK_PAWN,
+		FCollisionShape::MakeBox(BoxExtent),
+		CollisionParams
+	);
+
+	DrawDebugBox(GetWorld(), StartLocation, BoxExtent, FQuat::Identity, FColor::Red, false, 3, 0, 1);
+	DrawDebugBox(GetWorld(), EndLocation, BoxExtent, FQuat::Identity, FColor::Red, false, 3, 0, 1);
+	if (bHit)
+	{
+		AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(Result.GetActor());
+		if (Player)
+		{
+			FDamageEvent DamageEvent;
+			Player->TakeDamage(NormalStrong_Damage, DamageEvent, GetInstigatorController(), this);
+		}
+	}
+}
+
 void AIGBoss::GenerateCloseAttack()
 {
 	// 주먹에 의한 피해
@@ -341,9 +415,7 @@ void AIGBoss::GenerateCloseAttack()
 		}
 	}
 
-	// 산 생성 -> 보스 Front방향으로 변경!
 	FVector TargetVector = GetActorForwardVector();
-
 	FVector StartLocation = GetActorLocation();
 	FVector EndLocation = StartLocation + TargetVector.GetSafeNormal2D() * 2500.f;
 	FVector BoxExtent(100.0f, 100.0f, 100.0f);

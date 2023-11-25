@@ -38,6 +38,13 @@ public:
 	UPROPERTY(EditAnywhere, Category = "2페이즈 확률", DisplayName = "2페이즈 장판 공격 확률")
 	float FloorAttack_Phase2Probability;
 
+	// 평타
+	UPROPERTY(EditAnywhere, Category = "평타 패턴", DisplayName = "기본 평타 피해량")
+	float NormalWeak_Damage;
+
+	UPROPERTY(EditAnywhere, Category = "평타 패턴", DisplayName = "강화 평타 피해량")
+	float NormalStrong_Damage;
+	
 	// 근거리 패턴
 	UPROPERTY(EditAnywhere, Category = "근거리 패턴", DisplayName = "근거리 패턴 공격영역 피해량")
 	float CloseAttack_Damage;
