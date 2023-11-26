@@ -46,7 +46,7 @@ void AIGPhasePlaceBase::Tick(float DeltaTime)
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
 
-	DrawDebugBox(GetWorld(), GetActorLocation(), BoxCollider->GetScaledBoxExtent(), FColor::Green, false, 1.f);
+	DrawDebugBox(GetWorld(), GetActorLocation(), BoxCollider->GetScaledBoxExtent(), FColor::Green, false, 0.f);
 
 	bool bHit = GetWorld()->SweepSingleByChannel(
 		Result,

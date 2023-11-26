@@ -29,14 +29,14 @@ protected:
 
 	uint8 bIsInCollision : 1;
 	
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UBoxComponent> BoxCollider;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UBoxComponent> BoxCollider;
+
 
 
 };

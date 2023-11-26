@@ -185,11 +185,13 @@ float AIGHintMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 
 	AnimInstance->OnHit();
 	bIsHit = true;
+	
 	SetHp(GetHp() - DamageAmount);
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("[도깨비불 체력] %f"), GetHp()));
 	if(GetHp() <= 0)
 	{
 		bIsDead = true;
+				
 		DelegateHandle = AnimInstance->OnFinishHit.AddUObject(this, &AIGHintMonsterBase::DropCrystal);			
 	    FTimerHandle TimerHandle;
         GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([&]()
@@ -200,6 +202,7 @@ float AIGHintMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Dam
         		AnimInstance->OnFinishHit.Remove(DelegateHandle);
 				AIGEnemyBase::SetHp(30);
         		bIsDead = false;
+        		AttackSpeed = 800;
                 GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
             }), RespawnTime, false);			
 	}	
@@ -223,9 +226,7 @@ void AIGHintMonsterBase::PerformCloseAttack()
 	AnimInstance->OnDash();
 	
 	FVector TargetVector =  (Player->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-	//FVector TargetVector =  GetActorForwardVector().GetSafeNormal();
 	AttackStartLocation = GetActorLocation();
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("%f"), TargetVector.Y));
 	bIsAttack = true;
 	DashStartLocation = TargetVector;
 	DashEndLocation = DashStartLocation * StoppingDistance;

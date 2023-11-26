@@ -140,7 +140,7 @@ void UIGPlayerInventory::AddCrystal(ECrystal InCrystalType)
 		)
 	{
 		//다 모았을 때
-		IGBossZoneGateManager::GetInstance()->OpenGate();
+		//IGBossZoneGateManager::GetInstance()->OpenGate();
 		Player->GetShinmyophil()->ProvisoRemakeGetAllCrystal();
 	}
 }
