@@ -198,6 +198,7 @@ void AIGPlayerCharacter::BeginPlay()
 	PlayerAnimInstance = CastChecked<UIGPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	PlayerAnimInstance->SetSpeed(0.f);
 	PlayerAnimInstance->OnFinishRoll.AddUObject(this, &AIGPlayerCharacter::FinishRolling);
+	PlayerAnimInstance->OnFinishAttack.AddUObject(this, &AIGPlayerCharacter::NotifyComboActionEnd);
 	PlayerAnimInstance->OnShouldGenerateProjectile.AddUObject(this, &AIGPlayerCharacter::GenerateProjectile);
 	CurrentState = EPlayerState::Idling;
 
@@ -711,6 +712,7 @@ void AIGPlayerCharacter::ComboActionEnd(UAnimMontage* TargetMontage, bool IsProp
 
 void AIGPlayerCharacter::NotifyComboActionEnd()
 {
+	CurrentCombo = 0;
 	RemovePlayerState(EPlayerState::Attacking);
 }
 
