@@ -14,6 +14,7 @@ class UIGPlayerControlDataAsset;
 enum class ECrystal : uint32;
 class UIGIngameHUDWidget;
 class UIGTutotialWidget;
+class UIGGIFTutorialWidget;
 class UIGPlayerAnimInstance;
 class UIGCharacterDataParser;
 class USpringArmComponent;
@@ -83,6 +84,12 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UIGTutotialWidget> TutorialWidget;
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UIGGIFTutorialWidget> GIFTutorialWidgetClass;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UIGGIFTutorialWidget> GIFTutorialWidget;
 
 public:
 	virtual void Tick(float DeltaTime) override;
@@ -98,6 +105,11 @@ public:
 	//BGM 변경
 	void SetVillageBGM();
 	void SetBossBGM();
+
+	//GIF튜토리얼 위젯 띄우기
+	void ShowFirstHealKitGIFTutorial();
+	void ShowFirstCrystalGIFTutorial();
+	void ShowFirstBossGIFTutorial();
 	
 public:
 	//인터페이스 함수
@@ -187,6 +199,12 @@ private:
 	
 	UPROPERTY()
 	uint8 bIsAimingProperActor : 1;
+	
+	UPROPERTY()
+	uint8 bIsFirstGetHealKit : 1;
+	
+	UPROPERTY()
+	uint8 bIsFirstMeetBoss : 1;
 
 	UPROPERTY()
 	FVector AimingStartPoint;

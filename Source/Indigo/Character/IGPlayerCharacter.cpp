@@ -37,6 +37,7 @@
 #include "Indigo/UI/IGIngameHUDWidget.h"
 #include "Indigo/UI/QuestUI/IGQuest.h"
 #include "Indigo/UI/TutorialUI/IGTutotialWidget.h"
+#include "Indigo/UI/TutorialUI/IGGIFTutorialWidget.h"
 #include "Indigo/Util/IGCharacterDataTable.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGDataTableParser.h"
@@ -133,6 +134,11 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 		TutorialWidgetClass = Class;
 	}, EAssertionLevel::Check);
 
+	FIGConstructorHelper::FindClassAndInitialize<UIGGIFTutorialWidget>(TEXT("/Game/_GorillaJiphyunjeon/UI/Game/Tutorial/WBP_GIFTutorialWidget.WBP_GIFTutorialWidget_C"), [&](TSubclassOf<UIGGIFTutorialWidget> Class)
+	{
+		GIFTutorialWidgetClass = Class;
+	}, EAssertionLevel::Check);
+	
 	FIGConstructorHelper::FindObjectAndInitialize<UAnimMontage>(TEXT("/Script/Engine.AnimMontage'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/AM_PlayerAttack.AM_PlayerAttack'"), [&](UAnimMontage* Montage)
 	{
 		ComboActionMontage = Montage;
@@ -145,6 +151,8 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	PlayerDataAsset = FIGConstructorHelper::FindAndGetObject<UIGPlayerDataAsset>(TEXT("/Script/Indigo.IGPlayerDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerData.DA_PlayerData'"));
 
 	HealCount = 0;
+	bIsFirstGetHealKit = false;
+	bIsFirstMeetBoss = false;
 }
 
 bool AIGPlayerCharacter::CheckPlayerState(const EPlayerState InState) const
@@ -228,7 +236,15 @@ void AIGPlayerCharacter::BeginPlay()
 	if (TutorialWidget)
 	{
 		TutorialWidget->AddToViewport();
+		TutorialWidget->VisibleTutorialWidget();
 		TutorialWidget->SetKeyboardFocus();
+	}
+
+	GIFTutorialWidget = CreateWidget<UIGGIFTutorialWidget>(GetWorld(), GIFTutorialWidgetClass);
+	if (GIFTutorialWidget)
+	{
+		GIFTutorialWidget->AddToViewport(10);
+		GIFTutorialWidget->CloseGIFTutorialWidget();
 	}
 
 	ManageStaminaByTime();
@@ -1010,6 +1026,11 @@ void AIGPlayerCharacter::UpdateShinmyophilScript(const FString InText)
 
 void AIGPlayerCharacter::AddHealKit()
 {
+	if(!bIsFirstGetHealKit)
+	{
+		bIsFirstGetHealKit = true;
+		ShowFirstHealKitGIFTutorial();
+	}
 	HealCount++;
 	if (HudWidget != nullptr)
 	{
@@ -1042,6 +1063,30 @@ void AIGPlayerCharacter::SetBossBGM()
 	AudioComponent = UGameplayStatics::SpawnSound2D(this, CurrentBGM);
 	AudioComponent->SetupAttachment(RootComponent);
 	AudioComponent->RegisterComponent();
+}
+
+void AIGPlayerCharacter::ShowFirstHealKitGIFTutorial()
+{
+	GIFTutorialWidget->VisibleGIFTutorialWidget();
+	GIFTutorialWidget->PreSetByFirstHealKit();
+}
+
+void AIGPlayerCharacter::ShowFirstCrystalGIFTutorial()
+{
+	GIFTutorialWidget->VisibleGIFTutorialWidget();
+	GIFTutorialWidget->PreSetByFirstCrystal();
+}
+
+void AIGPlayerCharacter::ShowFirstBossGIFTutorial()
+{
+	if(bIsFirstMeetBoss)
+	{
+		return;
+	}
+	
+	GIFTutorialWidget->VisibleGIFTutorialWidget();
+	GIFTutorialWidget->PreSetByFirstBoss();
+	bIsFirstMeetBoss = true;
 }
 
 

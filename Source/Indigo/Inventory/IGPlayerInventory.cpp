@@ -81,7 +81,7 @@ void UIGPlayerInventory::AddCrystal(ECrystal InCrystalType)
 	}
 	
 	
-	const AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(GetOwner());	
+	AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(GetOwner());	
 	if(Player == nullptr)
 	{
 		return;
@@ -91,6 +91,7 @@ void UIGPlayerInventory::AddCrystal(ECrystal InCrystalType)
 	{
 		//처음 결정 조각 얻었을 떄
 		Player->GetShinmyophil()->ProvisoRemakeFirstGetCrystalFrag();
+		Player->ShowFirstCrystalGIFTutorial();
 		bIsGetFirstCrystalFrag = true;
 	}
 	

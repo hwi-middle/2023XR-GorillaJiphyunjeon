@@ -76,6 +76,7 @@ void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 			if(!bFirstDetectPlayer)
 			{
 				Player->SetBossBGM();
+				Player->ShowFirstBossGIFTutorial();
 				bFirstDetectPlayer = true;
 			}
 		}
