@@ -139,8 +139,6 @@ void UIGPlayerInventory::AddCrystal(ECrystal InCrystalType)
 		WaveCrystalArray.Num() >= 3
 		)
 	{
-		//다 모았을 때
-		//IGBossZoneGateManager::GetInstance()->OpenGate();
 		Player->GetShinmyophil()->ProvisoRemakeGetAllCrystal();
 	}
 }
