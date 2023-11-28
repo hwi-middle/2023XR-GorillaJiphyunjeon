@@ -26,7 +26,8 @@ public:
 	void AddCrystal(AIGCrystalBase* InCrystal);
 	UFUNCTION(BlueprintCallable)
 	void ActiveCrystal(int32 InNumber);
-	
+	UFUNCTION(BlueprintCallable)
+	void CrystalCooltime();
 protected:
 	virtual void NativeConstruct() override;
 

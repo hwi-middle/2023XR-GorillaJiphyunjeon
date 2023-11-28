@@ -34,7 +34,7 @@ void UIGLevelButton::MoveLevel()
 	UGameplayStatics::PlaySound2D(this, SoundDataAsset->UIGameStart);
 
 	
-	AsyncLevelLoad(TEXT("/Game/_GorillaJiphyunjeon/Level/"), TEXT("64-WispTest"));	
+	AsyncLevelLoad(TEXT("/Game/_GorillaJiphyunjeon/GrayBox/"), TEXT("AD_GrayBox"));	
 }
 
 void UIGLevelButton::OnTargetLevelLoaded()

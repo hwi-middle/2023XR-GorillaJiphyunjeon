@@ -150,6 +150,9 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	SoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
 	PlayerDataAsset = FIGConstructorHelper::FindAndGetObject<UIGPlayerDataAsset>(TEXT("/Script/Indigo.IGPlayerDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerData.DA_PlayerData'"));
 
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
+	AudioComponent->SetupAttachment(RootComponent);
+	
 	HealCount = 0;
 	bIsFirstGetHealKit = false;
 	bIsFirstMeetBoss = false;
@@ -1040,27 +1043,18 @@ void AIGPlayerCharacter::AddHealKit()
 
 void AIGPlayerCharacter::SetVillageBGM()
 {
-	if (AudioComponent != nullptr)
-	{
 		AudioComponent->Stop();
-		AudioComponent->RemoveFromRoot();
-	}
-	CurrentBGM = SoundDataAsset->BGMVillageSoundCue;
-	AudioComponent = UGameplayStatics::SpawnSound2D(this, CurrentBGM);
-	AudioComponent->SetupAttachment(RootComponent);
+		CurrentBGM = SoundDataAsset->BGMVillageSoundCue;
+		AudioComponent = UGameplayStatics::SpawnSound2D(this, CurrentBGM);
+		AudioComponent->Play();
 }
 
 void AIGPlayerCharacter::SetBossBGM()
 {
-	if (AudioComponent != nullptr)
-	{
-		AudioComponent->Stop();
-		AudioComponent->RemoveFromRoot();
-	}
+	AudioComponent->Stop();
 	CurrentBGM = SoundDataAsset->BGMBossSoundCue;
-	UGameplayStatics::PlaySound2D(this, SoundDataAsset->BossAppearSoundCue);
 	AudioComponent = UGameplayStatics::SpawnSound2D(this, CurrentBGM);
-	AudioComponent->SetupAttachment(RootComponent);
+	AudioComponent->Play();
 }
 
 void AIGPlayerCharacter::ShowFirstHealKitGIFTutorial()

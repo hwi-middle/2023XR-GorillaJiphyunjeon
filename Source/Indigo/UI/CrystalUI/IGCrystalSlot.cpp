@@ -17,9 +17,9 @@ void UIGCrystalSlot::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	CrystalSlot[0] = Cast<UImage>(GetWidgetFromName(TEXT("Crystal1")));	
-	CrystalSlot[1] = Cast<UImage>(GetWidgetFromName(TEXT("Crystal2")));
-	CrystalSlot[2] = Cast<UImage>(GetWidgetFromName(TEXT("Crystal3")));
+	CrystalSlot[0] = Cast<UImage>(GetWidgetFromName(TEXT("Rock")));	
+	CrystalSlot[1] = Cast<UImage>(GetWidgetFromName(TEXT("Wave")));
+	CrystalSlot[2] = Cast<UImage>(GetWidgetFromName(TEXT("Tree")));
 	CrystalFragCount = 0;
 }
 
@@ -49,6 +49,11 @@ void UIGCrystalSlot::AddCrystal(AIGCrystalBase* InCrystal)
 		
 
 void UIGCrystalSlot::ActiveCrystal(int32 InNumber)
+{
+	
+}
+
+void UIGCrystalSlot::CrystalCooltime()
 {
 	
 }
