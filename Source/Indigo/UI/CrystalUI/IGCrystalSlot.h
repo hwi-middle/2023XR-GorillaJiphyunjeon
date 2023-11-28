@@ -11,6 +11,8 @@ class UButton;
 class AIGPlayerCharacter;
 class AIGCrystalBase;
 class UImage;
+class UTextBlock;
+enum class ECrystal : uint32;
 
 /**
  * 
@@ -26,12 +28,19 @@ public:
 	void AddCrystal(AIGCrystalBase* InCrystal);
 	UFUNCTION(BlueprintCallable)
 	void ActiveCrystal(int32 InNumber);
-	
+	UFUNCTION(BlueprintCallable)
+	void CrystalCooltime(const float InDurationTime);
+	UFUNCTION(BlueprintCallable)
+	void SetCrystalType(const ECrystal InCrystalType);
 protected:
 	virtual void NativeConstruct() override;
 
 	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UImage> CrystalSlot[3];
+	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UImage> CooltimeProgress;
+	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UTextBlock> CrystalCount;
 
 private:
 	UPROPERTY()
@@ -40,4 +49,8 @@ private:
 	UPROPERTY()
 	int32 CrystalFragCount;
 	
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> DMI_CoolTime;
+
+	ECrystal CrystalType;
 };

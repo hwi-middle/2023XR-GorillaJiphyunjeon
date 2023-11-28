@@ -13,6 +13,8 @@ class AIGProvisoWispPlace;
 class AIGWispAIController;
 class UIGWispAnimInstance;
 class UIGSoundDataAsset;
+class UNiagaraComponent;
+class UNiagaraSystem;
 DECLARE_MULTICAST_DELEGATE(FOnFinishWispAttackDelegate)
 
 enum class ECrystal : uint32;
@@ -50,6 +52,8 @@ protected:
 
 	FORCEINLINE	void SetCrystalType(const ECrystal InCrystalType) {CrystalType = InCrystalType;}
 	
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> NiagaraComp; 
 private:
 	UPROPERTY()
 	TObjectPtr<UIGWispAnimInstance> AnimInstance;
@@ -115,5 +119,5 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;
-	
+
 };

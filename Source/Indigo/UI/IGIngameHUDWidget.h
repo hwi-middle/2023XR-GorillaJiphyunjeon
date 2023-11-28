@@ -16,7 +16,6 @@ class UQuest;
 class UIGHealKits;
 class UIGShinmyophilText;
 class UIGCrystalSlot;
-
 /**
  * 
  */
@@ -37,6 +36,9 @@ public:
 	void SetHealKit(const int32 InValue) const;
 
 	FORCEINLINE FString GetShinmyophilText() const { return ShinmyophilText->GetText();}
+	void MountainCrystalCooltime(const float InDuraiontime);
+	void WaveCrystalCooltime(const float InDuraiontime);
+	void TreeCrystalCooltime(const float InDuraiontime);
 
 protected:
 	virtual void NativeConstruct() override;

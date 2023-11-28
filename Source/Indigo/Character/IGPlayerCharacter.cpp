@@ -79,12 +79,12 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	StaminaValue = CharacterDataTable->StaminaValue;
 
 	FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Mesh/SM_Main_Rigging.SM_Main_Rigging'"), [&](USkeletalMesh* SkeletalMesh)
-		{
-			GetMesh()->SetSkeletalMesh(SkeletalMesh);
-			// Temporal
-			GetMesh()->SetRelativeRotation(FRotator(0.f, 270.f, 0.f));
-			GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -100.f));
-		}, EAssertionLevel::Check);
+	{
+		GetMesh()->SetSkeletalMesh(SkeletalMesh);
+		// Temporal
+		GetMesh()->SetRelativeRotation(FRotator(0.f, 270.f, 0.f));
+		GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -100.f));
+	}, EAssertionLevel::Check);
 
 	// FIGConstructorHelper::FindObjectAndInitialize<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Weapon/SM_Main_Weapon.SM_Main_Weapon'"), [&](USkeletalMesh* MeshRef)
 	// {
@@ -99,12 +99,12 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	// WeaponMesh->SetAnimInstanceClass(WeaponAnimInstanceClass);
 
 	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/PlayerWeapon/Mesh/SM_Weapon.SM_Weapon'"), [&](UStaticMesh* MeshRef)
-		{
-			WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BrushMesh"));
-			WeaponMesh->SetStaticMesh(MeshRef);
-			WeaponMesh->SetWorldLocation(GetMesh()->GetSocketLocation(TEXT("RightHand")));
-			WeaponMesh->SetupAttachment(GetMesh());
-		}, EAssertionLevel::Check);
+	{
+		WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BrushMesh"));
+		WeaponMesh->SetStaticMesh(MeshRef);
+		WeaponMesh->SetWorldLocation(GetMesh()->GetSocketLocation(TEXT("RightHand")));
+		WeaponMesh->SetupAttachment(GetMesh());
+	}, EAssertionLevel::Check);
 
 	PlayerControlDataAsset = FIGConstructorHelper::FindAndGetObject<UIGPlayerControlDataAsset>(TEXT("/Script/Indigo.IGPlayerControlDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerControlData.DA_PlayerControlData'"));
 	DefaultMappingContext = PlayerControlDataAsset->DefaultMappingContext;
@@ -125,24 +125,24 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	GetMesh()->SetAnimInstanceClass(PlayerAnimInstanceClass);
 
 	FIGConstructorHelper::FindClassAndInitialize<UIGIngameHUDWidget>(TEXT("/Game/_GorillaJiphyunjeon/UI/Game/WBP_GameHUD.WBP_GameHUD_C"), [&](TSubclassOf<UIGIngameHUDWidget> Class)
-		{
-			HudWidgetClass = Class;
-		}, EAssertionLevel::Check);
+	{
+		HudWidgetClass = Class;
+	}, EAssertionLevel::Check);
 
 	FIGConstructorHelper::FindClassAndInitialize<UIGTutotialWidget>(TEXT("/Game/_GorillaJiphyunjeon/UI/Game/Tutorial/WBP_TutorialWidget.WBP_TutorialWidget_C"), [&](TSubclassOf<UIGTutotialWidget> Class)
-		{
-			TutorialWidgetClass = Class;
-		}, EAssertionLevel::Check);
+	{
+		TutorialWidgetClass = Class;
+	}, EAssertionLevel::Check);
 
 	FIGConstructorHelper::FindClassAndInitialize<UIGGIFTutorialWidget>(TEXT("/Game/_GorillaJiphyunjeon/UI/Game/Tutorial/WBP_GIFTutorialWidget.WBP_GIFTutorialWidget_C"), [&](TSubclassOf<UIGGIFTutorialWidget> Class)
-		{
-			GIFTutorialWidgetClass = Class;
-		}, EAssertionLevel::Check);
-
+	{
+		GIFTutorialWidgetClass = Class;
+	}, EAssertionLevel::Check);
+	
 	FIGConstructorHelper::FindObjectAndInitialize<UAnimMontage>(TEXT("/Script/Engine.AnimMontage'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/AM_PlayerAttack.AM_PlayerAttack'"), [&](UAnimMontage* Montage)
-		{
-			ComboActionMontage = Montage;
-		}, EAssertionLevel::Check);
+	{
+		ComboActionMontage = Montage;
+	}, EAssertionLevel::Check);
 
 	PlayerInventory = CreateDefaultSubobject<UIGPlayerInventory>(TEXT("Inventory"));
 	Shinmyophil = CreateDefaultSubobject<UIGShinmyophil>(TEXT("Shinmyophil"));
@@ -152,7 +152,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
 	AudioComponent->SetupAttachment(RootComponent);
-
+	
 	HealCount = 0;
 	bIsFirstGetHealKit = false;
 	bIsFirstMeetBoss = false;
@@ -239,8 +239,7 @@ void AIGPlayerCharacter::BeginPlay()
 	if (TutorialWidget)
 	{
 		TutorialWidget->AddToViewport();
-		TutorialWidget->VisibleTutorialWidget();
-		TutorialWidget->SetKeyboardFocus();
+		TutorialWidget->CloseTutorialWidget();		
 	}
 
 	GIFTutorialWidget = CreateWidget<UIGGIFTutorialWidget>(GetWorld(), GIFTutorialWidgetClass);
@@ -273,6 +272,16 @@ void AIGPlayerCharacter::BeginPlay()
 	}
 
 	SetVillageBGM();
+
+	if(UGameplayStatics::GetCurrentLevelName(GetWorld(),false) == FString("BOSS"))
+	{
+		TutorialWidget->CloseTutorialWidget();
+	}
+	else
+	{
+		TutorialWidget->VisibleTutorialWidget();
+	}
+	
 }
 
 void AIGPlayerCharacter::Tick(float DeltaTime)
@@ -417,11 +426,11 @@ float AIGPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	if (Boss)
 	{
 		EAttackPattern CurGimmick = Boss->GetCurrentGimmick();
-
+		
 		if ((ActivatedCrystal == ECrystal::Mountain && CurGimmick == EAttackPattern::Close) ||
-			(ActivatedCrystal == ECrystal::Wave && CurGimmick == EAttackPattern::Far) ||
-			(ActivatedCrystal == ECrystal::Tree && CurGimmick == EAttackPattern::Floor)
-			)
+		(ActivatedCrystal == ECrystal::Wave && CurGimmick == EAttackPattern::Far) ||
+		(ActivatedCrystal == ECrystal::Tree && CurGimmick == EAttackPattern::Floor)
+		)
 		{
 			return 0.f;
 		}
@@ -892,6 +901,7 @@ void AIGPlayerCharacter::ManageCrystalActivationByTime()
 	constexpr float Duration = 3.f;
 	const float DeltaTime = GWorld->DeltaTimeSeconds;
 	ElapsedCrystalActivationTime += DeltaTime;
+	
 
 	if (ElapsedCrystalActivationTime >= Duration)
 	{
@@ -912,7 +922,9 @@ void AIGPlayerCharacter::ManageCrystalCooldownByTime()
 	constexpr float Duration = 5.f;
 	const float DeltaTime = GWorld->DeltaTimeSeconds;
 	ElapsedCrystalCooldownTime += DeltaTime;
-
+	HudWidget->MountainCrystalCooltime(1 - ElapsedCrystalCooldownTime / Duration);
+	HudWidget->WaveCrystalCooltime(1 - ElapsedCrystalCooldownTime / Duration);
+	HudWidget->TreeCrystalCooltime(1 - ElapsedCrystalCooldownTime / Duration);
 	if (ElapsedCrystalCooldownTime >= Duration)
 	{
 		ElapsedCrystalCooldownTime = 0.f;
@@ -945,7 +957,11 @@ void AIGPlayerCharacter::TutorialWidgetVisible()
 	{
 		if (TutorialWidget->GetVisibility() == ESlateVisibility::Hidden)
 		{
-			TutorialWidget->VisibleTutorialWidget();
+			TutorialWidget->VisibleTutorialWidget();			
+		}
+		else if(TutorialWidget->GetVisibility() == ESlateVisibility::Visible)
+		{
+			TutorialWidget->CloseTutorialWidget();			
 		}
 	}
 }
@@ -1029,7 +1045,7 @@ void AIGPlayerCharacter::UpdateShinmyophilScript(const FString InText)
 
 void AIGPlayerCharacter::AddHealKit()
 {
-	if (!bIsFirstGetHealKit)
+	if(!bIsFirstGetHealKit)
 	{
 		bIsFirstGetHealKit = true;
 		ShowFirstHealKitGIFTutorial();
@@ -1043,10 +1059,10 @@ void AIGPlayerCharacter::AddHealKit()
 
 void AIGPlayerCharacter::SetVillageBGM()
 {
-	AudioComponent->Stop();
-	CurrentBGM = SoundDataAsset->BGMVillageSoundCue;
-	AudioComponent = UGameplayStatics::SpawnSound2D(this, CurrentBGM);
-	AudioComponent->Play();
+		AudioComponent->Stop();
+		CurrentBGM = SoundDataAsset->BGMVillageSoundCue;
+		AudioComponent = UGameplayStatics::SpawnSound2D(this, CurrentBGM);
+		AudioComponent->Play();
 }
 
 void AIGPlayerCharacter::SetBossBGM()
@@ -1071,11 +1087,11 @@ void AIGPlayerCharacter::ShowFirstCrystalGIFTutorial()
 
 void AIGPlayerCharacter::ShowFirstBossGIFTutorial()
 {
-	if (bIsFirstMeetBoss)
+	if(bIsFirstMeetBoss)
 	{
 		return;
 	}
-
+	
 	GIFTutorialWidget->VisibleGIFTutorialWidget();
 	GIFTutorialWidget->PreSetByFirstBoss();
 	bIsFirstMeetBoss = true;
