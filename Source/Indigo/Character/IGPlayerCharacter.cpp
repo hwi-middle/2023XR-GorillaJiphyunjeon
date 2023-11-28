@@ -1048,7 +1048,6 @@ void AIGPlayerCharacter::SetVillageBGM()
 	CurrentBGM = SoundDataAsset->BGMVillageSoundCue;
 	AudioComponent = UGameplayStatics::SpawnSound2D(this, CurrentBGM);
 	AudioComponent->SetupAttachment(RootComponent);
-	AudioComponent->RegisterComponent();
 }
 
 void AIGPlayerCharacter::SetBossBGM()
@@ -1062,7 +1061,6 @@ void AIGPlayerCharacter::SetBossBGM()
 	UGameplayStatics::PlaySound2D(this, SoundDataAsset->BossAppearSoundCue);
 	AudioComponent = UGameplayStatics::SpawnSound2D(this, CurrentBGM);
 	AudioComponent->SetupAttachment(RootComponent);
-	AudioComponent->RegisterComponent();
 }
 
 void AIGPlayerCharacter::ShowFirstHealKitGIFTutorial()

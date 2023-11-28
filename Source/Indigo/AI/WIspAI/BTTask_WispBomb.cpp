@@ -1,0 +1,47 @@
+// Copyright GorillaJiphyunjeon. All Rights Reserved.
+
+
+#include "Indigo/AI/WIspAI/BTTask_WispBomb.h"
+#include "AIController.h"
+#include "Indigo/AI/IGAI.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "Indigo/CommonMonsters/IGHintMonsterBase.h"
+#include "Indigo/Character/IGPlayerCharacter.h"
+#include "Kismet/GameplayStatics.h"
+
+EBTNodeResult::Type UBTTask_WispBomb::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+	APawn* ControllingPawn = Cast<APawn>(OwnerComp.GetAIOwner()->GetPawn());
+	if (!ControllingPawn)
+	{
+		return EBTNodeResult::Failed;
+	}
+
+	ControllingWisp = Cast<AIGHintMonsterBase>(ControllingPawn);
+	if (!ControllingWisp)
+	{
+		return EBTNodeResult::Failed;
+	}
+
+	AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0));
+	if(Player->IsDead() || ControllingWisp->IsDead())
+	{
+		return EBTNodeResult::Aborted;
+	}
+	
+	CheckEndDelegateHandle = ControllingWisp->OnFinishWispAttack.AddLambda(
+		[&]()
+		{
+			DeleteLambda();
+			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		}
+	);
+
+	ControllingWisp->PerformBombAttack();	
+	return EBTNodeResult::InProgress;	
+}
+
+void UBTTask_WispBomb::DeleteLambda()
+{
+	Cast<AIGHintMonsterBase>(ControllingWisp)->OnFinishWispAttack.Remove(CheckEndDelegateHandle);
+}

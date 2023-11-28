@@ -81,7 +81,7 @@ void UIGPlayerInventory::AddCrystal(ECrystal InCrystalType)
 	}
 	
 	
-	AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(GetOwner());	
+	const AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(GetOwner());	
 	if(Player == nullptr)
 	{
 		return;
@@ -91,7 +91,6 @@ void UIGPlayerInventory::AddCrystal(ECrystal InCrystalType)
 	{
 		//처음 결정 조각 얻었을 떄
 		Player->GetShinmyophil()->ProvisoRemakeFirstGetCrystalFrag();
-		Player->ShowFirstCrystalGIFTutorial();
 		bIsGetFirstCrystalFrag = true;
 	}
 	
@@ -140,8 +139,6 @@ void UIGPlayerInventory::AddCrystal(ECrystal InCrystalType)
 		WaveCrystalArray.Num() >= 3
 		)
 	{
-		//다 모았을 때 - 문열리는거 안씀
-		//IGBossZoneGateManager::GetInstance()->OpenGate();
 		Player->GetShinmyophil()->ProvisoRemakeGetAllCrystal();
 	}
 }

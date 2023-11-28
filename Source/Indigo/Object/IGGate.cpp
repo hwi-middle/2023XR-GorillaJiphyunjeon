@@ -2,6 +2,8 @@
 
 
 #include "IGGate.h"
+
+#include "Components/BoxComponent.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Character/IGPlayerCharacter.h"
 #include "Indigo/Inventory/IGShinmyophil.h"
@@ -15,7 +17,7 @@ AIGGate::AIGGate()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/BossDoor/Wall_small01.Wall_small01'"), [&](UStaticMesh* MeshRef)
+	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/Gatehouse/SM_gatehouse_door.SM_gatehouse_door'"), [&](UStaticMesh* MeshRef)
 	{
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetStaticMesh(MeshRef);
@@ -32,6 +34,8 @@ AIGGate::AIGGate()
 
 	StartRotation = GetActorRotation();
 	TargetRotation = StartRotation + FRotator(0.0f, 90.0f, 0.0f);
+
+	BoxCollider->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -40,7 +44,8 @@ void AIGGate::BeginPlay()
 	Super::BeginPlay();
 
 	BossGatePlace = GetWorld()->SpawnActor<AIGBossGatePlace>(AIGBossGatePlace::StaticClass(), GetActorLocation(), GetActorRotation());
-	BossGatePlace->SetActorScale3D(GetActorScale()*5);
+	BossGatePlace->SetActorScale3D(GetActorScale()*50);
+
 	
 }
 
@@ -48,6 +53,12 @@ void AIGGate::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 	IGBossZoneGateManager::GetInstance()->FOpenGateDelegate.Unbind();
+}
+
+void AIGGate::EnterPhasePlace()
+{
+	Super::EnterPhasePlace();
+	UGameplayStatics::OpenLevel(this, TEXT("BOSS"));
 }
 
 // Called every frame

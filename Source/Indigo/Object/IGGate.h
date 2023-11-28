@@ -5,12 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Indigo/Interface/Interactable.h"
+#include "Indigo/PhasePlace/IGPhasePlaceBase.h"
 #include "IGGate.generated.h"
 
 class AIGBossGatePlace;
 
 UCLASS()
-class INDIGO_API AIGGate : public AActor, public IInteractable
+class INDIGO_API AIGGate : public AIGPhasePlaceBase, public IInteractable
 {
 	GENERATED_BODY()
 	
@@ -22,6 +23,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	virtual void EnterPhasePlace();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
