@@ -70,6 +70,21 @@ void UIGIngameHUDWidget::SetHealKit(const int32 InValue) const
 	HealKit->SetHealKitCount(InValue);
 }
 
+void UIGIngameHUDWidget::MountainCrystalCooltime(const float InDuraiontime)
+{
+	MountainCrystalSlot->CrystalCooltime(InDuraiontime);
+}
+
+void UIGIngameHUDWidget::WaveCrystalCooltime(const float InDuraiontime)
+{
+	WaveCrystalSlot->CrystalCooltime(InDuraiontime);
+}
+
+void UIGIngameHUDWidget::TreeCrystalCooltime(const float InDuraiontime)
+{
+	TreeCrystalSlot->CrystalCooltime(InDuraiontime);
+}
+
 void UIGIngameHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -83,4 +98,11 @@ void UIGIngameHUDWidget::NativeConstruct()
 	TreeCrystalSlot = Cast<UIGCrystalSlot>(GetWidgetFromName(TEXT("TreeCrystalSlots")));
 	WaveCrystalSlot = Cast<UIGCrystalSlot>(GetWidgetFromName(TEXT("WaveCrystalSlots")));
 	HealKit = Cast<UIGHealKits>(GetWidgetFromName(TEXT("HealKitSlot")));
+
+	if(TreeCrystalSlot || WaveCrystalSlot || MountainCrystalSlot)
+	{
+		MountainCrystalSlot->SetCrystalType(ECrystal::Mountain);
+		WaveCrystalSlot->SetCrystalType(ECrystal::Wave);
+		TreeCrystalSlot->SetCrystalType(ECrystal::Tree);		
+	}
 }

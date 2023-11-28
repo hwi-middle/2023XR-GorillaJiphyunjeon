@@ -18,28 +18,25 @@ void UIGTutotialWidget::NativeConstruct()
 	Controller->bEnableClickEvents = true;
 	
 	ConfirmButton = Cast<UButton>(GetWidgetFromName(TEXT("Confirm")));
-	ConfirmButton->OnClicked.AddDynamic(this, &UIGTutotialWidget::CloseTutorialWidget);
-	SetVisibility(ESlateVisibility::Visible);
-	UGameplayStatics::SetGamePaused(GWorld, true);
+	ConfirmButton->OnClicked.AddDynamic(this, &UIGTutotialWidget::CloseTutorialWidget);	
 }
 
 void UIGTutotialWidget::CloseTutorialWidget()
 {
+	SetVisibility(ESlateVisibility::Hidden);
 	Controller->bShowMouseCursor = false;
 	Controller->bEnableMouseOverEvents = false;
 	Controller->bEnableClickEvents = false;
-
 	UGameplayStatics::SetGamePaused(GWorld, false);
-	SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UIGTutotialWidget::VisibleTutorialWidget()
 {
+	SetVisibility(ESlateVisibility::Visible);
 	Controller->bShowMouseCursor = true;
 	Controller->bEnableMouseOverEvents = true;
 	Controller->bEnableClickEvents = true;
 	UGameplayStatics::SetGamePaused(GWorld, true);
-	SetVisibility(ESlateVisibility::Visible);
 }
 
 

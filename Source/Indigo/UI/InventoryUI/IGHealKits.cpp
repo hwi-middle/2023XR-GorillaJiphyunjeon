@@ -14,13 +14,24 @@ void UIGHealKits::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	HealKitSlot= Cast<UImage>(GetWidgetFromName(TEXT("HealKitIcon")));
+	HealKitSlot = Cast<UImage>(GetWidgetFromName(TEXT("HealKit")));
+	HealKitEmpty = Cast<UImage>(GetWidgetFromName(TEXT("HealKitIcon")));
 	HealKitCount= Cast<UTextBlock>(GetWidgetFromName(TEXT("HealKitCountText")));
+
+	HealKitSlot->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 0.0f));
 	
 }
 
 void UIGHealKits::SetHealKitCount(const int32 InValue)
 {
+	if(InValue == 0)
+	{
+		HealKitSlot->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 0.0f));
+	}
+	else
+	{
+		HealKitSlot->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
+	}
 	HealKitCount->SetText(FText::AsNumber(InValue)); 
 }
 
