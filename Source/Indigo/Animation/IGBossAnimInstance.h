@@ -52,6 +52,8 @@ protected:
 	uint8 bIsDead : 1;
 	
 public:
+	FOnGenerateBossAttackDelegate OnGenerateBossNormalWeakAttack;
+	FOnGenerateBossAttackDelegate OnGenerateBossNormalStrongAttack;
 	FOnGenerateBossAttackDelegate OnGenerateBossCloseAttack;
 	FOnGenerateBossAttackDelegate OnGenerateBossFloorAttack;
 	FOnGenerateBossAttackDelegate OnGenerateBossFarAttack;
@@ -67,6 +69,13 @@ public:
 	FORCEINLINE void StartFloorAttack() { bShouldPerformFloorAttack = true; }
 	FORCEINLINE void StartFarAttack() { bShouldPerformFarAttack = true; }
 
+	UFUNCTION()
+	void AnimNotify_GenerateNormalWeakAttack();
+
+	UFUNCTION()
+	void AnimNotify_GenerateNormalStrongAttack();
+
+	
 	UFUNCTION()
 	void AnimNotify_GenerateCloseAttack();
 

@@ -24,6 +24,8 @@
 #include "Indigo/UI/IGIngameHUDWidget.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Kismet/GameplayStatics.h"
+#include "Indigo/DataAsset/IGSoundDataAsset.h"
+#include "Sound/SoundCue.h"
 
 AIGBoss::AIGBoss()
 {
@@ -64,10 +66,13 @@ AIGBoss::AIGBoss()
 		EyeMesh->SetupAttachment(GetMesh());
 	}, EAssertionLevel::Check);
 
+	SoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
+		
 	bIsFirstAttack = false;
 	bIsFirstRangeAttack = false;
 	bIsFirstFloorAttack = false;
 	bIsFirstDeadInteract = false;
+	bIsEnforcedDamage = false;
 }
 
 void AIGBoss::BeginPlay()
@@ -79,6 +84,8 @@ void AIGBoss::BeginPlay()
 
 	AnimInstance = CastChecked<UIGBossAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->SetSpeed(0.f);
+	AnimInstance->OnGenerateBossNormalWeakAttack.AddUObject(this, &AIGBoss::GenerateNormalWeakAttack);
+	AnimInstance->OnGenerateBossNormalStrongAttack.AddUObject(this, &AIGBoss::GenerateNormalStrongAttack);
 	AnimInstance->OnGenerateBossCloseAttack.AddUObject(this, &AIGBoss::GenerateCloseAttack);
 	AnimInstance->OnGenerateBossFloorAttack.AddUObject(this, &AIGBoss::GenerateFloorAttack);
 	AnimInstance->OnGenerateBossFarAttack.AddUObject(this, &AIGBoss::GenerateFarAttack);
@@ -96,9 +103,13 @@ void AIGBoss::BeginPlay()
 	FarAttack_Phase2Probability = GimmickDataAsset->FarAttack_Phase2Probability;
 	FloorAttack_Phase2Probability = GimmickDataAsset->FloorAttack_Phase2Probability;
 
+	NormalWeak_Damage = GimmickDataAsset->NormalWeak_Damage;
+	NormalStrong_Damage = GimmickDataAsset->NormalStrong_Damage;
+	
 	CloseAttack_SpikeNum = GimmickDataAsset->CloseAttack_SpikeNum;
 	CloseAttack_HandRadius = GimmickDataAsset->CloseAttack_HandRadius;
 	CloseAttack_Damage = GimmickDataAsset->CloseAttack_Damage;
+	CloseAttack_HandDamage = GimmickDataAsset->CloseAttack_HandDamage;
 	CloseAttack_SpikeTimeGap = GimmickDataAsset->CloseAttack_SpikeTimeGap;
 	CloseAttack_SpikeDistanceGap = GimmickDataAsset->CloseAttack_SpikeDistanceGap;
 	CloseAttack_SpikeDuration = GimmickDataAsset->CloseAttack_SpikeDuration;
@@ -138,6 +149,16 @@ float AIGBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 		HudWidget->UpdateHpGauge(Hp);
 	}
 
+	if(bIsEnforcedDamage)
+	{
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->BossGetEnforceDamageSoundCue);		
+	}
+	else
+	{
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->BossGetDamageSoundCue);
+	}
+	bIsEnforcedDamage = false;
+	
 	if (Hp <= 0 && !bIsDead)
 	{
 		AnimInstance->Die();
@@ -297,6 +318,74 @@ void AIGBoss::PerformFarAttack()
 	AnimInstance->StartFarAttack();
 }
 
+void AIGBoss::GenerateNormalWeakAttack()
+{
+	FHitResult Result;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+
+	FVector TargetVector = GetActorForwardVector();
+	FVector StartLocation = GetActorLocation();
+	FVector EndLocation = StartLocation + TargetVector.GetSafeNormal2D() * 500.f;
+	FVector BoxExtent(100.0f, 100.0f, 100.0f);
+
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		Result,
+		StartLocation,
+		EndLocation,
+		FQuat::Identity,
+		ECC_CHECK_PAWN,
+		FCollisionShape::MakeBox(BoxExtent),
+		CollisionParams
+	);
+
+	DrawDebugBox(GetWorld(), StartLocation, BoxExtent, FQuat::Identity, FColor::Red, false, 3, 0, 1);
+	DrawDebugBox(GetWorld(), EndLocation, BoxExtent, FQuat::Identity, FColor::Red, false, 3, 0, 1);
+	if (bHit)
+	{
+		AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(Result.GetActor());
+		if (Player)
+		{
+			FDamageEvent DamageEvent;
+			Player->TakeDamage(NormalWeak_Damage, DamageEvent, GetInstigatorController(), this);
+		}
+	}
+}
+
+void AIGBoss::GenerateNormalStrongAttack()
+{
+	FHitResult Result;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+
+	FVector TargetVector = GetActorForwardVector();
+	FVector StartLocation = GetActorLocation();
+	FVector EndLocation = StartLocation + TargetVector.GetSafeNormal2D() * 500.f;
+	FVector BoxExtent(100.0f, 100.0f, 100.0f);
+
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		Result,
+		StartLocation,
+		EndLocation,
+		FQuat::Identity,
+		ECC_CHECK_PAWN,
+		FCollisionShape::MakeBox(BoxExtent),
+		CollisionParams
+	);
+
+	DrawDebugBox(GetWorld(), StartLocation, BoxExtent, FQuat::Identity, FColor::Red, false, 3, 0, 1);
+	DrawDebugBox(GetWorld(), EndLocation, BoxExtent, FQuat::Identity, FColor::Red, false, 3, 0, 1);
+	if (bHit)
+	{
+		AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(Result.GetActor());
+		if (Player)
+		{
+			FDamageEvent DamageEvent;
+			Player->TakeDamage(NormalStrong_Damage, DamageEvent, GetInstigatorController(), this);
+		}
+	}
+}
+
 void AIGBoss::GenerateCloseAttack()
 {
 	// 주먹에 의한 피해
@@ -322,27 +411,42 @@ void AIGBoss::GenerateCloseAttack()
 		if (Player)
 		{
 			FDamageEvent DamageEvent;
-			Player->TakeDamage(10.f, DamageEvent, GetInstigatorController(), this);
+			Player->TakeDamage(CloseAttack_Damage, DamageEvent, GetInstigatorController(), this);
 		}
 	}
 
-	// 산 생성 -> 보스 Front방향으로 변경!
 	FVector TargetVector = GetActorForwardVector();
-	TargetVector.Normalize();
+	FVector StartLocation = GetActorLocation();
+	FVector EndLocation = StartLocation + TargetVector.GetSafeNormal2D() * 2500.f;
+	FVector BoxExtent(100.0f, 100.0f, 100.0f);
 
-	for (uint32 i = 0; i < CloseAttack_SpikeNum; i++)
+	bHit = GetWorld()->SweepSingleByChannel(
+		Result,
+		StartLocation,
+		EndLocation,
+		FQuat::Identity,
+		ECC_CHECK_PAWN,
+		FCollisionShape::MakeBox(BoxExtent),
+		CollisionParams
+	);
+
+	DrawDebugBox(GetWorld(), StartLocation, BoxExtent, FQuat::Identity, FColor::Red, false, 3, 0, 1);
+	DrawDebugBox(GetWorld(), EndLocation, BoxExtent, FQuat::Identity, FColor::Red, false, 3, 0, 1);
+	if (bHit)
 	{
-		constexpr float Height = 300.f;
-		FVector GenerationLocation = GetActorLocation() + TargetVector * CloseAttack_SpikeDistanceGap * (i + 1);
-		GenerationLocation.Z = -Height + CloseAttack_SpikeGroundOffset;
-		AIGMountainSpike* SpawnedSpike = GWorld->SpawnActor<AIGMountainSpike>(GenerationLocation, FRotator::ZeroRotator);
-		SpawnedSpike->Init(CloseAttack_Damage, 300.f, CloseAttack_SpikeTimeGap * i, CloseAttack_SpikeDuration, CloseAttack_SpikeDestroyDelay);
+		AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(Result.GetActor());
+		if (Player)
+		{
+			FDamageEvent DamageEvent;
+			Player->TakeDamage(CloseAttack_Damage, DamageEvent, GetInstigatorController(), this);
+		}
 	}
 }
 
 void AIGBoss::GenerateFloorAttack()
 {
 	float Angle = 0.f;
+	UGameplayStatics::PlaySound2D(this,	SoundDataAsset->BossShotTreeSoundCue);
 	for (uint32 i = 0; i < FloorAttack_ProjectileNum; ++i)
 	{
 		AIGStraightProjectile* SpawnedProjectile = GWorld->SpawnActor<AIGBossFlooringProjectile>(GetActorLocation(), FRotator(0.f, Angle, 0.f));

@@ -31,7 +31,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	FORCEINLINE void SetIsEnforced (const bool InValue) {bIsEnforced = InValue;}
+	
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UStaticMeshComponent> Mesh;
@@ -47,6 +48,9 @@ protected:
 
 	UPROPERTY()
 	float ElapsedTime;
+	
+	UPROPERTY()
+	uint8 bIsEnforced : 1;
 	
 public:
 	FOnHitProjectile OnHitProjectile;

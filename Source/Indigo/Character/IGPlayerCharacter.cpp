@@ -4,10 +4,13 @@
 #include "IGPlayerCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "IGBoss.h"
 #include "InputAction.h"
 #include "InputActionValue.h"
 #include "InputMappingContext.h"
+#include "Audio/AudioDebug.h"
 #include "Camera/CameraComponent.h"
+#include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/PostProcessVolume.h"
@@ -34,6 +37,7 @@
 #include "Indigo/UI/IGIngameHUDWidget.h"
 #include "Indigo/UI/QuestUI/IGQuest.h"
 #include "Indigo/UI/TutorialUI/IGTutotialWidget.h"
+#include "Indigo/UI/TutorialUI/IGGIFTutorialWidget.h"
 #include "Indigo/Util/IGCharacterDataTable.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGDataTableParser.h"
@@ -43,6 +47,7 @@
 #include "Indigo/Interactable/IGHintBase.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Sound/AmbientSound.h"
 
 AIGPlayerCharacter::AIGPlayerCharacter()
 {
@@ -129,6 +134,11 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 		TutorialWidgetClass = Class;
 	}, EAssertionLevel::Check);
 
+	FIGConstructorHelper::FindClassAndInitialize<UIGGIFTutorialWidget>(TEXT("/Game/_GorillaJiphyunjeon/UI/Game/Tutorial/WBP_GIFTutorialWidget.WBP_GIFTutorialWidget_C"), [&](TSubclassOf<UIGGIFTutorialWidget> Class)
+	{
+		GIFTutorialWidgetClass = Class;
+	}, EAssertionLevel::Check);
+	
 	FIGConstructorHelper::FindObjectAndInitialize<UAnimMontage>(TEXT("/Script/Engine.AnimMontage'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/AM_PlayerAttack.AM_PlayerAttack'"), [&](UAnimMontage* Montage)
 	{
 		ComboActionMontage = Montage;
@@ -137,10 +147,12 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	PlayerInventory = CreateDefaultSubobject<UIGPlayerInventory>(TEXT("Inventory"));
 	Shinmyophil = CreateDefaultSubobject<UIGShinmyophil>(TEXT("Shinmyophil"));
 
-	TestSoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
+	SoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
 	PlayerDataAsset = FIGConstructorHelper::FindAndGetObject<UIGPlayerDataAsset>(TEXT("/Script/Indigo.IGPlayerDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerData.DA_PlayerData'"));
 
 	HealCount = 0;
+	bIsFirstGetHealKit = false;
+	bIsFirstMeetBoss = false;
 }
 
 bool AIGPlayerCharacter::CheckPlayerState(const EPlayerState InState) const
@@ -194,6 +206,7 @@ void AIGPlayerCharacter::BeginPlay()
 	PlayerAnimInstance = CastChecked<UIGPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	PlayerAnimInstance->SetSpeed(0.f);
 	PlayerAnimInstance->OnFinishRoll.AddUObject(this, &AIGPlayerCharacter::FinishRolling);
+	PlayerAnimInstance->OnFinishAttack.AddUObject(this, &AIGPlayerCharacter::NotifyComboActionEnd);
 	PlayerAnimInstance->OnShouldGenerateProjectile.AddUObject(this, &AIGPlayerCharacter::GenerateProjectile);
 	CurrentState = EPlayerState::Idling;
 
@@ -223,7 +236,15 @@ void AIGPlayerCharacter::BeginPlay()
 	if (TutorialWidget)
 	{
 		TutorialWidget->AddToViewport();
+		TutorialWidget->VisibleTutorialWidget();
 		TutorialWidget->SetKeyboardFocus();
+	}
+
+	GIFTutorialWidget = CreateWidget<UIGGIFTutorialWidget>(GetWorld(), GIFTutorialWidgetClass);
+	if (GIFTutorialWidget)
+	{
+		GIFTutorialWidget->AddToViewport(10);
+		GIFTutorialWidget->CloseGIFTutorialWidget();
 	}
 
 	ManageStaminaByTime();
@@ -247,6 +268,8 @@ void AIGPlayerCharacter::BeginPlay()
 		DMI_Fade = FadeMaterial;
 		PlayFadeInSequence();
 	}
+
+	SetVillageBGM();
 }
 
 void AIGPlayerCharacter::Tick(float DeltaTime)
@@ -326,7 +349,7 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 		AimingEndPoint,
 		ECC_PROJECTILE
 	);
-	
+
 	if (bIsAimingHit)
 	{
 		const AActor* HitActor = AimingHitResult.GetActor();
@@ -343,6 +366,7 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 	// 바닥에 떨어지면 사망
 	if (GetActorLocation().Z <= DieZLocation)
 	{
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerDeadSoundCue);
 		if (!CheckPlayerState(EPlayerState::Dead))
 		{
 			PlayerAnimInstance->Die();
@@ -385,14 +409,28 @@ void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 float AIGPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	UE_LOG(LogTemp, Log, TEXT("플레이어 TakeDamage"));
-	if (CheckPlayerState(EPlayerState::Rolling))
+
+	AIGBoss* Boss = Cast<AIGBoss>(DamageCauser);
+	if (Boss)
 	{
-		return 0.f;
+		EAttackPattern CurGimmick = Boss->GetCurrentGimmick();
+		
+		if ((ActivatedCrystal == ECrystal::Mountain && CurGimmick == EAttackPattern::Close) ||
+		(ActivatedCrystal == ECrystal::Wave && CurGimmick == EAttackPattern::Far) ||
+		(ActivatedCrystal == ECrystal::Tree && CurGimmick == EAttackPattern::Floor)
+		)
+		{
+			return 0.f;
+		}
 	}
+
+
+	UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerGetDamageSoundCue);
 	Hp -= DamageAmount;
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("Player HP: [%f]"), Hp));
 	if (Hp <= 0)
 	{
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerDeadSoundCue);
 		PlayerAnimInstance->Die();
 		HudWidget->UpdateHpGauge(0.f);
 		AddPlayerState(EPlayerState::Dead);
@@ -512,6 +550,7 @@ void AIGPlayerCharacter::Interact()
 
 	if (Crystal != nullptr)
 	{
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->ObjectGetCrystalSoundCue);
 		PlayerInventory->AddCrystal(Crystal->GetCrystalType());
 		HudWidget->AddCrystal(Crystal);
 	}
@@ -555,18 +594,25 @@ void AIGPlayerCharacter::GenerateProjectile()
 	SetActorRotation(FRotator(ActorRot.Pitch, AimingTargetYaw, ActorRot.Roll));
 	//RotateToAimingTarget();
 
+	//휘두르는 소리
+	UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerSwingSoundCue);
+
 	const FVector SpawnLocation = GetActorLocation() + AimingWorldDirection * 100.f;
 	AIGStraightProjectile* SpawnedActor = nullptr;
 	switch (CurrentCombo)
 	{
 	case 1:
 		SpawnedActor = GetWorld()->SpawnActor<AIGPlayerComboProjectile1>(SpawnLocation, GetActorRotation());
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerAttackCombo1SoundCue);
 		break;
 	case 2:
 		SpawnedActor = GetWorld()->SpawnActor<AIGPlayerComboProjectile2>(SpawnLocation, GetActorRotation());
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerAttackCombo2SoundCue);
 		break;
 	case 3:
 		SpawnedActor = GetWorld()->SpawnActor<AIGPlayerComboProjectile3>(SpawnLocation, GetActorRotation());
+		SpawnedActor->SetIsEnforced(true);
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerAttackCombo3SoundCue);
 		break;
 	default:
 		checkNoEntry();
@@ -575,7 +621,6 @@ void AIGPlayerCharacter::GenerateProjectile()
 	SpawnedActor->Init(Damage, SpawnDirection, 3000.f, 10.f, EProjectileSpawnType::SpawnedByPlayer);
 	SpawnedActor->OnHitProjectile.AddUObject(this, &AIGPlayerCharacter::OnHitProjectile);
 
-	UGameplayStatics::PlaySound2D(this, TestSoundDataAsset->PlayerAttackSoundCue);
 }
 
 void AIGPlayerCharacter::RotateToAimingTarget()
@@ -683,6 +728,7 @@ void AIGPlayerCharacter::ComboActionEnd(UAnimMontage* TargetMontage, bool IsProp
 
 void AIGPlayerCharacter::NotifyComboActionEnd()
 {
+	CurrentCombo = 0;
 	RemovePlayerState(EPlayerState::Attacking);
 }
 
@@ -704,7 +750,7 @@ void AIGPlayerCharacter::StartRolling()
 	AddPlayerState(EPlayerState::Rolling);
 	GetCharacterMovement()->MaxWalkSpeed = RollSpeed;
 	PlayerAnimInstance->StartRoll();
-	UGameplayStatics::PlaySound2D(this, TestSoundDataAsset->PlayerRollingSoundCue);
+	UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerRollSoundCue);
 }
 
 void AIGPlayerCharacter::FinishRolling()
@@ -776,6 +822,10 @@ void AIGPlayerCharacter::ManageStaminaByTime()
 	}
 
 	StaminaValue = FMath::Clamp(StaminaValue, 0.f, 100.f);
+	if (StaminaValue == 0.0f)
+	{
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerLowStaminaSoundCue);
+	}
 	HudWidget->UpdateStaminaGauge(StaminaValue);
 }
 
@@ -792,11 +842,11 @@ void AIGPlayerCharacter::ActivateCrystalByIndex(uint32 Index)
 	const TArray<AIGTreeCrystal*> TreeCrystalArray = PlayerInventory->GetTreeCrystalArray();
 	const TArray<AIGWaveCrystal*> WaveCrystalArray = PlayerInventory->GetWaveCrystalArray();
 
-	if (Index == 1 && MountainCrystalArray.Num() >= 3)
+	if (Index == 0 && MountainCrystalArray.Num() >= 3)
 	{
 		Type = ECrystal::Mountain;
 	}
-	else if (Index == 2 && TreeCrystalArray.Num() >= 3)
+	else if (Index == 1 && TreeCrystalArray.Num() >= 3)
 	{
 		Type = ECrystal::Tree;
 	}
@@ -808,7 +858,7 @@ void AIGPlayerCharacter::ActivateCrystalByIndex(uint32 Index)
 	{
 		return;
 	}
-
+	UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerCrystalActivitySoundCue);
 
 	ensure(Type != ECrystal::None);
 
@@ -846,6 +896,7 @@ void AIGPlayerCharacter::ManageCrystalActivationByTime()
 		ElapsedCrystalActivationTime = 0.f;
 		RemovePlayerState(EPlayerState::CrystalActivated);
 		AddPlayerState(EPlayerState::CrystalCooldown);
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerCrystalDisableSoundCue);
 		GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::ManageCrystalCooldownByTime);
 		return;
 	}
@@ -975,11 +1026,67 @@ void AIGPlayerCharacter::UpdateShinmyophilScript(const FString InText)
 
 void AIGPlayerCharacter::AddHealKit()
 {
+	if(!bIsFirstGetHealKit)
+	{
+		bIsFirstGetHealKit = true;
+		ShowFirstHealKitGIFTutorial();
+	}
 	HealCount++;
 	if (HudWidget != nullptr)
 	{
 		HudWidget->SetHealKit(HealCount);
 	}
+}
+
+void AIGPlayerCharacter::SetVillageBGM()
+{
+	if (AudioComponent != nullptr)
+	{
+		AudioComponent->Stop();
+		AudioComponent->RemoveFromRoot();
+	}
+	CurrentBGM = SoundDataAsset->BGMVillageSoundCue;
+	AudioComponent = UGameplayStatics::SpawnSound2D(this, CurrentBGM);
+	AudioComponent->SetupAttachment(RootComponent);
+	AudioComponent->RegisterComponent();
+}
+
+void AIGPlayerCharacter::SetBossBGM()
+{
+	if (AudioComponent != nullptr)
+	{
+		AudioComponent->Stop();
+		AudioComponent->RemoveFromRoot();
+	}
+	CurrentBGM = SoundDataAsset->BGMBossSoundCue;
+	UGameplayStatics::PlaySound2D(this, SoundDataAsset->BossAppearSoundCue);
+	AudioComponent = UGameplayStatics::SpawnSound2D(this, CurrentBGM);
+	AudioComponent->SetupAttachment(RootComponent);
+	AudioComponent->RegisterComponent();
+}
+
+void AIGPlayerCharacter::ShowFirstHealKitGIFTutorial()
+{
+	GIFTutorialWidget->VisibleGIFTutorialWidget();
+	GIFTutorialWidget->PreSetByFirstHealKit();
+}
+
+void AIGPlayerCharacter::ShowFirstCrystalGIFTutorial()
+{
+	GIFTutorialWidget->VisibleGIFTutorialWidget();
+	GIFTutorialWidget->PreSetByFirstCrystal();
+}
+
+void AIGPlayerCharacter::ShowFirstBossGIFTutorial()
+{
+	if(bIsFirstMeetBoss)
+	{
+		return;
+	}
+	
+	GIFTutorialWidget->VisibleGIFTutorialWidget();
+	GIFTutorialWidget->PreSetByFirstBoss();
+	bIsFirstMeetBoss = true;
 }
 
 

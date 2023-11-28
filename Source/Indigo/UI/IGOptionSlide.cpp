@@ -10,6 +10,7 @@
 #include "Sound/SoundCue.h"
 #include "UObject/UnrealTypePrivate.h"
 #include "Components/TextBlock.h"
+#include "Sound/SoundCue.h"
 
 UIGOptionSlide::UIGOptionSlide(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
 {
@@ -21,6 +22,8 @@ void UIGOptionSlide::SetSliderType(const ESliderType InType)
 	SoundSlider->SetMinValue(0.01f);
 	SoundSlider->SetMaxValue(2.0f);
 	SoundSlider->SetValue(1.0f);
+
+	SoundSlider->OnMouseCaptureBegin.AddDynamic(this, &UIGOptionSlide::PlayClickSound);
 	if(InType == ESliderType::BGM)
 	{
 		SoundSlider->OnValueChanged.AddDynamic(this, &UIGOptionSlide::SetBGM);		
@@ -95,4 +98,9 @@ void UIGOptionSlide::NativeConstruct()
 			}
 		}
 	}
+}
+
+void UIGOptionSlide::PlayClickSound()
+{
+	UGameplayStatics::PlaySound2D(this, SoundDataAsset->UIClick);
 }

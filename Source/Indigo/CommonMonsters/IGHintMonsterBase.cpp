@@ -16,6 +16,8 @@
 #include "Indigo/Interactable/IGTreeCrystal.h"
 #include "Indigo/Animation/IGWispAnimInstance.h"
 #include "Indigo/Interactable/IGHealKit.h"
+#include "Indigo/DataAsset/IGSoundDataAsset.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 AIGHintMonsterBase::AIGHintMonsterBase()
@@ -41,6 +43,8 @@ AIGHintMonsterBase::AIGHintMonsterBase()
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	bUseControllerRotationYaw = false;
 
+	SoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
+		
 	bIsHit = false;
 	bIsAttack = false;
 	bIsDelay = false;
@@ -182,7 +186,8 @@ float AIGHintMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	{
 		return 0.0f;
 	}
-
+	UGameplayStatics::PlaySound2D(this, SoundDataAsset->WispHitSoundCue);
+	
 	AnimInstance->OnHit();
 	bIsHit = true;
 	
@@ -190,6 +195,7 @@ float AIGHintMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("[도깨비불 체력] %f"), GetHp()));
 	if(GetHp() <= 0)
 	{
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->WispDeadSoundCue);
 		bIsDead = true;
 				
 		DelegateHandle = AnimInstance->OnFinishHit.AddUObject(this, &AIGHintMonsterBase::DropCrystal);			
@@ -239,10 +245,10 @@ void AIGHintMonsterBase::PerformBombAttack()
 
 void AIGHintMonsterBase::Explosion()
 {
+	UGameplayStatics::PlaySound2D(this, SoundDataAsset->WispBombSoundCue);
 	FHitResult Result;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
-	
 	bool bHit = GetWorld()->SweepSingleByChannel(
 	Result,
 	GetActorLocation(),

@@ -11,6 +11,7 @@ class UIGIngameHUDWidget;
 class UIGBossDataAsset;
 class UIGBossGimmickDataAsset;
 class UBoxComponent;
+class UIGSoundDataAsset;
 DECLARE_MULTICAST_DELEGATE(FOnFinishBossAttackDelegate)
 
 class UIGBossAnimInstance;
@@ -102,7 +103,11 @@ private:
 	float FloorAttack_Phase2Probability;
 	
 	// 평타
-	// TODO: 평타 관련 구현
+	UPROPERTY(VisibleAnywhere)
+	float NormalWeak_Damage;
+
+	UPROPERTY(VisibleAnywhere)
+	float NormalStrong_Damage;
 	
 	// 근거리 패턴
 	UPROPERTY(VisibleAnywhere)
@@ -113,6 +118,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	float CloseAttack_Damage;
+
+	UPROPERTY(VisibleAnywhere)
+	float CloseAttack_HandDamage;
 
 	UPROPERTY(VisibleAnywhere)
 	float CloseAttack_SpikeTimeGap;
@@ -173,7 +181,12 @@ private:
 	uint8 bIsFirstDeadInteract : 1;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UBoxComponent> InteractCollider; 
+	TObjectPtr<UBoxComponent> InteractCollider;
+	
+	// 사운드
+	UPROPERTY()
+	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;
+
 	
 public:
 	FOnFinishBossAttackDelegate OnFinishBossAttack;
@@ -181,6 +194,7 @@ public:
 public:
 	FORCEINLINE float GetStoppingDistance() const { return StoppingDistance; }
 	FORCEINLINE EAttackPattern GetCurrentGimmick() const { return CurrentGimmick; }
+
 
 	EAttackPattern GetRandomAttackPatternByProbability();
 	void EnableHUD();
@@ -190,8 +204,11 @@ public:
 	void PerformCloseAttack();
 	void PerformFloorAttack();
 	void PerformFarAttack();
+	void GenerateNormalWeakAttack();
+	void GenerateNormalStrongAttack();
 	void GenerateCloseAttack();
 	void GenerateFloorAttack();
 	void GenerateFarAttack();
 	void EndAttack();
+
 };

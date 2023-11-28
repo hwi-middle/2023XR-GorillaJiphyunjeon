@@ -14,6 +14,8 @@ class UIGLevelButton;
 class UIGExitButton;
 class UIGOptionWidget;
 class UButton;
+class UIGSoundDataAsset;
+class UCanvasPanel;
 
 UCLASS()
 class INDIGO_API UIGMainLobbyWidget : public UUserWidget
@@ -49,6 +51,9 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UIGOptionWidget> OptionWidget;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UCanvasPanel> Loading;
 
 	// 테스트용
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
@@ -59,4 +64,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UButton> TEST_WispButton;
+	
+private:
+	// 사운드
+	UPROPERTY()
+	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;
+	
+	UFUNCTION()
+	void ShowLoading();
 };

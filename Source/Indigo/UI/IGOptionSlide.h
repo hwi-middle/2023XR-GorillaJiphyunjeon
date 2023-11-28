@@ -38,7 +38,9 @@ public:
 	void SetSFX(const float InValue);
 	UFUNCTION(BlueprintCallable)
 	void SetMouseSensitivity(const float InValue);
-
+	UFUNCTION(BlueprintCallable)
+	void PlayClickSound();
+	
 	FORCEINLINE float GetValue() const {return SoundSlider->GetValue(); }
 	
 protected:
@@ -50,6 +52,8 @@ protected:
 	ESliderType SliderType;
 
 private:
+
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;
 	

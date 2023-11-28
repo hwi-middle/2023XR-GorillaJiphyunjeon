@@ -10,6 +10,16 @@ void UIGBossAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	InterpolatedSpeed = FMath::FInterpTo(InterpolatedSpeed, Speed, DeltaSeconds, 10.f);
 }
 
+void UIGBossAnimInstance::AnimNotify_GenerateNormalWeakAttack()
+{
+	OnGenerateBossNormalWeakAttack.Broadcast();
+}
+
+void UIGBossAnimInstance::AnimNotify_GenerateNormalStrongAttack()
+{
+	OnGenerateBossNormalStrongAttack.Broadcast();
+}
+
 void UIGBossAnimInstance::AnimNotify_GenerateCloseAttack()
 {
 	OnGenerateBossCloseAttack.Broadcast();

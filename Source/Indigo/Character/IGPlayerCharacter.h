@@ -14,6 +14,7 @@ class UIGPlayerControlDataAsset;
 enum class ECrystal : uint32;
 class UIGIngameHUDWidget;
 class UIGTutotialWidget;
+class UIGGIFTutorialWidget;
 class UIGPlayerAnimInstance;
 class UIGCharacterDataParser;
 class USpringArmComponent;
@@ -83,6 +84,12 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UIGTutotialWidget> TutorialWidget;
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UIGGIFTutorialWidget> GIFTutorialWidgetClass;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UIGGIFTutorialWidget> GIFTutorialWidget;
 
 public:
 	virtual void Tick(float DeltaTime) override;
@@ -94,6 +101,15 @@ public:
 
 	//체력템 획득
 	void AddHealKit();
+
+	//BGM 변경
+	void SetVillageBGM();
+	void SetBossBGM();
+
+	//GIF튜토리얼 위젯 띄우기
+	void ShowFirstHealKitGIFTutorial();
+	void ShowFirstCrystalGIFTutorial();
+	void ShowFirstBossGIFTutorial();
 	
 public:
 	//인터페이스 함수
@@ -183,6 +199,12 @@ private:
 	
 	UPROPERTY()
 	uint8 bIsAimingProperActor : 1;
+	
+	UPROPERTY()
+	uint8 bIsFirstGetHealKit : 1;
+	
+	UPROPERTY()
+	uint8 bIsFirstMeetBoss : 1;
 
 	UPROPERTY()
 	FVector AimingStartPoint;
@@ -198,6 +220,9 @@ private:
 
 	UPROPERTY()
 	float AimingTargetYaw;
+	
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> AudioComponent;
 
 private:
 	void Move(const FInputActionValue& Value);
@@ -361,13 +386,17 @@ private:
 	UPROPERTY()
 	ECrystal ActivatedCrystal;
 
+	//BGM
+	UPROPERTY()
+	TObjectPtr<USoundCue> CurrentBGM;
+
 	//체력가능 횟수
 	UPROPERTY()
 	int32 HealCount;
 
 	// 사운드
 	UPROPERTY()
-	TObjectPtr<UIGSoundDataAsset> TestSoundDataAsset;
+	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;
 
 	// 사망연출
 	UPROPERTY()
