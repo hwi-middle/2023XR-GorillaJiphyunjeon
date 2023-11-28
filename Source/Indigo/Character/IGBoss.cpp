@@ -26,6 +26,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Indigo/DataAsset/IGSoundDataAsset.h"
 #include "Sound/SoundCue.h"
+#include "LevelSequence.h"
+#include "LevelSequencePlayer.h"
+#include "LevelSequenceActor.h"
 
 AIGBoss::AIGBoss()
 {
@@ -169,6 +172,9 @@ float AIGBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 		}
 		bIsDead = true;
 		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleRemakeBossDie();
+		ULevelSequencePlayer* LevelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), LevelSequenceOnDied, FMovieSceneSequencePlaybackSettings(), OutActor);
+		LevelSequencePlayer->Play();
+		
 		return DamageAmount;
 	}
 	return DamageAmount;

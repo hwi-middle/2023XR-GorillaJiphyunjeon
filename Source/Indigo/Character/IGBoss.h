@@ -16,6 +16,9 @@ DECLARE_MULTICAST_DELEGATE(FOnFinishBossAttackDelegate)
 
 class UIGBossAnimInstance;
 class UIGPlayerAnimInstance;
+
+class ULevelSequence;
+class ALevelSequenceActor;
 /**
  * 
  */
@@ -54,6 +57,11 @@ protected:
 	TObjectPtr<UIGIngameHUDWidget> HudWidget;
 
 private:
+	ALevelSequenceActor* OutActor;
+
+	UPROPERTY(EditAnywhere)
+	ULevelSequence* LevelSequenceOnDied;
+
 	UPROPERTY()
 	TObjectPtr<UStaticMeshComponent> EyeMesh;
 	
