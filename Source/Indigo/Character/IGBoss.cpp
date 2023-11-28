@@ -172,8 +172,22 @@ float AIGBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 		}
 		bIsDead = true;
 		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleRemakeBossDie();
+		DisableHUD();
+		
+
 		ULevelSequencePlayer* LevelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), LevelSequenceOnDied, FMovieSceneSequencePlaybackSettings(), OutActor);
-		LevelSequencePlayer->Play();
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([=, &TimerHandle]()
+			{
+				this->SetActorEnableCollision(false);
+				this->SetActorHiddenInGame(true);
+				Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->SetActorEnableCollision(false);
+				Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->SetActorHiddenInGame(true);
+				Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->DisableHUD();
+				LevelSequencePlayer->Play();
+				GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+				
+			}), 6.0f, false);
 		
 		return DamageAmount;
 	}

@@ -156,6 +156,9 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	HealCount = 0;
 	bIsFirstGetHealKit = false;
 	bIsFirstMeetBoss = false;
+
+
+
 }
 
 bool AIGPlayerCharacter::CheckPlayerState(const EPlayerState InState) const
@@ -273,7 +276,7 @@ void AIGPlayerCharacter::BeginPlay()
 
 	SetVillageBGM();
 
-	if(UGameplayStatics::GetCurrentLevelName(GetWorld(),false) == FString("BOSS"))
+	if(UGameplayStatics::GetCurrentLevelName(GetWorld(),false) == FString("UEDPIE_0_BOSS"))
 	{
 		TutorialWidget->CloseTutorialWidget();
 	}
@@ -1031,6 +1034,11 @@ void AIGPlayerCharacter::PlayFadeOutSequence()
 	DMI_Fade->SetScalarParameterValue("Alpha", FMath::Clamp(ElapsedFadeSequenceTime / Duration, 0.f, 1.f));
 
 	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::PlayFadeOutSequence);
+}
+
+void AIGPlayerCharacter::DisableHUD()
+{
+	HudWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 float AIGPlayerCharacter::ComputeDamage()

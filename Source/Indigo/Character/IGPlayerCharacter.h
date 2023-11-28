@@ -263,6 +263,7 @@ private:
 
 public:
 	void PlayFadeOutSequence();
+	void DisableHUD();
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraSpringArm() const { return CameraSpringArm; }
