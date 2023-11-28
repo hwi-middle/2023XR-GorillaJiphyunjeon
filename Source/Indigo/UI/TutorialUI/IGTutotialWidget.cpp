@@ -18,9 +18,7 @@ void UIGTutotialWidget::NativeConstruct()
 	Controller->bEnableClickEvents = true;
 	
 	ConfirmButton = Cast<UButton>(GetWidgetFromName(TEXT("Confirm")));
-	ConfirmButton->OnClicked.AddDynamic(this, &UIGTutotialWidget::CloseTutorialWidget);
-	
-	UGameplayStatics::SetGamePaused(GWorld, true);
+	ConfirmButton->OnClicked.AddDynamic(this, &UIGTutotialWidget::CloseTutorialWidget);	
 }
 
 void UIGTutotialWidget::CloseTutorialWidget()

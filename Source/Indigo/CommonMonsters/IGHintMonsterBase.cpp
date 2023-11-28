@@ -18,6 +18,7 @@
 #include "Indigo/Interactable/IGHealKit.h"
 #include "Indigo/DataAsset/IGSoundDataAsset.h"
 #include "Sound/SoundCue.h"
+#include "NiagaraComponent.h"
 
 // Sets default values
 AIGHintMonsterBase::AIGHintMonsterBase()
@@ -37,6 +38,8 @@ AIGHintMonsterBase::AIGHintMonsterBase()
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Monster"));
 	RootComponent = GetCapsuleComponent();
 
+	
+	
 	AIControllerClass = AIGWispAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	GetCharacterMovement()->MaxWalkSpeed = 200.f;

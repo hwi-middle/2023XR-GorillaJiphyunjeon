@@ -10,6 +10,7 @@
 #include "Sound/SoundCue.h"
 #include "UObject/UnrealTypePrivate.h"
 #include "Components/TextBlock.h"
+#include "Components/ProgressBar.h"
 #include "Sound/SoundCue.h"
 
 UIGOptionSlide::UIGOptionSlide(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
@@ -26,7 +27,7 @@ void UIGOptionSlide::SetSliderType(const ESliderType InType)
 	SoundSlider->OnMouseCaptureBegin.AddDynamic(this, &UIGOptionSlide::PlayClickSound);
 	if(InType == ESliderType::BGM)
 	{
-		SoundSlider->OnValueChanged.AddDynamic(this, &UIGOptionSlide::SetBGM);		
+		SoundSlider->OnValueChanged.AddDynamic(this, &UIGOptionSlide::SetBGM);
 	}
 	else if(InType == ESliderType::SFX)
 	{
@@ -45,6 +46,7 @@ void UIGOptionSlide::SetBGM(const float InValue)
 	{
 		BGM->VolumeMultiplier = InValue;
 	}
+		ProgressBar->SetPercent(InValue/2);
 }
 
 void UIGOptionSlide::SetSFX(const float InValue)
@@ -54,6 +56,7 @@ void UIGOptionSlide::SetSFX(const float InValue)
 	{
 		SFX->VolumeMultiplier = InValue;
 	}
+		ProgressBar->SetPercent(InValue/2);
 }
 
 void UIGOptionSlide::SetMouseSensitivity(const float InValue)
@@ -64,6 +67,7 @@ void UIGOptionSlide::SetMouseSensitivity(const float InValue)
 		PlayerDataAsset->MousePitchScale = InValue;
 		
 		ValueText->SetText(FText::AsNumber(FMath::TruncToInt(InValue  * 50)));
+		ProgressBar->SetPercent(InValue/2);
 	}
 }
 
@@ -74,6 +78,7 @@ void UIGOptionSlide::NativeConstruct()
 	PlayerDataAsset = LoadObject<UIGPlayerDataAsset>(nullptr, TEXT("/Script/Indigo.IGPlayerDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerData.DA_PlayerData'"), nullptr, LOAD_None, nullptr, nullptr);
 	SoundSlider = Cast<USlider>(GetWidgetFromName(TEXT("Slider")));
 	ValueText = Cast<UTextBlock>(GetWidgetFromName(TEXT("Value")));
+	ProgressBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("Percent")));
 	ValueText->SetText(FText::AsNumber(50));
 	PlayerDataAsset->MouseYawScale = 1.0f;
 	PlayerDataAsset->MousePitchScale = 1.0f;

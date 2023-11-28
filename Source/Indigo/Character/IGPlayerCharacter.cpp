@@ -239,8 +239,7 @@ void AIGPlayerCharacter::BeginPlay()
 	if (TutorialWidget)
 	{
 		TutorialWidget->AddToViewport();
-		TutorialWidget->VisibleTutorialWidget();
-		TutorialWidget->SetKeyboardFocus();
+		TutorialWidget->CloseTutorialWidget();		
 	}
 
 	GIFTutorialWidget = CreateWidget<UIGGIFTutorialWidget>(GetWorld(), GIFTutorialWidgetClass);
@@ -273,6 +272,16 @@ void AIGPlayerCharacter::BeginPlay()
 	}
 
 	SetVillageBGM();
+
+	if(UGameplayStatics::GetCurrentLevelName(GetWorld(),false) == FString("BOSS"))
+	{
+		TutorialWidget->CloseTutorialWidget();
+	}
+	else
+	{
+		TutorialWidget->VisibleTutorialWidget();
+	}
+	
 }
 
 void AIGPlayerCharacter::Tick(float DeltaTime)
@@ -892,6 +901,7 @@ void AIGPlayerCharacter::ManageCrystalActivationByTime()
 	constexpr float Duration = 3.f;
 	const float DeltaTime = GWorld->DeltaTimeSeconds;
 	ElapsedCrystalActivationTime += DeltaTime;
+	
 
 	if (ElapsedCrystalActivationTime >= Duration)
 	{
@@ -912,7 +922,9 @@ void AIGPlayerCharacter::ManageCrystalCooldownByTime()
 	constexpr float Duration = 5.f;
 	const float DeltaTime = GWorld->DeltaTimeSeconds;
 	ElapsedCrystalCooldownTime += DeltaTime;
-
+	HudWidget->MountainCrystalCooltime(1 - ElapsedCrystalCooldownTime / Duration);
+	HudWidget->WaveCrystalCooltime(1 - ElapsedCrystalCooldownTime / Duration);
+	HudWidget->TreeCrystalCooltime(1 - ElapsedCrystalCooldownTime / Duration);
 	if (ElapsedCrystalCooldownTime >= Duration)
 	{
 		ElapsedCrystalCooldownTime = 0.f;
@@ -945,7 +957,11 @@ void AIGPlayerCharacter::TutorialWidgetVisible()
 	{
 		if (TutorialWidget->GetVisibility() == ESlateVisibility::Hidden)
 		{
-			TutorialWidget->VisibleTutorialWidget();
+			TutorialWidget->VisibleTutorialWidget();			
+		}
+		else if(TutorialWidget->GetVisibility() == ESlateVisibility::Visible)
+		{
+			TutorialWidget->CloseTutorialWidget();			
 		}
 	}
 }

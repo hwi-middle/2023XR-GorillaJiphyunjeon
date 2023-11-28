@@ -12,6 +12,7 @@ class USoundCue;
 class UIGSoundDataAsset;
 class UIGPlayerDataAsset;
 class UTextBlock;
+class UProgressBar;
 enum class ESliderType : int8
 {
 	SFX,
@@ -48,6 +49,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USlider> SoundSlider;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UProgressBar> ProgressBar;
 
 	ESliderType SliderType;
 
