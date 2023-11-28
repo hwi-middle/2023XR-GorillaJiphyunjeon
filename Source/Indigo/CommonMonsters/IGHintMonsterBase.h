@@ -12,6 +12,7 @@
 class AIGProvisoWispPlace;
 class AIGWispAIController;
 class UIGWispAnimInstance;
+class UIGSoundDataAsset;
 DECLARE_MULTICAST_DELEGATE(FOnFinishWispAttackDelegate)
 
 enum class ECrystal : uint32;
@@ -111,5 +112,8 @@ private:
 	
 	UPROPERTY()
 	FVector SpawnPos;
+
+	UPROPERTY()
+	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;
 	
 };
