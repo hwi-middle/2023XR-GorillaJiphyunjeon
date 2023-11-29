@@ -389,7 +389,7 @@ private:
 
 	//BGM
 	UPROPERTY()
-	TObjectPtr<USoundCue> CurrentBGM;
+	class USoundCue* CurrentBGM;
 
 	//체력가능 횟수
 	UPROPERTY()

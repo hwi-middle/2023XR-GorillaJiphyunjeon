@@ -29,6 +29,7 @@ public:
 	
 	virtual void DropCrystal(); 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	void PendRespawn();
 	FORCEINLINE float GetStoppingDistance() const { return StoppingDistance; }
 	FORCEINLINE float GetExplosionDistance() const { return ExplosionDistance; }
 	FORCEINLINE	bool GetIsDelay() const {return bIsDelay;}

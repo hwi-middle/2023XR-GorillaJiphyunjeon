@@ -95,7 +95,7 @@ void AIGHintMonsterBase::Tick(float DeltaTime)
 		FCollisionQueryParams CollisionParams;
 		CollisionParams.AddIgnoredActor(this);
 
-		DrawDebugSphere(GetWorld(), GetActorLocation(), GetActorScale().X, 16, FColor::Green, false, 0.f);
+		//DrawDebugSphere(GetWorld(), GetActorLocation(), GetActorScale().X, 16, FColor::Green, false, 0.f);
 
 		bool bHit = GetWorld()->SweepSingleByChannel(
 			Result,
@@ -106,7 +106,7 @@ void AIGHintMonsterBase::Tick(float DeltaTime)
 			FCollisionShape::MakeSphere(25),
 			CollisionParams
 		);
-		DrawDebugSphere(GWorld, GetActorLocation(), 25, 16, FColor::Green, false, 0.f);
+		//DrawDebugSphere(GWorld, GetActorLocation(), 25, 16, FColor::Green, false, 0.f);
 		
 		if (bHit)
 		{
@@ -195,28 +195,40 @@ float AIGHintMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	bIsHit = true;
 	
 	SetHp(GetHp() - DamageAmount);
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("[도깨비불 체력] %f"), GetHp()));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("[도깨비불 체력] %f"), GetHp()));
 	if(GetHp() <= 0)
 	{
 		UGameplayStatics::PlaySound2D(this, SoundDataAsset->WispDeadSoundCue);
 		bIsDead = true;
 				
 		DelegateHandle = AnimInstance->OnFinishHit.AddUObject(this, &AIGHintMonsterBase::DropCrystal);			
-	    FTimerHandle TimerHandle;
-        GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([&]()
-            {
-				SetActorLocation(SpawnPos);
-        		this->SetActorEnableCollision(true);
-				this->SetActorHiddenInGame(false);
-        		AnimInstance->OnFinishHit.Remove(DelegateHandle);
-				AIGEnemyBase::SetHp(30);
-        		bIsDead = false;
-        		AttackSpeed = 800;
-                GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
-            }), RespawnTime, false);			
+		GetWorldTimerManager().SetTimerForNextTick(this, &AIGHintMonsterBase::PendRespawn);
+
 	}	
 
 	return DamageAmount;
+}
+
+void AIGHintMonsterBase::PendRespawn()
+{
+	static float ElapsedRespawnTime = 0.f;
+	constexpr float Duration = 10.f;
+	const float DeltaTime = GWorld->GetDeltaSeconds();
+	ElapsedRespawnTime += DeltaTime;
+
+	if (ElapsedRespawnTime <= Duration)
+	{
+		SetActorLocation(SpawnPos);
+		this->SetActorEnableCollision(true);
+		this->SetActorHiddenInGame(false);
+		AnimInstance->OnFinishHit.Remove(DelegateHandle);
+		AIGEnemyBase::SetHp(30);
+		bIsDead = false;
+		AttackSpeed = 800;
+		ElapsedTime = 0.f;
+		return;
+	}
+	GetWorldTimerManager().SetTimerForNextTick(this, &AIGHintMonsterBase::PendRespawn);
 }
 
 void AIGHintMonsterBase::PerformCloseAttack()
@@ -261,7 +273,7 @@ void AIGHintMonsterBase::Explosion()
 	FCollisionShape::MakeSphere(100),
 	CollisionParams
 );
-	DrawDebugSphere(GWorld, GetActorLocation(), 100, 16, FColor::Green, false, 0.f);
+	//DrawDebugSphere(GWorld, GetActorLocation(), 100, 16, FColor::Green, false, 0.f);
 		
 	if (bHit)
 	{

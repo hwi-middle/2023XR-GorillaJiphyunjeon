@@ -9,6 +9,12 @@
 #include "Indigo/Character/IGPlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
+UBTTast_WispAttack::UBTTast_WispAttack()
+{
+	bNotifyTick = true;
+	bIsFinished = false;
+}
+
 EBTNodeResult::Type UBTTast_WispAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	
@@ -30,19 +36,23 @@ EBTNodeResult::Type UBTTast_WispAttack::ExecuteTask(UBehaviorTreeComponent& Owne
 		return EBTNodeResult::Aborted;
 	}
 	
-	CheckEndDelegateHandle = ControllingWisp->OnFinishWispAttack.AddLambda(
-		[&]()
-		{
-			DeleteLambda();
-			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-		}
-	);
-
-		ControllingWisp->PerformCloseAttack();	
-		return EBTNodeResult::InProgress;			
+	ControllingWisp->OnFinishWispAttack.AddUObject(this, &UBTTast_WispAttack::SetFinished);
+	ControllingWisp->PerformCloseAttack();	
+	return EBTNodeResult::InProgress;			
 }
 
-void UBTTast_WispAttack::DeleteLambda()
+void UBTTast_WispAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-	Cast<AIGHintMonsterBase>(ControllingWisp)->OnFinishWispAttack.Remove(CheckEndDelegateHandle);
+	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
+
+	if (bIsFinished)
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		bIsFinished = false;
+	}
+}
+
+void UBTTast_WispAttack::SetFinished()
+{
+	bIsFinished = true;
 }

@@ -142,30 +142,30 @@ void UIGShinmyophil::OnBattlePhase()
 
 void UIGShinmyophil::PrintRelayScript(const TArray<FIGScriptMasterDataTable*> InScriptArray, const int32 InSubNum)
 {
-	AIGPlayerCharacter* IGPlayerCharacter = Cast<AIGPlayerCharacter>(GetOwner());
-	for(int32 Index = 0; Index < InScriptArray.Num(); Index++)
-	{
-		TArray<FString> TextCodeArray;
-		InScriptArray[Index]->ScriptCode.ParseIntoArray(TextCodeArray, TEXT("_"), false);//0 string이라 제외, 1 main, 2 sub, 3 detail 
-			
-		if(FCString::Atof(*TextCodeArray[2]) == InSubNum)
-		{
-			FTimerHandle TimerHandle;
+	//AIGPlayerCharacter* IGPlayerCharacter = Cast<AIGPlayerCharacter>(GetOwner());
+	//for(int32 Index = 0; Index < InScriptArray.Num(); Index++)
+	//{
+	//	TArray<FString> TextCodeArray;
+	//	InScriptArray[Index]->ScriptCode.ParseIntoArray(TextCodeArray, TEXT("_"), false);//0 string이라 제외, 1 main, 2 sub, 3 detail 
+	//		
+	//	if(FCString::Atof(*TextCodeArray[2]) == InSubNum)
+	//	{
+	//		FTimerHandle TimerHandle;
 
-			GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([=, &TimerHandle]()
-			{			
-					ScriptLogArray.Add(InScriptArray[Index]->ScriptText);
-					IGPlayerCharacter->UpdateShinmyophilScript(InScriptArray[Index]->ScriptText);
-					GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
-			}), ScriptDelayTime, false);
-			ScriptDelayTime += 2.0f;			
-			
-		}
-		else if(FCString::Atof(*TextCodeArray[2])  > InSubNum)
-		{
-			return;
-		}
-	}
+	//		GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([=, &TimerHandle]()
+	//		{			
+	//				ScriptLogArray.Add(InScriptArray[Index]->ScriptText);
+	//				IGPlayerCharacter->UpdateShinmyophilScript(InScriptArray[Index]->ScriptText);
+	//				GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+	//		}), ScriptDelayTime, false);
+	//		ScriptDelayTime += 2.0f;			
+	//		
+	//	}
+	//	else if(FCString::Atof(*TextCodeArray[2])  > InSubNum)
+	//	{
+	//		return;
+	//	}
+	//}
 }
 
 

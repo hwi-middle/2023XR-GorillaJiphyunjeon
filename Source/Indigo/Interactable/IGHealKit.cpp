@@ -65,7 +65,7 @@ void AIGHealKit::Tick(float DeltaTime)
 		CollisionParams
 	);
 
-	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 16, FColor::Green, false, 0.f);
+	//DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 16, FColor::Green, false, 0.f);
 
 	if (!bHit)
 	{

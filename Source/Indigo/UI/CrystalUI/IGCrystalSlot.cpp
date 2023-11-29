@@ -3,7 +3,6 @@
 
 #include "Indigo/UI/CrystalUI/IGCrystalSlot.h"
 
-#include "AsyncTreeDifferences.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Indigo/Interactable/IGCrystalBase.h"

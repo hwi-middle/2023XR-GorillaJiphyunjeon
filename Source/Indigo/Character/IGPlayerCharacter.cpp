@@ -291,6 +291,7 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 #if UE_EDITOR
+	/*
 	// Hp = CharacterDataTable->HPValue;
 	// AttackValue = CharacterDataTable->AttackValue;
 	// AttackRange = CharacterDataTable->AttackRange;
@@ -340,6 +341,7 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 		DebugMessage.Append(TEXT("사망\n"));
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, *DebugMessage);
+	*/
 #endif
 
 	// 조준
@@ -423,7 +425,7 @@ void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 float AIGPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	UE_LOG(LogTemp, Log, TEXT("플레이어 TakeDamage"));
+	//UE_LOG(LogTemp, Log, TEXT("플레이어 TakeDamage"));
 
 	AIGBoss* Boss = Cast<AIGBoss>(DamageCauser);
 	if (Boss)
@@ -442,7 +444,7 @@ float AIGPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 
 	UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerGetDamageSoundCue);
 	Hp -= DamageAmount;
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("Player HP: [%f]"), Hp));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("Player HP: [%f]"), Hp));
 	if (Hp <= 0)
 	{
 		UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerDeadSoundCue);
@@ -546,7 +548,7 @@ void AIGPlayerCharacter::Interact()
 		CollisionParams
 	);
 
-	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 16, FColor::Green, false, 2.f);
+	//DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 16, FColor::Green, false, 2.f);
 
 	if (!bHit)
 	{
