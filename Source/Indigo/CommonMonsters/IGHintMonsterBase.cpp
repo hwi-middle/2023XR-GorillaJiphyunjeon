@@ -37,7 +37,7 @@ AIGHintMonsterBase::AIGHintMonsterBase()
 	GetCapsuleComponent()->SetSimulatePhysics(false);
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Monster"));
 	RootComponent = GetCapsuleComponent();
-	SetActorRotation(FRotator(0,0,0));
+
 	
 	
 	AIControllerClass = AIGWispAIController::StaticClass();
@@ -75,6 +75,7 @@ void AIGHintMonsterBase::BeginPlay()
 	AnimInstance->OnFinishHit.AddUObject(this, &AIGHintMonsterBase::IsHitFinish);
 	AnimInstance->OnWispExplosion.AddUObject(this, &AIGHintMonsterBase::Explosion);
 	AnimInstance->OnFinishBomb.AddUObject(this, &AIGHintMonsterBase::EndAttack);
+	SetActorRotation(FRotator(0, 0, 0));
 }
 
 // Called every frame
