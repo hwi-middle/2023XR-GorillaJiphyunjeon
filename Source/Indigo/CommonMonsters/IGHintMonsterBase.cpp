@@ -37,7 +37,7 @@ AIGHintMonsterBase::AIGHintMonsterBase()
 	GetCapsuleComponent()->SetSimulatePhysics(false);
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Monster"));
 	RootComponent = GetCapsuleComponent();
-
+	SetActorRotation(FRotator(0,0,0));
 	
 	
 	AIControllerClass = AIGWispAIController::StaticClass();
@@ -58,7 +58,7 @@ AIGHintMonsterBase::AIGHintMonsterBase()
 	AttackTime  = 0.0f;
 	RetreatTime = 0.0f;
 	StoppingDistance = 500.0f;
-	ExplosionDistance = 150.0f;
+	ExplosionDistance = 250.0f;
 	AttackSpeed = 800.0f;
 	
 }
@@ -103,10 +103,10 @@ void AIGHintMonsterBase::Tick(float DeltaTime)
 			GetActorLocation(),
 			FQuat::Identity,
 			ECC_CHECK_PAWN,
-			FCollisionShape::MakeSphere(25),
+			FCollisionShape::MakeSphere(50),
 			CollisionParams
 		);
-		//DrawDebugSphere(GWorld, GetActorLocation(), 25, 16, FColor::Green, false, 0.f);
+		DrawDebugSphere(GWorld, GetActorLocation(), 50, 16, FColor::Green, false, 0.f);
 		
 		if (bHit)
 		{
@@ -171,15 +171,9 @@ void AIGHintMonsterBase::DropCrystal()
 	{
 		AIGHealKit* HealKit = GetWorld()->SpawnActor<AIGHealKit>(GetActorTransform().GetLocation(), FRotator::ZeroRotator);
 	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("드랍 안됨!")));
-	}
-
 
 	this->SetActorEnableCollision(false);
-	this->SetActorHiddenInGame(true);
-	
+	this->SetActorHiddenInGame(true);	
 }
 
 float AIGHintMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
@@ -195,7 +189,6 @@ float AIGHintMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	bIsHit = true;
 	
 	SetHp(GetHp() - DamageAmount);
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Orange, FString::Printf(TEXT("[도깨비불 체력] %f"), GetHp()));
 	if(GetHp() <= 0)
 	{
 		UGameplayStatics::PlaySound2D(this, SoundDataAsset->WispDeadSoundCue);
@@ -216,7 +209,7 @@ void AIGHintMonsterBase::PendRespawn()
 	const float DeltaTime = GWorld->GetDeltaSeconds();
 	ElapsedRespawnTime += DeltaTime;
 
-	if (ElapsedRespawnTime <= Duration)
+	if (ElapsedRespawnTime >= Duration)
 	{
 		SetActorLocation(SpawnPos);
 		this->SetActorEnableCollision(true);
@@ -226,6 +219,7 @@ void AIGHintMonsterBase::PendRespawn()
 		bIsDead = false;
 		AttackSpeed = 800;
 		ElapsedTime = 0.f;
+		ElapsedRespawnTime = 0.0f;
 		return;
 	}
 	GetWorldTimerManager().SetTimerForNextTick(this, &AIGHintMonsterBase::PendRespawn);
@@ -246,7 +240,7 @@ void AIGHintMonsterBase::PerformCloseAttack()
 
 	AnimInstance->OnDash();
 	
-	FVector TargetVector =  (Player->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+	FVector TargetVector =  (Player->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
 	AttackStartLocation = GetActorLocation();
 	bIsAttack = true;
 	DashStartLocation = TargetVector;
@@ -270,10 +264,10 @@ void AIGHintMonsterBase::Explosion()
 	GetActorLocation(),
 	FQuat::Identity,
 	ECC_CHECK_PAWN,
-	FCollisionShape::MakeSphere(100),
+	FCollisionShape::MakeSphere(250),
 	CollisionParams
 );
-	//DrawDebugSphere(GWorld, GetActorLocation(), 100, 16, FColor::Green, false, 0.f);
+	DrawDebugSphere(GWorld, GetActorLocation(), 250, 16, FColor::Green, false, 0.f);
 		
 	if (bHit)
 	{
