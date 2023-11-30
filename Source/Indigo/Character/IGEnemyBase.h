@@ -47,7 +47,7 @@ public:
 	FORCEINLINE void SetIsEnforcedDamage(const bool InValue){ bIsEnforcedDamage = InValue;}
 	
 	// Getter/Setter
-	FORCEINLINE float GetDetectRange() const { return 3000.f; }
+	FORCEINLINE float GetDetectRange() const { return 5000.f; }
 	FORCEINLINE FVector GetOrigin() const { return Origin; }
 
 protected:
