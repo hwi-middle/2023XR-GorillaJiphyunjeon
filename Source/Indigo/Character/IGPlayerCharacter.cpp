@@ -46,6 +46,7 @@
 #include "Indigo/Inventory/IGShinmyophil.h"
 #include "Indigo/Interactable/IGHintBase.h"
 #include "GameFramework/PlayerController.h"
+#include "Indigo/IGGameInstance.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Sound/AmbientSound.h"
 
@@ -237,12 +238,14 @@ void AIGPlayerCharacter::BeginPlay()
 			HudWidget->InitQuestList(Shinmyophil->GetQuestArray()[i]);
 		}
 	}
-
+	UIGGameInstance* GameInstance = Cast<UIGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	TutorialWidget = CreateWidget<UIGTutotialWidget>(GetWorld(), TutorialWidgetClass);
-	if (TutorialWidget)
+	if (TutorialWidget && !GameInstance->bIsControlTutorialDisplayed)
 	{
 		TutorialWidget->AddToViewport();
-		TutorialWidget->CloseTutorialWidget();		
+		TutorialWidget->CloseTutorialWidget();
+		TutorialWidget->VisibleTutorialWidget();
+		GameInstance->bIsControlTutorialDisplayed = true;
 	}
 
 	GIFTutorialWidget = CreateWidget<UIGGIFTutorialWidget>(GetWorld(), GIFTutorialWidgetClass);
@@ -276,21 +279,20 @@ void AIGPlayerCharacter::BeginPlay()
 
 	SetVillageBGM();
 
-	if(UGameplayStatics::GetCurrentLevelName(GetWorld()) == FString("BOSS"))
-	{
-		TutorialWidget->CloseTutorialWidget();
-	}
-	else
-	{
-		TutorialWidget->VisibleTutorialWidget();
-	}	
+	// if(UGameplayStatics::GetCurrentLevelName(GetWorld()) == FString("BOSS"))
+	// {
+	// 	TutorialWidget->CloseTutorialWidget();
+	// }
+	// else
+	// {
+	// 	TutorialWidget->VisibleTutorialWidget();
+	// }	
 }
 
 void AIGPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 #if UE_EDITOR
-	/*
 	// Hp = CharacterDataTable->HPValue;
 	// AttackValue = CharacterDataTable->AttackValue;
 	// AttackRange = CharacterDataTable->AttackRange;
@@ -340,7 +342,7 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 		DebugMessage.Append(TEXT("사망\n"));
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Yellow, *DebugMessage);
-	*/
+
 #endif
 
 	// 조준
