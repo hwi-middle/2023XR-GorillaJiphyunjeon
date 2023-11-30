@@ -276,15 +276,14 @@ void AIGPlayerCharacter::BeginPlay()
 
 	SetVillageBGM();
 
-	if(UGameplayStatics::GetCurrentLevelName(GetWorld(),false) == FString("UEDPIE_0_BOSS"))
+	if(UGameplayStatics::GetCurrentLevelName(GetWorld()) == FString("BOSS"))
 	{
 		TutorialWidget->CloseTutorialWidget();
 	}
 	else
 	{
 		TutorialWidget->VisibleTutorialWidget();
-	}
-	
+	}	
 }
 
 void AIGPlayerCharacter::Tick(float DeltaTime)
@@ -1040,6 +1039,7 @@ void AIGPlayerCharacter::PlayFadeOutSequence()
 
 void AIGPlayerCharacter::DisableHUD()
 {
+	DisableInput(PlayerController);
 	HudWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
