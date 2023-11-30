@@ -171,19 +171,21 @@ float AIGBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 			HudWidget->UpdateHpGauge(0.f);
 		}
 		bIsDead = true;
-		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->GetShinmyophil()->BattleRemakeBossDie();
+		AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0));
+		Player->GetShinmyophil()->BattleRemakeBossDie();
 		DisableHUD();
-		
 
 		ULevelSequencePlayer* LevelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), LevelSequenceOnDied, FMovieSceneSequencePlaybackSettings(), OutActor);
+		
 		FTimerHandle TimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([=, &TimerHandle]()
 			{
 				this->SetActorEnableCollision(false);
 				this->SetActorHiddenInGame(true);
-				Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->SetActorEnableCollision(false);
-				Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->SetActorHiddenInGame(true);
-				Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0))->DisableHUD();
+
+				Player->SetActorEnableCollision(false);
+				Player->SetActorHiddenInGame(true);
+				Player->DisableHUD();
 				LevelSequencePlayer->Play();
 				GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 				
