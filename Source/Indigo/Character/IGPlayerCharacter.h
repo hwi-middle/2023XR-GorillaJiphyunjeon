@@ -15,6 +15,7 @@ enum class ECrystal : uint32;
 class UIGIngameHUDWidget;
 class UIGTutotialWidget;
 class UIGGIFTutorialWidget;
+class UIGPauseHUD;
 class UIGPlayerAnimInstance;
 class UIGCharacterDataParser;
 class USpringArmComponent;
@@ -91,6 +92,12 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UIGGIFTutorialWidget> GIFTutorialWidget;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UIGPauseHUD> PauseWidgetClass;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UIGPauseHUD> PauseWidget;
+
 public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -106,6 +113,9 @@ public:
 	void SetVillageBGM();
 	void SetBossBGM();
 
+	//Puause 위젯 띄우기
+	void ShowPause();
+	
 	//GIF튜토리얼 위젯 띄우기
 	void ShowFirstHealKitGIFTutorial();
 	void ShowFirstCrystalGIFTutorial();
@@ -173,6 +183,9 @@ private:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> UseHealKit;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> Pause;
 
 	// 애니메이션
 	UPROPERTY()
