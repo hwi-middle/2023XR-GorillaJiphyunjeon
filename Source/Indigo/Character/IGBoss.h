@@ -7,6 +7,7 @@
 #include "Indigo/Interface/Interactable.h"
 #include "IGBoss.generated.h"
 
+class ULevelSequencePlayer;
 class UIGIngameHUDWidget;
 class UIGBossDataAsset;
 class UIGBossGimmickDataAsset;
@@ -46,6 +47,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	void MoveToMainLobbyOnFinishPlayingEndSequence();
 	void FadeOut();
 
 	virtual void Interact() override;
@@ -58,6 +60,9 @@ protected:
 
 private:
 	ALevelSequenceActor* OutActor;
+	
+	UPROPERTY(EditAnywhere)
+	ULevelSequencePlayer* LevelSequencePlayer;
 
 	UPROPERTY(EditAnywhere)
 	ULevelSequence* LevelSequenceOnDied;

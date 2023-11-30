@@ -70,7 +70,7 @@ AIGBoss::AIGBoss()
 	}, EAssertionLevel::Check);
 
 	SoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
-		
+
 	bIsFirstAttack = false;
 	bIsFirstRangeAttack = false;
 	bIsFirstFloorAttack = false;
@@ -108,7 +108,7 @@ void AIGBoss::BeginPlay()
 
 	NormalWeak_Damage = GimmickDataAsset->NormalWeak_Damage;
 	NormalStrong_Damage = GimmickDataAsset->NormalStrong_Damage;
-	
+
 	CloseAttack_SpikeNum = GimmickDataAsset->CloseAttack_SpikeNum;
 	CloseAttack_HandRadius = GimmickDataAsset->CloseAttack_HandRadius;
 	CloseAttack_Damage = GimmickDataAsset->CloseAttack_Damage;
@@ -152,16 +152,16 @@ float AIGBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 		HudWidget->UpdateHpGauge(Hp);
 	}
 
-	if(bIsEnforcedDamage)
+	if (bIsEnforcedDamage)
 	{
-		UGameplayStatics::PlaySound2D(this, SoundDataAsset->BossGetEnforceDamageSoundCue);		
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->BossGetEnforceDamageSoundCue);
 	}
 	else
 	{
 		UGameplayStatics::PlaySound2D(this, SoundDataAsset->BossGetDamageSoundCue);
 	}
 	bIsEnforcedDamage = false;
-	
+
 	if (Hp <= 0 && !bIsDead)
 	{
 		AnimInstance->Die();
@@ -175,25 +175,36 @@ float AIGBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 		Player->GetShinmyophil()->BattleRemakeBossDie();
 		DisableHUD();
 
-		ULevelSequencePlayer* LevelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), LevelSequenceOnDied, FMovieSceneSequencePlaybackSettings(), OutActor);
-		
+		LevelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), LevelSequenceOnDied, FMovieSceneSequencePlaybackSettings(), OutActor);
 		FTimerHandle TimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([=, &TimerHandle]()
-			{
-				this->SetActorEnableCollision(false);
-				this->SetActorHiddenInGame(true);
+		{
+			this->SetActorEnableCollision(false);
+			this->SetActorHiddenInGame(true);
 
-				Player->SetActorEnableCollision(false);
-				Player->SetActorHiddenInGame(true);
-				Player->DisableHUD();
-				LevelSequencePlayer->Play();
-				GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
-				
-			}), 6.0f, false);
-		
+			Player->SetActorEnableCollision(false);
+			Player->SetActorHiddenInGame(true);
+			Player->DisableHUD();
+			LevelSequencePlayer->Play();
+			GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+			GetWorldTimerManager().SetTimerForNextTick(this, &AIGBoss::MoveToMainLobbyOnFinishPlayingEndSequence);
+
+		}), 6.0f, false);
+
 		return DamageAmount;
 	}
 	return DamageAmount;
+}
+
+void AIGBoss::MoveToMainLobbyOnFinishPlayingEndSequence()
+{
+	if (LevelSequencePlayer->IsPlaying())
+	{
+		GetWorldTimerManager().SetTimerForNextTick(this, &AIGBoss::MoveToMainLobbyOnFinishPlayingEndSequence);
+		return;
+	}
+
+	UGameplayStatics::OpenLevel(this, TEXT("MainTitle"));
 }
 
 void AIGBoss::FadeOut()
@@ -468,7 +479,7 @@ void AIGBoss::GenerateCloseAttack()
 void AIGBoss::GenerateFloorAttack()
 {
 	float Angle = 0.f;
-	UGameplayStatics::PlaySound2D(this,	SoundDataAsset->BossShotTreeSoundCue);
+	UGameplayStatics::PlaySound2D(this, SoundDataAsset->BossShotTreeSoundCue);
 	for (uint32 i = 0; i < FloorAttack_ProjectileNum; ++i)
 	{
 		AIGStraightProjectile* SpawnedProjectile = GWorld->SpawnActor<AIGBossFlooringProjectile>(GetActorLocation(), FRotator(0.f, Angle, 0.f));
