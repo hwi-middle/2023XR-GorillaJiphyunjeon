@@ -333,7 +333,7 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 	// DefenceValue = CharacterDataTable->DefenseValue;
 	// StaminaValue = CharacterDataTable->StaminaValue;
 	FString DebugMessage = TEXT("<플레이어 상태>\n");
-
+	DebugMessage.Append(FString::Printf(TEXT("콤보: %d단\n"), CurrentCombo));
 	if (CheckPlayerState(EPlayerState::Idling))
 	{
 		DebugMessage.Append(TEXT("정지\n"));
@@ -610,8 +610,10 @@ void AIGPlayerCharacter::Interact()
 
 void AIGPlayerCharacter::Attack()
 {
+	UE_LOG(LogTemp, Log, TEXT("Attack 진입 (콤보: %d)"), CurrentCombo);
 	if (CheckPlayerState(EPlayerState::Rolling) || CheckPlayerState(EPlayerState::Dead))
 	{
+		UE_LOG(LogTemp, Log, TEXT("구르기 또는 사망으로 인한 Attack 취소"));
 		return;
 	}
 
@@ -619,6 +621,7 @@ void AIGPlayerCharacter::Attack()
 	const float Cost = 10.f;
 	if (StaminaValue < Cost)
 	{
+		UE_LOG(LogTemp, Log, TEXT("비용 부족으로 인한 Attack 취소"));
 		return;
 	}
 
@@ -667,12 +670,12 @@ void AIGPlayerCharacter::GenerateProjectile()
 		UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerAttackCombo3SoundCue);
 		break;
 	default:
+		UE_LOG(LogTemp, Error, TEXT("AssertionFailed, Current Combo: %d"), CurrentCombo);
 		checkNoEntry();
 		break;
 	}
 	SpawnedActor->Init(Damage, SpawnDirection, 3000.f, 10.f, EProjectileSpawnType::SpawnedByPlayer);
 	SpawnedActor->OnHitProjectile.AddUObject(this, &AIGPlayerCharacter::OnHitProjectile);
-
 }
 
 void AIGPlayerCharacter::RotateToAimingTarget()
@@ -697,16 +700,19 @@ void AIGPlayerCharacter::ProcessComboCommand()
 {
 	if (CurrentCombo == 0)
 	{
+		UE_LOG(LogTemp, Log, TEXT("첫 콤보 개시"));
 		ComboActionBegin();
 		return;
 	}
 
 	if (!ComboTimerHandle.IsValid())
 	{
+		UE_LOG(LogTemp, Log, TEXT("다음 콤보 없음"));
 		HasNextComboCommand = false;
 	}
 	else
 	{
+		UE_LOG(LogTemp, Log, TEXT("다음 콤보 있음"));
 		HasNextComboCommand = true;
 	}
 }
@@ -719,22 +725,24 @@ void AIGPlayerCharacter::ComboActionBegin()
 
 	PlayerAnimInstance->Montage_Play(ComboActionMontage);
 
+	UE_LOG(LogTemp, Log, TEXT("몽타주 종료 델리게이트 연결"));
 	FOnMontageEnded EndDelegate;
 	EndDelegate.BindUObject(this, &AIGPlayerCharacter::ComboActionEnd);
 	PlayerAnimInstance->Montage_SetEndDelegate(EndDelegate, ComboActionMontage);
-
 	ComboTimerHandle.Invalidate();
 	SetComboCheckTimer();
 }
 
 void AIGPlayerCharacter::SetComboCheckTimer()
 {
+	UE_LOG(LogTemp, Log, TEXT("SetComboCheckTimer 진입"));
 	const int32 FrameCount = GetComboAnimationFrameCount();
 	constexpr float AnimationFrameRate = 30.f;
 	const float ComboDelayTime = FrameCount / AnimationFrameRate;
 
 	if (ComboDelayTime > 0.0f)
 	{
+		UE_LOG(LogTemp, Log, TEXT("ComboCheck 설정: %f"), ComboDelayTime);
 		GetWorld()->GetTimerManager().SetTimer(ComboTimerHandle, this, &AIGPlayerCharacter::ComboCheck, ComboDelayTime, false);
 	}
 }
@@ -757,13 +765,18 @@ int32 AIGPlayerCharacter::GetComboAnimationFrameCount() const
 
 void AIGPlayerCharacter::ComboCheck()
 {
+	UE_LOG(LogTemp, Log, TEXT("ComboCheck 진입"));
+	
 	ComboTimerHandle.Invalidate();
 	if (!HasNextComboCommand)
 	{
+		UE_LOG(LogTemp, Log, TEXT("다음 콤보 없어서 ComboCheck 탈출"));
 		return;
 	}
 
+	UE_LOG(LogTemp, Log, TEXT("현재 콤보: %d"), CurrentCombo);
 	CurrentCombo = FMath::Clamp(CurrentCombo + 1, 1, 3);
+	UE_LOG(LogTemp, Log, TEXT("콤보 증가 결과: %d"), CurrentCombo);
 	const FName NextSection = *FString::Printf(TEXT("PlayerAttack%d"), CurrentCombo);
 	PlayerAnimInstance->Montage_JumpToSection(NextSection, ComboActionMontage);
 	SetComboCheckTimer();
@@ -772,15 +785,17 @@ void AIGPlayerCharacter::ComboCheck()
 
 void AIGPlayerCharacter::ComboActionEnd(UAnimMontage* TargetMontage, bool IsProperlyEnded)
 {
-	CurrentCombo = 0;
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-
+	UE_LOG(LogTemp, Log, TEXT("ComboActionEnd 호출"));
 	NotifyComboActionEnd();
 }
 
 void AIGPlayerCharacter::NotifyComboActionEnd()
 {
+	UE_LOG(LogTemp, Log, TEXT("NotifyComboActionEnd 호출"));
 	CurrentCombo = 0;
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	ComboTimerHandle.Invalidate();
+	HasNextComboCommand = false;
 	RemovePlayerState(EPlayerState::Attacking);
 }
 
