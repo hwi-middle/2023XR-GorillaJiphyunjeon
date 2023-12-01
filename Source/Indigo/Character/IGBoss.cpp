@@ -484,7 +484,7 @@ void AIGBoss::GenerateCloseAttack()
 	FVector TargetVector = GetActorForwardVector();
 	FVector StartLocation = GetActorLocation();
 	FVector EndLocation = StartLocation + TargetVector.GetSafeNormal2D() * 2500.f;
-	FVector BoxExtent(100.0f, 100.0f, 100.0f);
+	FVector BoxExtent(100.0f, 200.0f, 100.0f);
 
 	bHit = GetWorld()->SweepSingleByChannel(
 		Result,
