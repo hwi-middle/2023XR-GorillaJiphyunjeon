@@ -142,12 +142,12 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	{
 		GIFTutorialWidgetClass = Class;
 	}, EAssertionLevel::Check);
-	
+
 	FIGConstructorHelper::FindClassAndInitialize<UIGPauseHUD>(TEXT("/Game/_GorillaJiphyunjeon/UI/Game/Pause/WBP_PauseWidget.WBP_PauseWidget_C"), [&](TSubclassOf<UIGPauseHUD> Class)
 	{
 		PauseWidgetClass = Class;
 	}, EAssertionLevel::Check);
-	
+
 	FIGConstructorHelper::FindObjectAndInitialize<UAnimMontage>(TEXT("/Script/Engine.AnimMontage'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/AM_PlayerAttack.AM_PlayerAttack'"), [&](UAnimMontage* Montage)
 	{
 		ComboActionMontage = Montage;
@@ -229,7 +229,7 @@ void AIGPlayerCharacter::BeginPlay()
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
 	GameInstance = Cast<UIGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	
+
 	HudWidget = CreateWidget<UIGIngameHUDWidget>(GetWorld(), HudWidgetClass);
 	if (HudWidget)
 	{
@@ -244,12 +244,27 @@ void AIGPlayerCharacter::BeginPlay()
 
 		HudWidget->SetHealKit(GameInstance->PlayerInventory->GetHealCount());
 
+		for (const auto Crystal : GameInstance->PlayerInventory->GetMountainCrystalArray())
+		{
+			HudWidget->AddCrystal(Crystal);
+		}
+
+		for (const auto Crystal : GameInstance->PlayerInventory->GetTreeCrystalArray())
+		{
+			HudWidget->AddCrystal(Crystal);
+		}
+
+		for (const auto Crystal : GameInstance->PlayerInventory->GetWaveCrystalArray())
+		{
+			HudWidget->AddCrystal(Crystal);
+		}
+
 		if (bIsHudDisabled)
 		{
 			HudWidget->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
-	
+
 	TutorialWidget = CreateWidget<UIGTutotialWidget>(GetWorld(), TutorialWidgetClass);
 	if (TutorialWidget && !GameInstance->bIsControlTutorialDisplayed)
 	{
@@ -265,7 +280,7 @@ void AIGPlayerCharacter::BeginPlay()
 		GIFTutorialWidget->AddToViewport(10);
 		GIFTutorialWidget->CloseGIFTutorialWidget();
 	}
-	
+
 	PauseWidget = CreateWidget<UIGPauseHUD>(GetWorld(), PauseWidgetClass);
 	if (PauseWidget)
 	{
@@ -1121,13 +1136,13 @@ void AIGPlayerCharacter::SetBossBGM()
 
 void AIGPlayerCharacter::ShowPause()
 {
-	if(PauseWidget)
+	if (PauseWidget)
 	{
-		if(PauseWidget->GetVisibility() == ESlateVisibility::Hidden)
+		if (PauseWidget->GetVisibility() == ESlateVisibility::Hidden)
 		{
 			PauseWidget->OpenPause();
 		}
-		else if(PauseWidget->GetVisibility() == ESlateVisibility::Visible)
+		else if (PauseWidget->GetVisibility() == ESlateVisibility::Visible)
 		{
 			PauseWidget->ClosePause();
 		}
