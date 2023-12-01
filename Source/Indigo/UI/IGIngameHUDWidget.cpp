@@ -13,6 +13,8 @@
 #include "Indigo/Interactable/IGTreeCrystal.h"
 #include "Indigo/Interactable/IGWaveCrystal.h"
 #include "Components/TextBlock.h"
+#include "Components/Image.h"
+#include "Indigo/Character/IGEnemyBase.h"
 
 void UIGIngameHUDWidget::InitHpGauge(float InMaxValue, float InInitialValue) const
 {
@@ -70,6 +72,25 @@ void UIGIngameHUDWidget::SetHealKit(const int32 InValue) const
 	HealKit->SetHealKitCount(InValue);
 }
 
+void UIGIngameHUDWidget::AimToEnemy(AActor* InActor)
+{
+	AIGEnemyBase* Enemy = Cast<AIGEnemyBase>(InActor);
+	if(Enemy != nullptr)
+	{
+		AimImage->SetColorAndOpacity(FLinearColor(1.0, 0.0f, 0.0f));
+	}
+	else
+	{
+		AimImage->SetColorAndOpacity(FLinearColor(1.0, 1.0f, 1.0f));		
+	}
+	
+}
+
+void UIGIngameHUDWidget::AimToWhite()
+{
+	AimImage->SetColorAndOpacity(FLinearColor(1.0, 1.0f, 1.0f));
+}
+
 void UIGIngameHUDWidget::MountainCrystalCooltime(const float InDuraiontime)
 {
 	MountainCrystalSlot->CrystalCooltime(InDuraiontime);
@@ -98,6 +119,7 @@ void UIGIngameHUDWidget::NativeConstruct()
 	TreeCrystalSlot = Cast<UIGCrystalSlot>(GetWidgetFromName(TEXT("TreeCrystalSlots")));
 	WaveCrystalSlot = Cast<UIGCrystalSlot>(GetWidgetFromName(TEXT("WaveCrystalSlots")));
 	HealKit = Cast<UIGHealKits>(GetWidgetFromName(TEXT("HealKitSlot")));
+	AimImage = Cast<UImage>(GetWidgetFromName(TEXT("Aim")));
 
 	if(TreeCrystalSlot || WaveCrystalSlot || MountainCrystalSlot)
 	{

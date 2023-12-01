@@ -41,7 +41,7 @@ public:
 	
 	FORCEINLINE bool GetIsExplosion() const { return bShouldExplosion; }
 	
-	FORCEINLINE void OnHit() { bShouldAttack = true; }
+	FORCEINLINE void OnHit();
 	FORCEINLINE void OnExplosion() { bShouldExplosion = true; }
 	FORCEINLINE void OnDash() { bShouldDash = true; }
 	FORCEINLINE void OnRetreat() { bShouldRetreat = true; }

@@ -117,8 +117,14 @@ public:
 	void AddHealKit();
 
 	//BGM 변경
+	UFUNCTION()
 	void SetVillageBGM();
+	UFUNCTION()
 	void SetBossBGM();
+	UFUNCTION()
+	void SetInBossBGM();
+	UFUNCTION()
+	void SetBossClearBGM();
 
 	//Puause 위젯 띄우기
 	void ShowPause();

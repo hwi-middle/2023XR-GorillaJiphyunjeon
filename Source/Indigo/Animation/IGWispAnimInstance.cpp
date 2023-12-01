@@ -8,6 +8,14 @@ void UIGWispAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Super::NativeUpdateAnimation(DeltaSeconds);
 }
 
+void UIGWispAnimInstance::OnHit()
+{
+	bShouldAttack = true;
+	bShouldRetreat = false;
+	bShouldDash = false;
+	bShouldExplosion = false;
+}
+
 void UIGWispAnimInstance::AnimNotify_FinishHit()
 {
 	OnFinishHit.Broadcast();

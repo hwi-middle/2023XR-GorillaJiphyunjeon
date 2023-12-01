@@ -2,6 +2,8 @@
 
 
 #include "Indigo/UI/IGOptionSlide.h"
+
+#include "AsyncTreeDifferences.h"
 #include "Components/Slider.h"
 #include "Indigo/DataAsset/IGSoundDataAsset.h"
 #include "Indigo/DataAsset/IGPlayerDataAsset.h"
@@ -12,6 +14,7 @@
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
 #include "Sound/SoundCue.h"
+#include "Indigo/Util/IGSaveOption.h"
 
 UIGOptionSlide::UIGOptionSlide(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
 {
@@ -22,20 +25,39 @@ void UIGOptionSlide::SetSliderType(const ESliderType InType)
 {
 	SoundSlider->SetMinValue(0.01f);
 	SoundSlider->SetMaxValue(2.0f);
-	SoundSlider->SetValue(1.0f);
 
+	TObjectPtr<UIGSaveOption> OptionSaveData = Cast<UIGSaveOption>(UGameplayStatics::LoadGameFromSlot(TEXT("Option"), 0));
+	if(OptionSaveData == nullptr)
+	{
+		OptionSaveData = Cast<UIGSaveOption>(UGameplayStatics::CreateSaveGameObject(UIGSaveOption::StaticClass()));
+		OptionSaveData->SFXSound = 1;
+		OptionSaveData->BGMSound = 1;
+		OptionSaveData->MouseSensivity = 1;
+		SoundSlider->SetValue(1.0f);
+		UGameplayStatics::SaveGameToSlot(OptionSaveData, TEXT("Option"), 0);		
+	}
+	
 	SoundSlider->OnMouseCaptureBegin.AddDynamic(this, &UIGOptionSlide::PlayClickSound);
-	if(InType == ESliderType::BGM)
+	switch (InType)
 	{
-		SoundSlider->OnValueChanged.AddDynamic(this, &UIGOptionSlide::SetBGM);
-	}
-	else if(InType == ESliderType::SFX)
-	{
-		SoundSlider->OnValueChanged.AddDynamic(this, &UIGOptionSlide::SetSFX);		
-	}
-	else if(InType == ESliderType::MouseSensitivity)
-	{		
-		SoundSlider->OnValueChanged.AddDynamic(this, &UIGOptionSlide::SetMouseSensitivity);		
+		case ESliderType::BGM:
+			SetBGM(OptionSaveData->BGMSound);
+			SoundSlider->SetValue(OptionSaveData->BGMSound);
+			SoundSlider->OnValueChanged.AddDynamic(this, &UIGOptionSlide::SetBGM);
+			break;
+		case ESliderType::SFX:
+			SetSFX(OptionSaveData->SFXSound);
+			SoundSlider->SetValue(OptionSaveData->SFXSound);
+			SoundSlider->OnValueChanged.AddDynamic(this, &UIGOptionSlide::SetSFX);	
+			break;
+		case ESliderType::MouseSensitivity:
+			SetMouseSensitivity(OptionSaveData->MouseSensivity);
+			SoundSlider->SetValue(OptionSaveData->MouseSensivity);
+			SoundSlider->OnValueChanged.AddDynamic(this, &UIGOptionSlide::SetMouseSensitivity);	
+			break;
+		default:
+			
+			break;
 	}
 }
 
@@ -45,6 +67,7 @@ void UIGOptionSlide::SetBGM(const float InValue)
 	for(USoundCue* BGM: BGMSoundsData)
 	{
 		BGM->VolumeMultiplier = InValue;
+		BGMSoundData = InValue;
 	}
 		ProgressBar->SetPercent(InValue/2);
 }
@@ -55,6 +78,7 @@ void UIGOptionSlide::SetSFX(const float InValue)
 	for(USoundCue* SFX: SFXSoundsData)
 	{
 		SFX->VolumeMultiplier = InValue;
+		SFXSoundData = InValue;
 	}
 		ProgressBar->SetPercent(InValue/2);
 }
@@ -65,6 +89,7 @@ void UIGOptionSlide::SetMouseSensitivity(const float InValue)
 	{
 		PlayerDataAsset->MouseYawScale = InValue;
 		PlayerDataAsset->MousePitchScale = InValue;
+		MouseData = InValue;
 		
 		ValueText->SetText(FText::AsNumber(FMath::TruncToInt(InValue  * 50)));
 		ProgressBar->SetPercent(InValue/2);
@@ -82,7 +107,7 @@ void UIGOptionSlide::NativeConstruct()
 	ValueText->SetText(FText::AsNumber(50));
 	PlayerDataAsset->MouseYawScale = 1.0f;
 	PlayerDataAsset->MousePitchScale = 1.0f;
-
+	
 	if (SoundDataAsset)
 	{
 		for (TObjectIterator<USoundCue> It; It; ++It)
@@ -102,7 +127,7 @@ void UIGOptionSlide::NativeConstruct()
 				}
 			}
 		}
-	}
+	}	
 }
 
 void UIGOptionSlide::PlayClickSound()

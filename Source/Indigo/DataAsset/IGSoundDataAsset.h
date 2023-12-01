@@ -147,6 +147,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = "BGM", DisplayName = "배경음 오프닝")
 	TObjectPtr<USoundCue> BGMOpeningSoundCue;
 	
+	UPROPERTY(EditAnywhere, Category = "BGM", DisplayName = "배경음 보스 입장")
+	TObjectPtr<USoundCue> BGMInBoss;
+	
+	UPROPERTY(EditAnywhere, Category = "BGM", DisplayName = "배경음 보스 클리어")
+	TObjectPtr<USoundCue> BGMClearBoss;
+	
 //AMB
 public:	
 	UPROPERTY(EditAnywhere, Category = "AMB", DisplayName = "환경음 새소리")

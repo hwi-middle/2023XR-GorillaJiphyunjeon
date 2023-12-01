@@ -194,8 +194,10 @@ float AIGHintMonsterBase::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	{
 		UGameplayStatics::PlaySound2D(this, SoundDataAsset->WispDeadSoundCue);
 		bIsDead = true;
-				
-		DelegateHandle = AnimInstance->OnFinishHit.AddUObject(this, &AIGHintMonsterBase::DropCrystal);			
+
+		
+		//피격 애니메이션 재생 안하고 체력 떨어지면 바로 사망 
+		DropCrystal();			
 		GetWorldTimerManager().SetTimerForNextTick(this, &AIGHintMonsterBase::PendRespawn);
 
 	}	
@@ -215,7 +217,6 @@ void AIGHintMonsterBase::PendRespawn()
 		SetActorLocation(SpawnPos);
 		this->SetActorEnableCollision(true);
 		this->SetActorHiddenInGame(false);
-		AnimInstance->OnFinishHit.Remove(DelegateHandle);
 		AIGEnemyBase::SetHp(30);
 		bIsDead = false;
 		AttackSpeed = 800;

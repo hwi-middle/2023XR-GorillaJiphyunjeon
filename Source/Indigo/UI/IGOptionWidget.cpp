@@ -5,6 +5,8 @@
 #include "IGOptionSlide.h"
 #include "Components/Button.h"
 #include "Components/CanvasPanel.h"
+#include "Indigo/Util/IGSaveOption.h"
+#include "Kismet/GameplayStatics.h"
 
 UIGOptionWidget::UIGOptionWidget(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
 {
@@ -27,6 +29,15 @@ void UIGOptionWidget::OpenSliderOption()
 	OptionPanel->SetVisibility(ESlateVisibility::Visible);
 }
 
+void UIGOptionWidget::SaveOptionData()
+{
+	TObjectPtr<UIGSaveOption> OptionSaveData = Cast<UIGSaveOption>(UGameplayStatics::CreateSaveGameObject(UIGSaveOption::StaticClass()));
+	OptionSaveData->BGMSound = BGM->GetBgmSoundValue();
+	OptionSaveData->SFXSound = SFX->GetSFXSoundValue();
+	OptionSaveData->MouseSensivity = Mouse->GetMouseSoundValue();
+	UGameplayStatics::SaveGameToSlot(OptionSaveData, TEXT("Option"), 0);		
+}
+
 void UIGOptionWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -44,6 +55,9 @@ void UIGOptionWidget::NativeConstruct()
 	CreditButton = Cast<UButton>(GetWidgetFromName(TEXT("Credit")));
 	CreditButton->OnClicked.AddDynamic(this, &UIGOptionWidget::OpenCredit);
 	
+	SaveButton = Cast<UButton>(GetWidgetFromName(TEXT("Save")));
+	SaveButton->OnClicked.AddDynamic(this, &UIGOptionWidget::SaveOptionData);
+	
 	SliderOptionButton = Cast<UButton>(GetWidgetFromName(TEXT("SliderWidgetButton")));
 	SliderOptionButton->OnClicked.AddDynamic(this, &UIGOptionWidget::OpenSliderOption);
 
@@ -56,4 +70,7 @@ void UIGOptionWidget::NativeConstruct()
 
 	SetVisibility(ESlateVisibility::Visible);
 	OptionPanel->SetVisibility(ESlateVisibility::Visible);
+	
+
+
 }

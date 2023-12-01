@@ -75,7 +75,6 @@ void UBTService_DetectPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 			DrawDebugLine(World, ControllingPawn->GetActorLocation(), Player->GetActorLocation(), FColor::Green, false, 0.f);
 			if(!bFirstDetectPlayer)
 			{
-				Player->SetBossBGM();
 				Player->ShowFirstBossGIFTutorial();
 				bFirstDetectPlayer = true;
 			}

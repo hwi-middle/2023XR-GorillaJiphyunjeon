@@ -13,6 +13,7 @@ class UIGSoundDataAsset;
 class UIGPlayerDataAsset;
 class UTextBlock;
 class UProgressBar;
+class UIGSaveOption;
 enum class ESliderType : int8
 {
 	SFX,
@@ -41,6 +42,13 @@ public:
 	void SetMouseSensitivity(const float InValue);
 	UFUNCTION(BlueprintCallable)
 	void PlayClickSound();
+
+	UFUNCTION(BlueprintCallable)
+	float GetBgmSoundValue() const {return BGMSoundData;}
+	UFUNCTION(BlueprintCallable)
+	float GetSFXSoundValue() const {return SFXSoundData;}
+	UFUNCTION(BlueprintCallable)
+	float GetMouseSoundValue() const {return MouseData;}
 	
 	FORCEINLINE float GetValue() const {return SoundSlider->GetValue(); }
 	
@@ -55,9 +63,7 @@ protected:
 
 	ESliderType SliderType;
 
-private:
-
-	
+private:	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;
 	
@@ -72,4 +78,14 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UTextBlock> ValueText;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float BGMSoundData;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float SFXSoundData;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float MouseData;
+
 };
