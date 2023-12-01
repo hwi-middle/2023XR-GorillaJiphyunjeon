@@ -52,10 +52,11 @@ void AIGOldTree::Interact()
 	{
 		return;
 	}
+	UIGGameInstance* GameInstance = Cast<UIGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
-	if((IGPlayerCharacter->GetInventory()->GetMountainCrystalArray().Num() +
-		IGPlayerCharacter->GetInventory()->GetTreeCrystalArray().Num() +
-		IGPlayerCharacter->GetInventory()->GetWaveCrystalArray().Num()) < 9)
+	if((GameInstance->PlayerInventory->GetMountainCrystalArray().Num() +
+		GameInstance->PlayerInventory->GetTreeCrystalArray().Num() +
+		GameInstance->PlayerInventory->GetWaveCrystalArray().Num()) < 9)
 	{
 		IGPlayerCharacter->GetShinmyophil()->ProvisoRemakeNoFindCrystalAndInteractToOldTree();
 		IGBossZoneGateManager::GetInstance()->OpenGate();

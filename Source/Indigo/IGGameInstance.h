@@ -6,6 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "IGGameInstance.generated.h"
 
+class UIGPlayerInventory;
 /**
  * 
  */
@@ -18,6 +19,9 @@ public:
 	UIGGameInstance();
 
 	virtual void Init() override;
+	
+	UPROPERTY()
+	TObjectPtr<UIGPlayerInventory> PlayerInventory;
 	
 	UPROPERTY()
 	uint8 bIsControlTutorialDisplayed : 1;

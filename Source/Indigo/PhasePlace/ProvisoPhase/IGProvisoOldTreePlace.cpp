@@ -5,6 +5,7 @@
 #include "Indigo/Character/IGPlayerCharacter.h"
 #include "Indigo/Inventory/IGPlayerInventory.h"
 #include "Indigo/Inventory/IGShinmyophil.h"
+#include "Kismet/GameplayStatics.h"
 
 
 AIGProvisoOldTreePlace::AIGProvisoOldTreePlace()
@@ -25,11 +26,12 @@ void AIGProvisoOldTreePlace::EnterPhasePlace()
 	{
 		return;
 	}
+	UIGGameInstance* GameInstance = Cast<UIGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
 	if(
-		(PlayerCharacter->GetInventory()->GetMountainCrystalArray().Num() +
-		PlayerCharacter->GetInventory()->GetTreeCrystalArray().Num() +
-		PlayerCharacter->GetInventory()->GetWaveCrystalArray().Num())
+		(GameInstance->PlayerInventory->GetMountainCrystalArray().Num() +
+		GameInstance->PlayerInventory->GetTreeCrystalArray().Num() +
+		GameInstance->PlayerInventory->GetWaveCrystalArray().Num())
 		< 9
 		&& bIsInCollision == false)
 	{

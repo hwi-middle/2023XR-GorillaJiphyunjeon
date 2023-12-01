@@ -153,7 +153,6 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 		ComboActionMontage = Montage;
 	}, EAssertionLevel::Check);
 
-	PlayerInventory = CreateDefaultSubobject<UIGPlayerInventory>(TEXT("Inventory"));
 	Shinmyophil = CreateDefaultSubobject<UIGShinmyophil>(TEXT("Shinmyophil"));
 
 	SoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
@@ -162,7 +161,6 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
 	AudioComponent->SetupAttachment(RootComponent);
 
-	HealCount = 0;
 	bIsFirstGetHealKit = false;
 }
 
@@ -230,6 +228,8 @@ void AIGPlayerCharacter::BeginPlay()
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
+	GameInstance = Cast<UIGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	
 	HudWidget = CreateWidget<UIGIngameHUDWidget>(GetWorld(), HudWidgetClass);
 	if (HudWidget)
 	{
@@ -242,12 +242,14 @@ void AIGPlayerCharacter::BeginPlay()
 			HudWidget->InitQuestList(Shinmyophil->GetQuestArray()[i]);
 		}
 
+		HudWidget->SetHealKit(GameInstance->PlayerInventory->GetHealCount());
+
 		if (bIsHudDisabled)
 		{
 			HudWidget->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
-	UIGGameInstance* GameInstance = Cast<UIGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	
 	TutorialWidget = CreateWidget<UIGTutotialWidget>(GetWorld(), TutorialWidgetClass);
 	if (TutorialWidget && !GameInstance->bIsControlTutorialDisplayed)
 	{
@@ -586,7 +588,7 @@ void AIGPlayerCharacter::Interact()
 	if (Crystal != nullptr)
 	{
 		UGameplayStatics::PlaySound2D(this, SoundDataAsset->ObjectGetCrystalSoundCue);
-		PlayerInventory->AddCrystal(Crystal->GetCrystalType());
+		GameInstance->PlayerInventory->AddCrystal(Crystal->GetCrystalType());
 		HudWidget->AddCrystal(Crystal);
 	}
 }
@@ -873,9 +875,9 @@ void AIGPlayerCharacter::ActivateCrystalByIndex(uint32 Index)
 	}
 
 	ECrystal Type = ECrystal::None;
-	const TArray<AIGMountainCrystal*> MountainCrystalArray = PlayerInventory->GetMountainCrystalArray();
-	const TArray<AIGTreeCrystal*> TreeCrystalArray = PlayerInventory->GetTreeCrystalArray();
-	const TArray<AIGWaveCrystal*> WaveCrystalArray = PlayerInventory->GetWaveCrystalArray();
+	const TArray<AIGMountainCrystal*> MountainCrystalArray = GameInstance->PlayerInventory->GetMountainCrystalArray();
+	const TArray<AIGTreeCrystal*> TreeCrystalArray = GameInstance->PlayerInventory->GetTreeCrystalArray();
+	const TArray<AIGWaveCrystal*> WaveCrystalArray = GameInstance->PlayerInventory->GetWaveCrystalArray();
 
 	if (Index == 0 && MountainCrystalArray.Num() >= 3)
 	{
@@ -991,17 +993,17 @@ void AIGPlayerCharacter::TutorialWidgetVisible()
 
 void AIGPlayerCharacter::UseHeal()
 {
-	if (HealCount <= 0)
+	if (GameInstance->PlayerInventory->GetHealCount() <= 0)
 	{
 		return;
 	}
 
-	HealCount--;
+	GameInstance->PlayerInventory->DecrementHealCount();
 	Hp = FMath::Clamp(Hp + 30.0f, 0, 100.0f);
 
 	if (HudWidget != nullptr)
 	{
-		HudWidget->SetHealKit(HealCount);
+		HudWidget->SetHealKit(GameInstance->PlayerInventory->GetHealCount());
 		HudWidget->UpdateHpGauge(Hp);
 	}
 
@@ -1094,10 +1096,10 @@ void AIGPlayerCharacter::AddHealKit()
 		bIsFirstGetHealKit = true;
 		ShowFirstHealKitGIFTutorial();
 	}
-	HealCount++;
+	GameInstance->PlayerInventory->IncrementHealCount();
 	if (HudWidget != nullptr)
 	{
-		HudWidget->SetHealKit(HealCount);
+		HudWidget->SetHealKit(GameInstance->PlayerInventory->GetHealCount());
 	}
 }
 
@@ -1146,7 +1148,6 @@ void AIGPlayerCharacter::ShowFirstCrystalGIFTutorial()
 
 void AIGPlayerCharacter::ShowFirstBossGIFTutorial()
 {
-	UIGGameInstance* GameInstance = Cast<UIGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	if (GameInstance->bIsBossTutorialDisplayed)
 	{
 		return;
@@ -1174,9 +1175,9 @@ void AIGPlayerCharacter::CheckCrystal_DEBUG()
 {
 	UE_LOG(LogTemp, Log, TEXT("크리스탈 목록"));
 
-	auto MountainCrystalArray = PlayerInventory->GetMountainCrystalArray();
-	auto WaveCrystalArray = PlayerInventory->GetWaveCrystalArray();
-	auto TreeCrystalArray = PlayerInventory->GetTreeCrystalArray();
+	auto MountainCrystalArray = GameInstance->PlayerInventory->GetMountainCrystalArray();
+	auto WaveCrystalArray = GameInstance->PlayerInventory->GetWaveCrystalArray();
+	auto TreeCrystalArray = GameInstance->PlayerInventory->GetTreeCrystalArray();
 
 	UE_LOG(LogTemp, Log, TEXT("[산 크리스탈 파편 갯수]: %d"), MountainCrystalArray.Num());
 	UE_LOG(LogTemp, Log, TEXT("[물결 크리스탈 파편 갯수]: %d"), WaveCrystalArray.Num());

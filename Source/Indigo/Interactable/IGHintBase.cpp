@@ -55,7 +55,8 @@ void AIGHintBase::BeginPlay()
 			TArray<ProvisoText*> PlayerHintsArray;
 			if(PlayerCharacter != nullptr)
 			{
-				PlayerHintsArray = PlayerCharacter->GetInventory()->GetHintArray();
+				UIGGameInstance* GameInstance = Cast<UIGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+				PlayerHintsArray = GameInstance->PlayerInventory->GetHintArray();
 			}
 			for (int32 i = 0; i < HintTextTitleArray.Num(); i++)
 			{

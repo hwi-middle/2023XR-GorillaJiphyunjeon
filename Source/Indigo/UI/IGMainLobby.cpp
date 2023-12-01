@@ -4,6 +4,7 @@
 #include "IGMainLobby.h"
 
 #include "Indigo/IGGameInstance.h"
+#include "Indigo/Inventory/IGPlayerInventory.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/UI/IGMainLobbyWidget.h"
 #include "Kismet/GameplayStatics.h"
@@ -31,6 +32,7 @@ void AIGMainLobby::BeginPlay()
 	GameInstance->bIsBossRoomEnterSequenceDisplayed = false;
 	GameInstance->bIsBossTutorialDisplayed = false;
 	GameInstance->bIsControlTutorialDisplayed = false;
+	GameInstance->PlayerInventory->InitInventory();
 	
 	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
 	Controller->bShowMouseCursor = true;

@@ -26,10 +26,28 @@ UIGPlayerInventory::UIGPlayerInventory()
 	bIsGet2HintBySameProviso =false;
 	bIsGetFirstCrystal = false;
 	CantFindProvisoTime = 0.0f;
+	HealCount = 0;
 }
 
 UIGPlayerInventory::~UIGPlayerInventory()
 {}
+
+void UIGPlayerInventory::InitInventory()
+{
+	PrimaryComponentTick.bCanEverTick = true;
+	bIsGetFirstCrystal = false;
+	bIsGetFirstBlankHint = false;
+	bIsGetFirstHint = false;
+	bIsGet2HintBySameProviso =false;
+	bIsGetFirstCrystal = false;
+	CantFindProvisoTime = 0.0f;
+	HealCount = 0;
+
+	MountainCrystalArray.Empty();
+	WaveCrystalArray.Empty();
+	TreeCrystalArray.Empty();
+	HintArray.Empty();
+}
 
 void UIGPlayerInventory::BeginPlay()
 {

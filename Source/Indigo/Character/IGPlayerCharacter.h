@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Indigo/IGGameInstance.h"
 #include "Indigo/Interface/IGCharacterStatus.h"
 #include "IGPlayerCharacter.generated.h"
 
@@ -70,12 +71,15 @@ private:
 	bool CheckPlayerState(const EPlayerState InState) const;
 	void AddPlayerState(const EPlayerState InState);
 	void RemovePlayerState(const EPlayerState InState);
-
+	
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY()
 	uint8 bIsHudDisabled : 1;
+
+	UPROPERTY()
+	TObjectPtr<UIGGameInstance> GameInstance;
 	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UIGIngameHUDWidget> HudWidgetClass;
@@ -283,7 +287,6 @@ public:
 	FORCEINLINE USpringArmComponent* GetCameraSpringArm() const { return CameraSpringArm; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 	FORCEINLINE UIGShinmyophil* GetShinmyophil() const { return Shinmyophil; }
-	FORCEINLINE UIGPlayerInventory* GetInventory() const { return PlayerInventory; }
 	FORCEINLINE EPlayerState GetCurrentState() const { return CurrentState; }
 	FORCEINLINE int32 GetCurrentCombo() const { return CurrentCombo; }
 
@@ -390,10 +393,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	float DieZLocation;
 
-	// 인벤토리
-	UPROPERTY()
-	TObjectPtr<UIGPlayerInventory> PlayerInventory;
-
 	//신묘필
 	UPROPERTY()
 	TObjectPtr<UIGShinmyophil> Shinmyophil;
@@ -404,11 +403,7 @@ private:
 	//BGM
 	UPROPERTY()
 	class USoundCue* CurrentBGM;
-
-	//체력가능 횟수
-	UPROPERTY()
-	int32 HealCount;
-
+	
 	// 사운드
 	UPROPERTY()
 	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;

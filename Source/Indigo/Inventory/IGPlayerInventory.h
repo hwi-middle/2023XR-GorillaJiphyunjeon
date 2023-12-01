@@ -25,6 +25,7 @@ class INDIGO_API UIGPlayerInventory : public UActorComponent
 public:
 	UIGPlayerInventory();
 	virtual ~UIGPlayerInventory() override;
+	void InitInventory();
 
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -38,32 +39,41 @@ public:
 	FORCEINLINE TArray<AIGWaveCrystal*> GetWaveCrystalArray() { return WaveCrystalArray; }
 	FORCEINLINE TArray<AIGTreeCrystal*> GetTreeCrystalArray() { return TreeCrystalArray; }
 	FORCEINLINE TArray<ProvisoText*> GetHintArray() { return HintArray; }
+	FORCEINLINE uint32 GetHealCount() const { return HealCount; }
+	FORCEINLINE void IncrementHealCount() { HealCount++; }
+	FORCEINLINE void DecrementHealCount() { HealCount--; }
 
 private:
-	
 	UPROPERTY()
 	TArray<AIGMountainCrystal*> MountainCrystalArray;
-	
+
 	UPROPERTY()
 	TArray<AIGWaveCrystal*> WaveCrystalArray;
-	
+
 	UPROPERTY()
 	TArray<AIGTreeCrystal*> TreeCrystalArray;
 
-	
+
 	TArray<ProvisoText*> HintArray;
-	
+
 	UPROPERTY()
 	uint8 bIsGetFirstCrystalFrag : 1;
+
 	UPROPERTY()
 	uint8 bIsGetFirstHint : 1;
+
 	UPROPERTY()
 	uint8 bIsGetFirstBlankHint : 1;
+
 	UPROPERTY()
 	uint8 bIsGet2HintBySameProviso : 1;
+
 	UPROPERTY()
 	uint8 bIsGetFirstCrystal : 1;
-	
+
 	UPROPERTY()
-	float CantFindProvisoTime;	
+	float CantFindProvisoTime;
+
+	UPROPERTY()
+	uint32 HealCount;
 };
