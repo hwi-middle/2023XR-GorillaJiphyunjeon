@@ -705,7 +705,7 @@ void AIGPlayerCharacter::ProcessComboCommand()
 		return;
 	}
 
-	if (!ComboTimerHandle.IsValid())
+	if (!bIsComboTimerActivated)
 	{
 		UE_LOG(LogTemp, Log, TEXT("다음 콤보 없음"));
 		HasNextComboCommand = false;
@@ -729,7 +729,6 @@ void AIGPlayerCharacter::ComboActionBegin()
 	FOnMontageEnded EndDelegate;
 	EndDelegate.BindUObject(this, &AIGPlayerCharacter::ComboActionEnd);
 	PlayerAnimInstance->Montage_SetEndDelegate(EndDelegate, ComboActionMontage);
-	ComboTimerHandle.Invalidate();
 	SetComboCheckTimer();
 }
 
@@ -738,12 +737,13 @@ void AIGPlayerCharacter::SetComboCheckTimer()
 	UE_LOG(LogTemp, Log, TEXT("SetComboCheckTimer 진입"));
 	const int32 FrameCount = GetComboAnimationFrameCount();
 	constexpr float AnimationFrameRate = 30.f;
-	const float ComboDelayTime = FrameCount / AnimationFrameRate;
+	ComboDelayTime = FrameCount / AnimationFrameRate;
 
 	if (ComboDelayTime > 0.0f)
 	{
 		UE_LOG(LogTemp, Log, TEXT("ComboCheck 설정: %f"), ComboDelayTime);
-		GetWorld()->GetTimerManager().SetTimer(ComboTimerHandle, this, &AIGPlayerCharacter::ComboCheck, ComboDelayTime, false);
+		// GetWorld()->GetTimerManager().SetTimer(ComboTimerHandle, this, &AIGPlayerCharacter::ComboCheck, ComboDelayTime, false);
+		GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::WaitForComboCheckDelay);
 	}
 }
 
@@ -763,11 +763,27 @@ int32 AIGPlayerCharacter::GetComboAnimationFrameCount() const
 	}
 }
 
+void AIGPlayerCharacter::WaitForComboCheckDelay()
+{
+	static float ElapsedTime = 0.f;
+	ElapsedTime += GetWorld()->GetDeltaSeconds();
+	if (ElapsedTime >= ComboDelayTime)
+	{
+		UE_LOG(LogTemp, Log, TEXT("%f / %f, ComboCheck 기다림 끝"), ElapsedTime, ComboDelayTime);
+		ElapsedTime = 0.f;
+		bIsComboTimerActivated = false;
+		ComboCheck();
+		return;
+	}
+
+	bIsComboTimerActivated = true;
+	GetWorldTimerManager().SetTimerForNextTick(this, &AIGPlayerCharacter::WaitForComboCheckDelay);
+}
+
 void AIGPlayerCharacter::ComboCheck()
 {
 	UE_LOG(LogTemp, Log, TEXT("ComboCheck 진입"));
-	
-	ComboTimerHandle.Invalidate();
+
 	if (!HasNextComboCommand)
 	{
 		UE_LOG(LogTemp, Log, TEXT("다음 콤보 없어서 ComboCheck 탈출"));
@@ -794,8 +810,7 @@ void AIGPlayerCharacter::NotifyComboActionEnd()
 	UE_LOG(LogTemp, Log, TEXT("NotifyComboActionEnd 호출"));
 	CurrentCombo = 0;
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-	ComboTimerHandle.Invalidate();
-	HasNextComboCommand = false;
+	// HasNextComboCommand = false;
 	RemovePlayerState(EPlayerState::Attacking);
 }
 

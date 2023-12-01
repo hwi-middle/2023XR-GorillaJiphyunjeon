@@ -71,7 +71,7 @@ private:
 	bool CheckPlayerState(const EPlayerState InState) const;
 	void AddPlayerState(const EPlayerState InState);
 	void RemovePlayerState(const EPlayerState InState);
-	
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -80,19 +80,19 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UIGGameInstance> GameInstance;
-	
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UIGIngameHUDWidget> HudWidgetClass;
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UIGIngameHUDWidget> HudWidget;
-	
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UIGTutotialWidget> TutorialWidgetClass;
-	
+
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UIGTutotialWidget> TutorialWidget;
-	
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UIGGIFTutorialWidget> GIFTutorialWidgetClass;
 
@@ -109,7 +109,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	
+
 	//신묘필 대사 갱신
 	void UpdateShinmyophilScript(const FString InText);
 
@@ -122,12 +122,12 @@ public:
 
 	//Puause 위젯 띄우기
 	void ShowPause();
-	
+
 	//GIF튜토리얼 위젯 띄우기
 	void ShowFirstHealKitGIFTutorial();
 	void ShowFirstCrystalGIFTutorial();
 	void ShowFirstBossGIFTutorial();
-	
+
 public:
 	//인터페이스 함수
 	virtual FORCEINLINE float GetHp() const override { return Hp; }
@@ -184,13 +184,13 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> Crystal3Action;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> ShowTutorialWidget;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> UseHealKit;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> Pause;
 
@@ -200,10 +200,10 @@ private:
 
 	// UPROPERTY()
 	// TObjectPtr<UIGPlayerWeaponAnimInstance> WeaponAnimInstance;
-	
+
 	// UPROPERTY()
 	// TObjectPtr<USkeletalMeshComponent> WeaponMesh;
-	
+
 	UPROPERTY()
 	TObjectPtr<UStaticMeshComponent> WeaponMesh;
 
@@ -216,10 +216,10 @@ private:
 
 	UPROPERTY()
 	FHitResult AimingHitResult;
-	
+
 	UPROPERTY()
 	uint8 bIsAimingProperActor : 1;
-	
+
 	UPROPERTY()
 	uint8 bIsFirstGetHealKit : 1;
 
@@ -237,7 +237,7 @@ private:
 
 	UPROPERTY()
 	float AimingTargetYaw;
-	
+
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> AudioComponent;
 
@@ -254,6 +254,7 @@ private:
 	void ComboActionBegin();
 	void SetComboCheckTimer();
 	int32 GetComboAnimationFrameCount() const;
+	void WaitForComboCheckDelay();
 	void ComboCheck();
 	void ComboActionEnd(UAnimMontage* TargetMontage, bool IsProperlyEnded);
 	virtual void NotifyComboActionEnd();
@@ -275,8 +276,6 @@ private:
 
 	//데미지 계산
 	float ComputeDamage();
-
-
 
 public:
 	void PlayFadeOutSequence();
@@ -361,16 +360,19 @@ private:
 	// 3타 시스템에 필요한 정보
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAnimMontage> ComboActionMontage;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	int32 CurrentCombo = 0;
-	
+
 	UPROPERTY(VisibleAnywhere)
-	FTimerHandle ComboTimerHandle;
+	float ComboDelayTime = 0.f;
 
 	UPROPERTY(VisibleAnywhere)
 	bool HasNextComboCommand = false;
-	
+
+	UPROPERTY(VisibleAnywhere)
+	bool bIsComboTimerActivated = false;
+
 	// 기타 필요한 정보
 	UPROPERTY(VisibleAnywhere)
 	float ExhaustionPhase1Duration;
@@ -386,24 +388,24 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	float RotateToAimingTargetDuration;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	float ElapsedRotateToAimingTargetTime;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	float DieZLocation;
 
 	//신묘필
 	UPROPERTY()
 	TObjectPtr<UIGShinmyophil> Shinmyophil;
-	
+
 	UPROPERTY()
 	ECrystal ActivatedCrystal;
 
 	//BGM
 	UPROPERTY()
 	class USoundCue* CurrentBGM;
-	
+
 	// 사운드
 	UPROPERTY()
 	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;
@@ -423,7 +425,6 @@ private:
 
 	UPROPERTY()
 	float ElapsedFadeSequenceTime;
-
 
 private:
 	// 디버그용
