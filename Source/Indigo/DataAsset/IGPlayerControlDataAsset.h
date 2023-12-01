@@ -51,4 +51,7 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "InputAction", DisplayName = "체력템 사용")
 	TObjectPtr<UInputAction> UseHealKit;
+	
+	UPROPERTY(EditAnywhere, Category = "InputAction", DisplayName = "일시정지")
+	TObjectPtr<UInputAction> Pause;
 };

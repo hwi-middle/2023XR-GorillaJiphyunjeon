@@ -38,6 +38,7 @@
 #include "Indigo/UI/QuestUI/IGQuest.h"
 #include "Indigo/UI/TutorialUI/IGTutotialWidget.h"
 #include "Indigo/UI/TutorialUI/IGGIFTutorialWidget.h"
+#include "Indigo/UI/IGPauseHUD.h"
 #include "Indigo/Util/IGCharacterDataTable.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/Util/IGDataTableParser.h"
@@ -121,6 +122,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	Crystal3Action = PlayerControlDataAsset->Crystal3Action;
 	ShowTutorialWidget = PlayerControlDataAsset->ShowTutorialWidget;
 	UseHealKit = PlayerControlDataAsset->UseHealKit;
+	Pause = PlayerControlDataAsset->Pause;
 
 	const TSubclassOf<UIGPlayerAnimInstance> PlayerAnimInstanceClass = FIGConstructorHelper::FindAndGetClass<UIGPlayerAnimInstance>(
 		TEXT("/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/ABP_Player.ABP_Player_C"), EAssertionLevel::Check);
@@ -140,7 +142,12 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	{
 		GIFTutorialWidgetClass = Class;
 	}, EAssertionLevel::Check);
-
+	
+	FIGConstructorHelper::FindClassAndInitialize<UIGPauseHUD>(TEXT("/Game/_GorillaJiphyunjeon/UI/Game/Pause/WBP_PauseWidget.WBP_PauseWidget_C"), [&](TSubclassOf<UIGPauseHUD> Class)
+	{
+		PauseWidgetClass = Class;
+	}, EAssertionLevel::Check);
+	
 	FIGConstructorHelper::FindObjectAndInitialize<UAnimMontage>(TEXT("/Script/Engine.AnimMontage'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/AM_PlayerAttack.AM_PlayerAttack'"), [&](UAnimMontage* Montage)
 	{
 		ComboActionMontage = Montage;
@@ -258,6 +265,13 @@ void AIGPlayerCharacter::BeginPlay()
 	{
 		GIFTutorialWidget->AddToViewport(10);
 		GIFTutorialWidget->CloseGIFTutorialWidget();
+	}
+	
+	PauseWidget = CreateWidget<UIGPauseHUD>(GetWorld(), PauseWidgetClass);
+	if (PauseWidget)
+	{
+		PauseWidget->AddToViewport(20);
+		PauseWidget->ClosePause();
 	}
 
 	ManageStaminaByTime();
@@ -426,6 +440,7 @@ void AIGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(Crystal3Action, ETriggerEvent::Started, this, &AIGPlayerCharacter::ActivateCrystal3);
 		EnhancedInputComponent->BindAction(ShowTutorialWidget, ETriggerEvent::Started, this, &AIGPlayerCharacter::TutorialWidgetVisible);
 		EnhancedInputComponent->BindAction(UseHealKit, ETriggerEvent::Started, this, &AIGPlayerCharacter::UseHeal);
+		EnhancedInputComponent->BindAction(Pause, ETriggerEvent::Started, this, &AIGPlayerCharacter::ShowPause);
 	}
 }
 
@@ -1102,6 +1117,21 @@ void AIGPlayerCharacter::SetBossBGM()
 	CurrentBGM = SoundDataAsset->BGMBossSoundCue;
 	AudioComponent = UGameplayStatics::SpawnSound2D(this, CurrentBGM);
 	AudioComponent->Play();
+}
+
+void AIGPlayerCharacter::ShowPause()
+{
+	if(PauseWidget)
+	{
+		if(PauseWidget->GetVisibility() == ESlateVisibility::Hidden)
+		{
+			PauseWidget->OpenPause();
+		}
+		else if(PauseWidget->GetVisibility() == ESlateVisibility::Visible)
+		{
+			PauseWidget->ClosePause();
+		}
+	}
 }
 
 void AIGPlayerCharacter::ShowFirstHealKitGIFTutorial()
