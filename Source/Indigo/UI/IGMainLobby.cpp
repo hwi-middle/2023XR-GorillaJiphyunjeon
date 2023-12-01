@@ -2,6 +2,8 @@
 
 
 #include "IGMainLobby.h"
+
+#include "Indigo/IGGameInstance.h"
 #include "Indigo/Util/IGConstructorHelper.h"
 #include "Indigo/UI/IGMainLobbyWidget.h"
 #include "Kismet/GameplayStatics.h"
@@ -25,6 +27,11 @@ AIGMainLobby::~AIGMainLobby()
 void AIGMainLobby::BeginPlay()
 {
 	Super::BeginPlay();
+	UIGGameInstance* GameInstance = Cast<UIGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	GameInstance->bIsBossRoomEnterSequenceDisplayed = false;
+	GameInstance->bIsBossTutorialDisplayed = false;
+	GameInstance->bIsControlTutorialDisplayed = false;
+	
 	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
 	Controller->bShowMouseCursor = true;
 	Controller->bEnableMouseOverEvents = true;

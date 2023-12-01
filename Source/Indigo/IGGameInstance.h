@@ -21,4 +21,10 @@ public:
 	
 	UPROPERTY()
 	uint8 bIsControlTutorialDisplayed : 1;
+
+	UPROPERTY()
+	uint8 bIsBossTutorialDisplayed : 1;
+
+	UPROPERTY()
+	uint8 bIsBossRoomEnterSequenceDisplayed : 1;
 };

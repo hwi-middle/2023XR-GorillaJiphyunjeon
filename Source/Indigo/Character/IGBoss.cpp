@@ -29,6 +29,7 @@
 #include "LevelSequence.h"
 #include "LevelSequencePlayer.h"
 #include "LevelSequenceActor.h"
+#include "Indigo/IGGameInstance.h"
 
 AIGBoss::AIGBoss()
 {
@@ -129,15 +130,20 @@ void AIGBoss::BeginPlay()
 	FloorAttack_ProjectileSpeed = GimmickDataAsset->FloorAttack_ProjectileSpeed;
 
 	// 보스방 입장 컷씬 재생
-	LevelSequenceOnEnterPlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), LevelSequenceOnEnter, FMovieSceneSequencePlaybackSettings(), OutActor);
-	this->SetActorEnableCollision(false);
-	this->SetActorHiddenInGame(true);
-	AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0));
-	Player->SetActorEnableCollision(false);
-	Player->SetActorHiddenInGame(true);
-	Player->DisableHUD();
-	LevelSequenceOnEnterPlayer->Play();
-	GetWorldTimerManager().SetTimerForNextTick(this, &AIGBoss::WaitForEnterSequence);
+	UIGGameInstance* GameInstance = Cast<UIGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if(!GameInstance->bIsBossRoomEnterSequenceDisplayed)
+	{
+		LevelSequenceOnEnterPlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), LevelSequenceOnEnter, FMovieSceneSequencePlaybackSettings(), OutActor);
+		this->SetActorEnableCollision(false);
+		this->SetActorHiddenInGame(true);
+		AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0));
+		Player->SetActorEnableCollision(false);
+		Player->SetActorHiddenInGame(true);
+		Player->DisableHUD();
+		LevelSequenceOnEnterPlayer->Play();
+		GetWorldTimerManager().SetTimerForNextTick(this, &AIGBoss::WaitForEnterSequence);
+		GameInstance->bIsBossRoomEnterSequenceDisplayed = true;
+	}
 }
 
 void AIGBoss::WaitForEnterSequence()

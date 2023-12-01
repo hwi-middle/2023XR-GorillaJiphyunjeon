@@ -164,9 +164,6 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 
 	HealCount = 0;
 	bIsFirstGetHealKit = false;
-	bIsFirstMeetBoss = false;
-
-
 }
 
 bool AIGPlayerCharacter::CheckPlayerState(const EPlayerState InState) const
@@ -1050,7 +1047,8 @@ void AIGPlayerCharacter::PlayFadeOutSequence()
 
 	if (ElapsedFadeSequenceTime >= Duration)
 	{
-		UGameplayStatics::OpenLevel(this, TEXT("AD_GrayBox"));
+		// UGameplayStatics::OpenLevel(this, TEXT("AD_GrayBox"));
+		UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
 		return;
 	}
 
@@ -1148,14 +1146,15 @@ void AIGPlayerCharacter::ShowFirstCrystalGIFTutorial()
 
 void AIGPlayerCharacter::ShowFirstBossGIFTutorial()
 {
-	if (bIsFirstMeetBoss)
+	UIGGameInstance* GameInstance = Cast<UIGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (GameInstance->bIsBossTutorialDisplayed)
 	{
 		return;
 	}
 
 	GIFTutorialWidget->VisibleGIFTutorialWidget();
 	GIFTutorialWidget->PreSetByFirstBoss();
-	bIsFirstMeetBoss = true;
+	GameInstance->bIsBossTutorialDisplayed = true;
 }
 
 

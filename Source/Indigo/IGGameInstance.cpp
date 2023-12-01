@@ -6,6 +6,8 @@
 UIGGameInstance::UIGGameInstance()
 {
 	bIsControlTutorialDisplayed = false;
+	bIsBossTutorialDisplayed = false;
+	bIsBossRoomEnterSequenceDisplayed = false;
 }
 
 void UIGGameInstance::Init()

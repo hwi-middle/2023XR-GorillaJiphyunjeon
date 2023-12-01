@@ -218,9 +218,6 @@ private:
 	
 	UPROPERTY()
 	uint8 bIsFirstGetHealKit : 1;
-	
-	UPROPERTY()
-	uint8 bIsFirstMeetBoss : 1;
 
 	UPROPERTY()
 	FVector AimingStartPoint;
