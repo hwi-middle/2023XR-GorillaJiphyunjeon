@@ -73,6 +73,9 @@ private:
 protected:
 	virtual void BeginPlay() override;
 
+	UPROPERTY()
+	uint8 bIsHudDisabled : 1;
+	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UIGIngameHUDWidget> HudWidgetClass;
 
@@ -81,7 +84,7 @@ protected:
 	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UIGTutotialWidget> TutorialWidgetClass;
-
+	
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UIGTutotialWidget> TutorialWidget;
 	
@@ -264,6 +267,7 @@ private:
 public:
 	void PlayFadeOutSequence();
 	void DisableHUD();
+	void EnableHUD();
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraSpringArm() const { return CameraSpringArm; }

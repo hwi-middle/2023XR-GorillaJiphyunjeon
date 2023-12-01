@@ -127,6 +127,33 @@ void AIGBoss::BeginPlay()
 	FloorAttack_ProjectileDistance = GimmickDataAsset->FloorAttack_ProjectileDistance;
 	FloorAttack_ProjectileNum = GimmickDataAsset->FloorAttack_ProjectileNum;
 	FloorAttack_ProjectileSpeed = GimmickDataAsset->FloorAttack_ProjectileSpeed;
+
+	// 보스방 입장 컷씬 재생
+	LevelSequenceOnEnterPlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), LevelSequenceOnEnter, FMovieSceneSequencePlaybackSettings(), OutActor);
+	this->SetActorEnableCollision(false);
+	this->SetActorHiddenInGame(true);
+	AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0));
+	Player->SetActorEnableCollision(false);
+	Player->SetActorHiddenInGame(true);
+	Player->DisableHUD();
+	LevelSequenceOnEnterPlayer->Play();
+	GetWorldTimerManager().SetTimerForNextTick(this, &AIGBoss::WaitForEnterSequence);
+}
+
+void AIGBoss::WaitForEnterSequence()
+{
+	if (LevelSequenceOnEnterPlayer->IsPlaying())
+	{
+		GetWorldTimerManager().SetTimerForNextTick(this, &AIGBoss::WaitForEnterSequence);
+		return;
+	}
+
+	this->SetActorEnableCollision(true);
+	this->SetActorHiddenInGame(false);
+	AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0));
+	Player->SetActorEnableCollision(true);
+	Player->SetActorHiddenInGame(false);
+	Player->EnableHUD();
 }
 
 void AIGBoss::Tick(float DeltaSeconds)
@@ -175,7 +202,7 @@ float AIGBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 		Player->GetShinmyophil()->BattleRemakeBossDie();
 		DisableHUD();
 
-		LevelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), LevelSequenceOnDied, FMovieSceneSequencePlaybackSettings(), OutActor);
+		LevelSequenceOnDiedPlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), LevelSequenceOnDied, FMovieSceneSequencePlaybackSettings(), OutActor);
 		FTimerHandle TimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([=, &TimerHandle]()
 		{
@@ -185,7 +212,7 @@ float AIGBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 			Player->SetActorEnableCollision(false);
 			Player->SetActorHiddenInGame(true);
 			Player->DisableHUD();
-			LevelSequencePlayer->Play();
+			LevelSequenceOnDiedPlayer->Play();
 			GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 			GetWorldTimerManager().SetTimerForNextTick(this, &AIGBoss::MoveToMainLobbyOnFinishPlayingEndSequence);
 
@@ -198,7 +225,7 @@ float AIGBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 
 void AIGBoss::MoveToMainLobbyOnFinishPlayingEndSequence()
 {
-	if (LevelSequencePlayer->IsPlaying())
+	if (LevelSequenceOnDiedPlayer->IsPlaying())
 	{
 		GetWorldTimerManager().SetTimerForNextTick(this, &AIGBoss::MoveToMainLobbyOnFinishPlayingEndSequence);
 		return;

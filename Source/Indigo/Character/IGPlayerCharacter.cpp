@@ -54,6 +54,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	bIsHudDisabled = false;
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
 	bUseControllerRotationPitch = false;
@@ -139,7 +140,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	{
 		GIFTutorialWidgetClass = Class;
 	}, EAssertionLevel::Check);
-	
+
 	FIGConstructorHelper::FindObjectAndInitialize<UAnimMontage>(TEXT("/Script/Engine.AnimMontage'/Game/_GorillaJiphyunjeon/SkeletalMesh/Character/Main/Animaion/AM_PlayerAttack.AM_PlayerAttack'"), [&](UAnimMontage* Montage)
 	{
 		ComboActionMontage = Montage;
@@ -153,11 +154,10 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
 	AudioComponent->SetupAttachment(RootComponent);
-	
+
 	HealCount = 0;
 	bIsFirstGetHealKit = false;
 	bIsFirstMeetBoss = false;
-
 
 
 }
@@ -236,6 +236,11 @@ void AIGPlayerCharacter::BeginPlay()
 		for (int i = 0; i < Shinmyophil->GetQuestArray().Num(); i++)
 		{
 			HudWidget->InitQuestList(Shinmyophil->GetQuestArray()[i]);
+		}
+
+		if (bIsHudDisabled)
+		{
+			HudWidget->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 	UIGGameInstance* GameInstance = Cast<UIGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
@@ -432,10 +437,10 @@ float AIGPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	if (Boss)
 	{
 		EAttackPattern CurGimmick = Boss->GetCurrentGimmick();
-		
+
 		if ((ActivatedCrystal == ECrystal::Mountain && CurGimmick == EAttackPattern::Close) ||
-		(ActivatedCrystal == ECrystal::Wave && CurGimmick == EAttackPattern::Far) ||
-		(ActivatedCrystal == ECrystal::Tree && CurGimmick == EAttackPattern::Floor)
+			(ActivatedCrystal == ECrystal::Wave && CurGimmick == EAttackPattern::Far) ||
+			(ActivatedCrystal == ECrystal::Tree && CurGimmick == EAttackPattern::Floor)
 		)
 		{
 			return 0.f;
@@ -907,7 +912,7 @@ void AIGPlayerCharacter::ManageCrystalActivationByTime()
 	constexpr float Duration = 3.f;
 	const float DeltaTime = GWorld->DeltaTimeSeconds;
 	ElapsedCrystalActivationTime += DeltaTime;
-	
+
 
 	if (ElapsedCrystalActivationTime >= Duration)
 	{
@@ -963,11 +968,11 @@ void AIGPlayerCharacter::TutorialWidgetVisible()
 	{
 		if (TutorialWidget->GetVisibility() == ESlateVisibility::Hidden)
 		{
-			TutorialWidget->VisibleTutorialWidget();			
+			TutorialWidget->VisibleTutorialWidget();
 		}
-		else if(TutorialWidget->GetVisibility() == ESlateVisibility::Visible)
+		else if (TutorialWidget->GetVisibility() == ESlateVisibility::Visible)
 		{
-			TutorialWidget->CloseTutorialWidget();			
+			TutorialWidget->CloseTutorialWidget();
 		}
 	}
 }
@@ -1042,7 +1047,21 @@ void AIGPlayerCharacter::PlayFadeOutSequence()
 void AIGPlayerCharacter::DisableHUD()
 {
 	DisableInput(PlayerController);
-	HudWidget->SetVisibility(ESlateVisibility::Hidden);
+	bIsHudDisabled = true;
+	if (HudWidget)
+	{
+		HudWidget->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void AIGPlayerCharacter::EnableHUD()
+{
+	EnableInput(PlayerController);
+	bIsHudDisabled = false;
+	if (HudWidget)
+	{
+		HudWidget->SetVisibility(ESlateVisibility::Visible);
+	}
 }
 
 float AIGPlayerCharacter::ComputeDamage()
@@ -1057,7 +1076,7 @@ void AIGPlayerCharacter::UpdateShinmyophilScript(const FString InText)
 
 void AIGPlayerCharacter::AddHealKit()
 {
-	if(!bIsFirstGetHealKit)
+	if (!bIsFirstGetHealKit)
 	{
 		bIsFirstGetHealKit = true;
 		ShowFirstHealKitGIFTutorial();
@@ -1071,10 +1090,10 @@ void AIGPlayerCharacter::AddHealKit()
 
 void AIGPlayerCharacter::SetVillageBGM()
 {
-		AudioComponent->Stop();
-		CurrentBGM = SoundDataAsset->BGMVillageSoundCue;
-		AudioComponent = UGameplayStatics::SpawnSound2D(this, CurrentBGM);
-		AudioComponent->Play();
+	AudioComponent->Stop();
+	CurrentBGM = SoundDataAsset->BGMVillageSoundCue;
+	AudioComponent = UGameplayStatics::SpawnSound2D(this, CurrentBGM);
+	AudioComponent->Play();
 }
 
 void AIGPlayerCharacter::SetBossBGM()
@@ -1099,11 +1118,11 @@ void AIGPlayerCharacter::ShowFirstCrystalGIFTutorial()
 
 void AIGPlayerCharacter::ShowFirstBossGIFTutorial()
 {
-	if(bIsFirstMeetBoss)
+	if (bIsFirstMeetBoss)
 	{
 		return;
 	}
-	
+
 	GIFTutorialWidget->VisibleGIFTutorialWidget();
 	GIFTutorialWidget->PreSetByFirstBoss();
 	bIsFirstMeetBoss = true;

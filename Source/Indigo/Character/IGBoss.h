@@ -45,6 +45,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	void WaitForEnterSequence();
 	virtual void Tick(float DeltaSeconds) override;
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	void MoveToMainLobbyOnFinishPlayingEndSequence();
@@ -60,10 +61,16 @@ protected:
 
 private:
 	ALevelSequenceActor* OutActor;
+
+	UPROPERTY(EditAnywhere)
+	ULevelSequencePlayer* LevelSequenceOnEnterPlayer;
 	
 	UPROPERTY(EditAnywhere)
-	ULevelSequencePlayer* LevelSequencePlayer;
+	ULevelSequencePlayer* LevelSequenceOnDiedPlayer;
 
+	UPROPERTY(EditAnywhere)
+	ULevelSequence* LevelSequenceOnEnter;
+	
 	UPROPERTY(EditAnywhere)
 	ULevelSequence* LevelSequenceOnDied;
 
