@@ -17,6 +17,7 @@
 #include "Indigo/Animation/IGWispAnimInstance.h"
 #include "Indigo/Interactable/IGHealKit.h"
 #include "Indigo/DataAsset/IGSoundDataAsset.h"
+#include "Indigo/DataAsset/IGWispDataAsset.h"
 #include "Sound/SoundCue.h"
 #include "NiagaraComponent.h"
 
@@ -38,16 +39,18 @@ AIGHintMonsterBase::AIGHintMonsterBase()
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Monster"));
 	RootComponent = GetCapsuleComponent();
 
-	
+	WispDataAsset = FIGConstructorHelper::FindAndGetObject<UIGWispDataAsset>(TEXT("/Script/Indigo.IGWispDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_WispData.DA_WispData'"));
 	
 	AIControllerClass = AIGWispAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-	GetCharacterMovement()->MaxWalkSpeed = 200.f;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	bUseControllerRotationYaw = false;
 
 	SoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
 		
+
+	GetCharacterMovement()->MaxWalkSpeed = WispDataAsset->Speed;
+
 	bIsHit = false;
 	bIsAttack = false;
 	bIsDelay = false;
@@ -68,7 +71,16 @@ void AIGHintMonsterBase::BeginPlay()
 {
 	Super::BeginPlay();	
 	
-	AIGEnemyBase::SetHp(30);
+	Wisp_MaxHp = WispDataAsset->MaxHp;
+	
+	BombDamage = WispDataAsset->BombDamage;
+	DashDamage = WispDataAsset->DashDamage;
+
+	CrystalPercent = WispDataAsset->CrystalPercent;
+	HealKitPercent = WispDataAsset->HealkitPercent;
+
+
+	AIGEnemyBase::SetHp(Wisp_MaxHp);
 	SpawnPos = GetActorLocation();
 
 	AnimInstance = CastChecked<UIGWispAnimInstance>(GetMesh()->GetAnimInstance());
@@ -115,7 +127,7 @@ void AIGHintMonsterBase::Tick(float DeltaTime)
 			if (Player != nullptr)
 			{
 				FDamageEvent DamageEvent;
-				Player->TakeDamage(5.f, DamageEvent, GetInstigatorController(), this);
+				Player->TakeDamage(DashDamage, DamageEvent, GetInstigatorController(), this);
 				bIsAttack = false;
 				bIsRetreating = true;
 				RetreatStartLocation = GetActorLocation();
@@ -151,9 +163,9 @@ void AIGHintMonsterBase::Tick(float DeltaTime)
 
 void AIGHintMonsterBase::DropCrystal()
 {
-	const int8 DropPercent = FMath::RandRange(1,10);
+	const int8 DropPercent = FMath::RandRange(1,100);
 	
-	if(DropPercent <= 3)
+	if(DropPercent <= CrystalPercent)
 	{	
 		if(CrystalType == ECrystal::Mountain)
 		{
@@ -168,10 +180,15 @@ void AIGHintMonsterBase::DropCrystal()
 			AIGWaveCrystal* WaveCrystal = GetWorld()->SpawnActor<AIGWaveCrystal>(GetActorTransform().GetLocation(), FRotator::ZeroRotator);					
 		}
 	}
-	else if(DropPercent <= 8)
+	else if (HealKitPercent + CrystalPercent <= 100)
 	{
-		AIGHealKit* HealKit = GetWorld()->SpawnActor<AIGHealKit>(GetActorTransform().GetLocation(), FRotator::ZeroRotator);
+		if (DropPercent <= HealKitPercent + CrystalPercent)
+		{
+			AIGHealKit* HealKit = GetWorld()->SpawnActor<AIGHealKit>(GetActorTransform().GetLocation(), FRotator::ZeroRotator);
+		}
 	}
+
+	
 
 	this->SetActorEnableCollision(false);
 	this->SetActorHiddenInGame(true);	
@@ -217,7 +234,7 @@ void AIGHintMonsterBase::PendRespawn()
 		SetActorLocation(SpawnPos);
 		this->SetActorEnableCollision(true);
 		this->SetActorHiddenInGame(false);
-		AIGEnemyBase::SetHp(30);
+		AIGEnemyBase::SetHp(Wisp_MaxHp);
 		bIsDead = false;
 		AttackSpeed = 800;
 		ElapsedTime = 0.f;
@@ -277,7 +294,7 @@ void AIGHintMonsterBase::Explosion()
 		if (Player != nullptr)
 		{
 			FDamageEvent DamageEvent;
-			Player->TakeDamage(10.0f, DamageEvent, GetInstigatorController(), this);
+			Player->TakeDamage(BombDamage, DamageEvent, GetInstigatorController(), this);
 		}
 	}
 }

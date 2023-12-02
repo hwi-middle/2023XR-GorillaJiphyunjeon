@@ -13,6 +13,7 @@ class AIGProvisoWispPlace;
 class AIGWispAIController;
 class UIGWispAnimInstance;
 class UIGSoundDataAsset;
+class UIGWispDataAsset;
 class UNiagaraComponent;
 class UNiagaraSystem;
 DECLARE_MULTICAST_DELEGATE(FOnFinishWispAttackDelegate)
@@ -66,6 +67,20 @@ private:
 	float RespawnTime;
 
 	UPROPERTY()
+	float Wisp_MaxHp;
+
+	UPROPERTY()
+	float BombDamage;
+	
+	UPROPERTY()
+	float DashDamage;
+
+	UPROPERTY()
+	float CrystalPercent;
+
+	UPROPERTY()
+	float HealKitPercent;
+
 	float StoppingDistance;
 	
 	UPROPERTY()
@@ -120,5 +135,8 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UIGSoundDataAsset> SoundDataAsset;
+
+	UPROPERTY()
+	TObjectPtr<UIGWispDataAsset> WispDataAsset;
 
 };
