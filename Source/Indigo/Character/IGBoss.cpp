@@ -166,6 +166,7 @@ void AIGBoss::WaitForEnterSequence()
 	Player->SetActorEnableCollision(true);
 	Player->SetActorHiddenInGame(false);
 	Player->EnableHUD();
+	Player->GetShinmyophil()->BattleStartBattlePhase();
 }
 
 void AIGBoss::Tick(float DeltaSeconds)

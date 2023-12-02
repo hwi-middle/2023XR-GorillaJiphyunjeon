@@ -12,6 +12,7 @@ class AIGMountainCrystal;
 class AIGWaveCrystal;
 class AIGTreeCrystal;
 class AIGHintBase;
+class AIGPlayerCharacter;
 enum class EHintType : uint8;
 enum class ECrystal : uint32;
 

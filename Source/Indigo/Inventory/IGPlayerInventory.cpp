@@ -58,7 +58,7 @@ void UIGPlayerInventory::BeginPlay()
 void UIGPlayerInventory::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	AIGPlayerCharacter* PlayerCharacter = Cast<AIGPlayerCharacter>(GetOwner());
+	AIGPlayerCharacter* PlayerCharacter = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GWorld, 0));
 	if(PlayerCharacter == nullptr)
 	{
 		return;
@@ -98,8 +98,7 @@ void UIGPlayerInventory::AddCrystal(ECrystal InCrystalType)
 			break;
 	}
 	
-	
-	AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(GetOwner());	
+	AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GWorld, 0));
 	if(Player == nullptr)
 	{
 		return;
@@ -168,7 +167,7 @@ void UIGPlayerInventory::AddHint(ProvisoText* InHint)
 	{
 		if(Hint->HintType == InHint->HintType && InHint->HintType != EHintType::Blank)
 		{
-			Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGet2HintToSameProviso();					
+			Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GWorld, 0))->GetShinmyophil()->ProvisoGet2HintToSameProviso();					
 		}	
 	}
 	
@@ -178,12 +177,12 @@ void UIGPlayerInventory::AddHint(ProvisoText* InHint)
 
 	if(bIsGetFirstHint == false && InHint->HintType != EHintType::Blank)
 	{ 
-		Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGetFirstHint();
+		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GWorld, 0))->GetShinmyophil()->ProvisoGetFirstHint();
 		bIsGetFirstHint = true;
 	}
 	if(bIsGetFirstBlankHint == false && InHint->HintType == EHintType::Blank)
 	{
-		Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGetFirstBlankHint();
+		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GWorld, 0))->GetShinmyophil()->ProvisoGetFirstBlankHint();
 		bIsGetFirstBlankHint = true;
 	}
 	
@@ -198,7 +197,7 @@ void UIGPlayerInventory::AddHint(ProvisoText* InHint)
 	
 	if(MainHintCount >= 6)
 	{
-		Cast<AIGPlayerCharacter>(GetOwner())->GetShinmyophil()->ProvisoGetHint6All();
+		Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GWorld, 0))->GetShinmyophil()->ProvisoGetHint6All();
 	}	
 }
 

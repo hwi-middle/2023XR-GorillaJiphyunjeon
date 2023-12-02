@@ -154,7 +154,7 @@ AIGPlayerCharacter::AIGPlayerCharacter()
 	}, EAssertionLevel::Check);
 
 	Shinmyophil = CreateDefaultSubobject<UIGShinmyophil>(TEXT("Shinmyophil"));
-
+	
 	SoundDataAsset = LoadObject<UIGSoundDataAsset>(nullptr, TEXT("/Script/Indigo.IGSoundDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_SoundCueData.DA_SoundCueData'"), nullptr, LOAD_None, nullptr, nullptr);
 	PlayerDataAsset = FIGConstructorHelper::FindAndGetObject<UIGPlayerDataAsset>(TEXT("/Script/Indigo.IGPlayerDataAsset'/Game/_GorillaJiphyunjeon/DataAssets/DA_PlayerData.DA_PlayerData'"));
 
@@ -311,6 +311,7 @@ void AIGPlayerCharacter::BeginPlay()
 	if(!GameInstance->bIsBossRoomEnterSequenceDisplayed)
 	{
 		SetVillageBGM();	
+		Shinmyophil->ProvisoStartProvisoPhase();
 	}
 	
 	// if(UGameplayStatics::GetCurrentLevelName(GetWorld()) == FString("BOSS"))
@@ -320,7 +321,7 @@ void AIGPlayerCharacter::BeginPlay()
 	// else
 	// {
 	// 	TutorialWidget->VisibleTutorialWidget();
-	// }	
+	// }
 }
 
 void AIGPlayerCharacter::Tick(float DeltaTime)

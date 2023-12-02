@@ -8,6 +8,7 @@
 
 struct FIGScriptMasterDataTable;
 struct FIGTextMasterDataTable;
+class AIGPlayerCharacter;
 
 UENUM()
 enum class EPhaseState : uint8
@@ -186,6 +187,9 @@ private:
 
 	UPROPERTY()
 	float ScriptDelayTime;
+	
+	UPROPERTY()
+	TObjectPtr<AIGPlayerCharacter> IGPlayerCharacter;
 	
 	UPROPERTY()
 	TArray<FString> ScriptLogArray;

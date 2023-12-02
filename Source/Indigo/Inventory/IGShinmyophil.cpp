@@ -33,7 +33,7 @@ UIGShinmyophil::UIGShinmyophil()
 void UIGShinmyophil::BeginPlay()
 {
 	Super::BeginPlay();
-
+	IGPlayerCharacter = Cast<AIGPlayerCharacter>(GetOwner());
 	FIGDataTableParser::LoadAndInitializeDataTable(TEXT("/Script/Engine.DataTable'/Game/_GorillaJiphyunjeon/DataTable/ScriptMasterDataTable/Script_Master.Script_Master'"),
 		[&](const UDataTable* ScriptDataTable)
 		{
@@ -142,7 +142,6 @@ void UIGShinmyophil::OnBattlePhase()
 
 void UIGShinmyophil::PrintRelayScript(const TArray<FIGScriptMasterDataTable*> InScriptArray, const int32 InSubNum)
 {
-	AIGPlayerCharacter* IGPlayerCharacter = Cast<AIGPlayerCharacter>(GetOwner());
 	for(int32 Index = 0; Index < InScriptArray.Num(); Index++)
 	{
 		TArray<FString> TextCodeArray;
@@ -432,7 +431,7 @@ void UIGShinmyophil::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	
 	ScriptDelayTime = FMath::Clamp(ScriptDelayTime -= DeltaTime, 0.5, FLT_MAX);	
 	
-	AIGPlayerCharacter* IGPlayerCharacter = Cast<AIGPlayerCharacter>(GetOwner());
+
 	
 	if(IGPlayerCharacter == nullptr)
 	{
@@ -451,15 +450,15 @@ void UIGShinmyophil::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	}
 
 	//배틀 페이즈
-	if(CurrentPhase == EPhaseState::BattlePhase)
+	//if(CurrentPhase == EPhaseState::BattlePhase)
 	{
 		//체력 3이하일때
-		if(IGPlayerCharacter->GetHp() <= 3 && bIsHpUnder3 == false)
+		if(IGPlayerCharacter->GetHp() <= 30 && bIsHpUnder3 == false)
 		{
 			BattleRemakePlayerHpUnder3();
 			bIsHpUnder3 = true;
 		}
-		else if(IGPlayerCharacter->GetHp() > 3 && bIsHpUnder3 == true)
+		else if(IGPlayerCharacter->GetHp() > 30 && bIsHpUnder3 == true)
 		{
 			//혹시 회복될떄
 			bIsHpUnder3 = false;
