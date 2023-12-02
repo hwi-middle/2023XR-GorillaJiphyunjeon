@@ -134,9 +134,10 @@ void AIGBoss::BeginPlay()
 	if(!GameInstance->bIsBossRoomEnterSequenceDisplayed)
 	{
 		LevelSequenceOnEnterPlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), LevelSequenceOnEnter, FMovieSceneSequencePlaybackSettings(), OutActor);
+		AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0));
+		Player->SetInBossBGM();
 		this->SetActorEnableCollision(false);
 		this->SetActorHiddenInGame(true);
-		AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0));
 		Player->SetActorEnableCollision(false);
 		Player->SetActorHiddenInGame(true);
 		Player->DisableHUD();
@@ -149,14 +150,15 @@ void AIGBoss::BeginPlay()
 void AIGBoss::WaitForEnterSequence()
 {
 	if (LevelSequenceOnEnterPlayer->IsPlaying())
-	{
+	{		
 		GetWorldTimerManager().SetTimerForNextTick(this, &AIGBoss::WaitForEnterSequence);
 		return;
 	}
 
+	AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0));
 	this->SetActorEnableCollision(true);
 	this->SetActorHiddenInGame(false);
-	AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0));
+	Player->SetBossBGM();
 	Player->SetActorEnableCollision(true);
 	Player->SetActorHiddenInGame(false);
 	Player->EnableHUD();
@@ -218,6 +220,7 @@ float AIGBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 			Player->SetActorEnableCollision(false);
 			Player->SetActorHiddenInGame(true);
 			Player->DisableHUD();
+			Player->SetBossClearBGM();
 			LevelSequenceOnDiedPlayer->Play();
 			GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 			GetWorldTimerManager().SetTimerForNextTick(this, &AIGBoss::MoveToMainLobbyOnFinishPlayingEndSequence);
@@ -531,4 +534,10 @@ void AIGBoss::EndAttack()
 {
 	CurrentGimmick = EAttackPattern::None;
 	OnFinishBossAttack.Broadcast();
+}
+
+void AIGBoss::PlayInBossBGM()
+{
+	AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0));
+	Player->SetInBossBGM();
 }

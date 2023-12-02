@@ -13,12 +13,9 @@ void UIGTutotialWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	Controller = UGameplayStatics::GetPlayerController(GWorld, 0);
-	Controller->bShowMouseCursor = true;
-	Controller->bEnableMouseOverEvents = true;
-	Controller->bEnableClickEvents = true;
-	
 	ConfirmButton = Cast<UButton>(GetWidgetFromName(TEXT("Confirm")));
-	ConfirmButton->OnClicked.AddDynamic(this, &UIGTutotialWidget::CloseTutorialWidget);	
+	ConfirmButton->OnClicked.AddDynamic(this, &UIGTutotialWidget::CloseTutorialWidget);
+	CloseTutorialWidget();
 }
 
 void UIGTutotialWidget::CloseTutorialWidget()
@@ -26,7 +23,8 @@ void UIGTutotialWidget::CloseTutorialWidget()
 	SetVisibility(ESlateVisibility::Hidden);
 	Controller->bShowMouseCursor = false;
 	Controller->bEnableMouseOverEvents = false;
-	Controller->bEnableClickEvents = false;
+	Controller->bEnableClickEvents = false;	
+	Controller->SetInputMode(FInputModeGameOnly());
 	UGameplayStatics::SetGamePaused(GWorld, false);
 }
 
@@ -36,6 +34,7 @@ void UIGTutotialWidget::VisibleTutorialWidget()
 	Controller->bShowMouseCursor = true;
 	Controller->bEnableMouseOverEvents = true;
 	Controller->bEnableClickEvents = true;
+	Controller->SetInputMode(FInputModeGameAndUI());
 	UGameplayStatics::SetGamePaused(GWorld, true);
 }
 

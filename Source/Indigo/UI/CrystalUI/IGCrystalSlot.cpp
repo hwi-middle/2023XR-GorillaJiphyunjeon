@@ -42,7 +42,7 @@ void UIGCrystalSlot::AddCrystal(AIGCrystalBase* InCrystal)
 	if(Cast<AIGMountainCrystal>(InCrystal) != nullptr)
 	{
 		CrystalFragCount++;
-		CrystalCount->SetText(FText::AsNumber(CrystalFragCount));
+		CrystalCount->SetText(FText::AsNumber(1));
 		if(CrystalFragCount >= 3)
 		{
 			CrystalSlot[0]->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f));
@@ -51,7 +51,7 @@ void UIGCrystalSlot::AddCrystal(AIGCrystalBase* InCrystal)
 	else if(Cast<AIGWaveCrystal>(InCrystal) != nullptr)
 	{
 		CrystalFragCount++;
-		CrystalCount->SetText(FText::AsNumber(CrystalFragCount));
+		CrystalCount->SetText(FText::AsNumber(3));
 		if(CrystalFragCount >= 3)
 		{
 			CrystalSlot[1]->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f));
@@ -60,7 +60,7 @@ void UIGCrystalSlot::AddCrystal(AIGCrystalBase* InCrystal)
 	else if(Cast<AIGTreeCrystal>(InCrystal) != nullptr)
 	{
 		CrystalFragCount++;
-		CrystalCount->SetText(FText::AsNumber(CrystalFragCount));
+		CrystalCount->SetText(FText::AsNumber(2));
 		if(CrystalFragCount >= 3)
 		{
 			CrystalSlot[2]->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f));
@@ -86,23 +86,25 @@ void UIGCrystalSlot::SetCrystalType(const ECrystal InCrystalType)
 	switch (InCrystalType)
 	{
 	case ECrystal::Mountain:
-		CrystalSlot[0] = Cast<UImage>(GetWidgetFromName(TEXT("Rock")));	
-		CrystalSlot[1] = Cast<UImage>(GetWidgetFromName(TEXT("Wave")));
-		CrystalSlot[2] = Cast<UImage>(GetWidgetFromName(TEXT("Tree")));
-
 		CrystalSlot[0]->SetColorAndOpacity(FLinearColor(0.3f, 0.3f, 0.3f));
 		CrystalSlot[1]->SetColorAndOpacity(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
 		CrystalSlot[2]->SetColorAndOpacity(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
+
+		CrystalCount->SetText(FText::AsNumber(1));
 		break;
 	case ECrystal::Wave:
 		CrystalSlot[0]->SetColorAndOpacity(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
 		CrystalSlot[1]->SetColorAndOpacity(FLinearColor(0.3f, 0.3f, 0.3f));
 		CrystalSlot[2]->SetColorAndOpacity(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
+
+		CrystalCount->SetText(FText::AsNumber(3));
 		break;
 	case ECrystal::Tree:
 		CrystalSlot[0]->SetColorAndOpacity(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
         CrystalSlot[1]->SetColorAndOpacity(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
         CrystalSlot[2]->SetColorAndOpacity(FLinearColor(0.3f, 0.3f, 0.3f));
+
+		CrystalCount->SetText(FText::AsNumber(2));
 		break;
 
 		default:

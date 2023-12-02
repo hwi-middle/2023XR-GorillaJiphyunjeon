@@ -9,6 +9,7 @@
 class UIGOptionSlide;
 class UButton;
 class UCanvasPanel;
+class UIGSaveOption;
 
 /**
  * 
@@ -27,6 +28,8 @@ public:
 	void OpenCredit();
 	UFUNCTION()
 	void OpenSliderOption();
+	UFUNCTION()
+	void SaveOptionData();
 	
 protected:
 	virtual void NativeConstruct() override;

@@ -230,5 +230,7 @@ public:
 	void GenerateFloorAttack();
 	void GenerateFarAttack();
 	void EndAttack();
+	void PlayInBossBGM();
+
 
 };

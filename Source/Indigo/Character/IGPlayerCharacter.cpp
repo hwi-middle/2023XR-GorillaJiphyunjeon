@@ -265,15 +265,6 @@ void AIGPlayerCharacter::BeginPlay()
 		}
 	}
 
-	TutorialWidget = CreateWidget<UIGTutotialWidget>(GetWorld(), TutorialWidgetClass);
-	if (TutorialWidget && !GameInstance->bIsControlTutorialDisplayed)
-	{
-		TutorialWidget->AddToViewport();
-		TutorialWidget->CloseTutorialWidget();
-		TutorialWidget->VisibleTutorialWidget();
-		GameInstance->bIsControlTutorialDisplayed = true;
-	}
-
 	GIFTutorialWidget = CreateWidget<UIGGIFTutorialWidget>(GetWorld(), GIFTutorialWidgetClass);
 	if (GIFTutorialWidget)
 	{
@@ -286,6 +277,14 @@ void AIGPlayerCharacter::BeginPlay()
 	{
 		PauseWidget->AddToViewport(20);
 		PauseWidget->ClosePause();
+	}
+
+	TutorialWidget = CreateWidget<UIGTutotialWidget>(GetWorld(), TutorialWidgetClass);
+	if (TutorialWidget && !GameInstance->bIsControlTutorialDisplayed)
+	{
+		TutorialWidget->AddToViewport();
+		TutorialWidgetVisible();
+		GameInstance->bIsControlTutorialDisplayed = true;
 	}
 
 	ManageStaminaByTime();
@@ -309,9 +308,11 @@ void AIGPlayerCharacter::BeginPlay()
 		DMI_Fade = FadeMaterial;
 		PlayFadeInSequence();
 	}
-
-	SetVillageBGM();
-
+	if(!GameInstance->bIsBossRoomEnterSequenceDisplayed)
+	{
+		SetVillageBGM();	
+	}
+	
 	// if(UGameplayStatics::GetCurrentLevelName(GetWorld()) == FString("BOSS"))
 	// {
 	// 	TutorialWidget->CloseTutorialWidget();
@@ -403,11 +404,13 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 
 	if (bIsAimingHit)
 	{
-		const AActor* HitActor = AimingHitResult.GetActor();
+		AActor* HitActor = AimingHitResult.GetActor();
 		bIsAimingProperActor = HitActor != nullptr;
+		HudWidget->AimToEnemy(HitActor);
 	}
 	else
 	{
+		HudWidget->AimToWhite();
 		bIsAimingProperActor = false;
 	}
 
@@ -416,8 +419,7 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 
 	// 바닥에 떨어지면 사망
 	if (GetActorLocation().Z <= DieZLocation)
-	{
-		UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerDeadSoundCue);
+	{		
 		if (!CheckPlayerState(EPlayerState::Dead))
 		{
 			PlayerAnimInstance->Die();
@@ -1058,8 +1060,11 @@ void AIGPlayerCharacter::UseHeal()
 void AIGPlayerCharacter::PlayDieSequence()
 {
 	constexpr float Duration = 1.f;
+	if(ElapsedDieSequenceTime == 0)
+	{
+		UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerDeadSoundCue);
+	}
 	ElapsedDieSequenceTime += GWorld->GetDeltaSeconds();
-
 	if (ElapsedDieSequenceTime >= Duration)
 	{
 		PlayFadeOutSequence();
@@ -1164,6 +1169,22 @@ void AIGPlayerCharacter::SetBossBGM()
 	AudioComponent->Play();
 }
 
+void AIGPlayerCharacter::SetInBossBGM()
+{
+	AudioComponent->Stop();
+	CurrentBGM = SoundDataAsset->BGMInBoss;
+	AudioComponent = UGameplayStatics::SpawnSound2D(this, CurrentBGM);
+	AudioComponent->Play();
+}
+
+void AIGPlayerCharacter::SetBossClearBGM()
+{
+	AudioComponent->Stop();
+	CurrentBGM = SoundDataAsset->BGMClearBoss;
+	AudioComponent = UGameplayStatics::SpawnSound2D(this, CurrentBGM);
+	AudioComponent->Play();
+}
+
 void AIGPlayerCharacter::ShowPause()
 {
 	if (PauseWidget)
@@ -1197,7 +1218,7 @@ void AIGPlayerCharacter::ShowFirstBossGIFTutorial()
 	{
 		return;
 	}
-
+	
 	GIFTutorialWidget->VisibleGIFTutorialWidget();
 	GIFTutorialWidget->PreSetByFirstBoss();
 	GameInstance->bIsBossTutorialDisplayed = true;

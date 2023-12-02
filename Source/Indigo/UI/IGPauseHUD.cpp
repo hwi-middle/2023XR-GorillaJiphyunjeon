@@ -27,6 +27,7 @@ void UIGPauseHUD::ClosePause()
 	Controller->bShowMouseCursor = false;
 	Controller->bEnableMouseOverEvents = false;
 	Controller->bEnableClickEvents = false;
+	Controller->SetInputMode(FInputModeGameOnly());
 	OptionWidget->SetVisibility(ESlateVisibility::Hidden);
 	UGameplayStatics::SetGamePaused(this, false);
 }
@@ -37,6 +38,7 @@ void UIGPauseHUD::OpenPause()
 	Controller->bShowMouseCursor = true;
 	Controller->bEnableMouseOverEvents = true;
 	Controller->bEnableClickEvents = true;
+	Controller->SetInputMode(FInputModeGameAndUI());
 	UGameplayStatics::SetGamePaused(this, true);
 }
 
@@ -45,9 +47,6 @@ void UIGPauseHUD::NativeConstruct()
 	Super::NativeConstruct();
 
 	Controller = UGameplayStatics::GetPlayerController(GWorld, 0);
-	Controller->bShowMouseCursor = true;
-	Controller->bEnableMouseOverEvents = true;
-	Controller->bEnableClickEvents = true;
 	
 	OptionWidget = Cast<UIGOptionWidget>(GetWidgetFromName(TEXT("Option")));
 	OptionButton = Cast<UButton>(GetWidgetFromName(TEXT("ShowOption")));

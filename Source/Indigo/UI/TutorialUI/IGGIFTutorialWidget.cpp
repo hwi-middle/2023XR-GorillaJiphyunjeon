@@ -22,9 +22,6 @@ void UIGGIFTutorialWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	Controller = UGameplayStatics::GetPlayerController(GWorld, 0);
-    Controller->bShowMouseCursor = true;
-    Controller->bEnableMouseOverEvents = true;
-    Controller->bEnableClickEvents = true;
 
 	GIFTutorialCanvas = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("Canvas")));
 	ConfirmButton = Cast<UButton>(GetWidgetFromName(TEXT("Confirm")));
@@ -48,6 +45,7 @@ void UIGGIFTutorialWidget::CloseGIFTutorialWidget()
 	Controller->bShowMouseCursor = false;
 	Controller->bEnableMouseOverEvents = false;
 	Controller->bEnableClickEvents = false;
+	Controller->SetInputMode(FInputModeGameOnly());
 	UGameplayStatics::SetGamePaused(GWorld, false);
 }
 
@@ -56,7 +54,8 @@ void UIGGIFTutorialWidget::VisibleGIFTutorialWidget()
 	SetVisibility(ESlateVisibility::Visible);
 	Controller->bShowMouseCursor = true;
 	Controller->bEnableMouseOverEvents = true;
-	Controller->bEnableClickEvents = true;	
+	Controller->bEnableClickEvents = true;
+	Controller->SetInputMode(FInputModeUIOnly());
 	UGameplayStatics::SetGamePaused(GWorld, true);
 }
 

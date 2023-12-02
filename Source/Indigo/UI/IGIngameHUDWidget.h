@@ -16,6 +16,7 @@ class UQuest;
 class UIGHealKits;
 class UIGShinmyophilText;
 class UIGCrystalSlot;
+class UImage;
 /**
  * 
  */
@@ -34,7 +35,9 @@ public:
 	void UpdateShinmyophilText(const FString& Str) const;
 	void AddCrystal(AIGCrystalBase* InCrystal) const;
 	void SetHealKit(const int32 InValue) const;
-
+	void AimToEnemy(AActor* InActor);
+	void AimToWhite();
+	
 	FORCEINLINE FString GetShinmyophilText() const { return ShinmyophilText->GetText();}
 	void MountainCrystalCooltime(const float InDuraiontime);
 	void WaveCrystalCooltime(const float InDuraiontime);
@@ -70,4 +73,7 @@ protected:
 	
 	UPROPERTY()
 	TObjectPtr<UIGHealKits> HealKit;
+	
+	UPROPERTY()
+	TObjectPtr<UImage> AimImage;
 };
