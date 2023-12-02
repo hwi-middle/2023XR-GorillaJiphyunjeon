@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Indigo/IGGameInstance.h"
+#include "Indigo/Interactable/IGCrystalBase.h"
 #include "Indigo/Interface/IGCharacterStatus.h"
 #include "IGPlayerCharacter.generated.h"
 
@@ -284,6 +285,7 @@ private:
 	float ComputeDamage();
 
 public:
+	void AddCrystal(AIGCrystalBase* InCrystal);
 	void PlayFadeOutSequence();
 	void DisableHUD();
 	void EnableHUD();

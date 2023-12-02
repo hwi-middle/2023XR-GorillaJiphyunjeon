@@ -11,24 +11,28 @@
 // Sets default values
 AIGHealKit::AIGHealKit()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/Monster_iteam/SM_Gourd_bottle.SM_Gourd_bottle'"), [&](UStaticMesh* MeshRef)
-{
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	Mesh->SetStaticMesh(MeshRef);
-	Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
-	RootComponent = Mesh;
-}, EAssertionLevel::Check);
-	
+	{
+		Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+		Mesh->SetStaticMesh(MeshRef);
+		// Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
+		RootComponent = Mesh;
+		Mesh->SetSimulatePhysics(true);
+		Mesh->BodyInstance.bLockXRotation = true;
+		Mesh->BodyInstance.bLockYRotation = true;
+		Mesh->BodyInstance.bLockZRotation = true;
+	}, EAssertionLevel::Check);
+
 }
 
 // Called when the game starts or when spawned
 void AIGHealKit::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
@@ -77,7 +81,6 @@ void AIGHealKit::Tick(float DeltaTime)
 		Player->AddHealKit();
 		Destroy();
 	}
-	
+
 
 }
-

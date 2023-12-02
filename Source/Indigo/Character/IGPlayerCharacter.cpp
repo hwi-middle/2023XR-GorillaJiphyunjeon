@@ -593,7 +593,7 @@ void AIGPlayerCharacter::Interact()
 	}
 
 	IInteractable* Interactable = Cast<IInteractable>(Result.GetActor());
-	AIGCrystalBase* Crystal = Cast<AIGCrystalBase>(Result.GetActor());
+	// AIGCrystalBase* Crystal = Cast<AIGCrystalBase>(Result.GetActor());
 
 	if (Interactable == nullptr)
 	{
@@ -602,12 +602,19 @@ void AIGPlayerCharacter::Interact()
 
 	Interactable->Interact();
 
-	if (Crystal != nullptr)
-	{
-		UGameplayStatics::PlaySound2D(this, SoundDataAsset->ObjectGetCrystalSoundCue);
-		GameInstance->PlayerInventory->AddCrystal(Crystal->GetCrystalType());
-		HudWidget->AddCrystal(Crystal);
-	}
+	// if (Crystal != nullptr)
+	// {
+	// 	UGameplayStatics::PlaySound2D(this, SoundDataAsset->ObjectGetCrystalSoundCue);
+	// 	GameInstance->PlayerInventory->AddCrystal(Crystal->GetCrystalType());
+	// 	HudWidget->AddCrystal(Crystal);
+	// }
+}
+
+void AIGPlayerCharacter::AddCrystal(AIGCrystalBase* InCrystal)
+{
+	UGameplayStatics::PlaySound2D(this, SoundDataAsset->ObjectGetCrystalSoundCue);
+	GameInstance->PlayerInventory->AddCrystal(InCrystal->GetCrystalType());
+	HudWidget->AddCrystal(InCrystal);
 }
 
 void AIGPlayerCharacter::Attack()
