@@ -20,7 +20,7 @@ AIGCrystalBase::AIGCrystalBase(FString InPath, FName InName)
 	bIsTaken = false;
 
 
-	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/SampleSphere/SM_SampleSphere.SM_SampleSphere'"), [&](UStaticMesh* MeshRef)
+	FIGConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/_GorillaJiphyunjeon/StaticMesh/Monster_iteam/SM_magatama.SM_magatama'"), [&](UStaticMesh* MeshRef)
 	{
 		Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 		Mesh->SetStaticMesh(MeshRef);
