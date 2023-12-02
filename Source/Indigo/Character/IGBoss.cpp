@@ -131,10 +131,10 @@ void AIGBoss::BeginPlay()
 
 	// 보스방 입장 컷씬 재생
 	UIGGameInstance* GameInstance = Cast<UIGGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0));
 	if(!GameInstance->bIsBossRoomEnterSequenceDisplayed)
 	{
 		LevelSequenceOnEnterPlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), LevelSequenceOnEnter, FMovieSceneSequencePlaybackSettings(), OutActor);
-		AIGPlayerCharacter* Player = Cast<AIGPlayerCharacter>(UGameplayStatics::GetPlayerPawn(GWorld, 0));
 		Player->SetInBossBGM();
 		this->SetActorEnableCollision(false);
 		this->SetActorHiddenInGame(true);
@@ -144,6 +144,10 @@ void AIGBoss::BeginPlay()
 		LevelSequenceOnEnterPlayer->Play();
 		GetWorldTimerManager().SetTimerForNextTick(this, &AIGBoss::WaitForEnterSequence);
 		GameInstance->bIsBossRoomEnterSequenceDisplayed = true;
+	}
+	else
+	{
+		Player->SetBossBGM();
 	}
 }
 
