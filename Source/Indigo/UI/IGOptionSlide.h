@@ -32,7 +32,7 @@ class INDIGO_API UIGOptionSlide : public UUserWidget
 public:
 	UIGOptionSlide(const FObjectInitializer& ObjectInitializer);
 
-	FORCEINLINE void SetSliderType(const ESliderType InType);
+	void SetSliderType(const ESliderType InType);
 
 	UFUNCTION(BlueprintCallable)
 	void SetBGM(const float InValue);
