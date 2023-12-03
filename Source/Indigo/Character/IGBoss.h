@@ -91,7 +91,7 @@ private:
 	TObjectPtr<UIGBossDataAsset> BossDataAsset;
 
 	// 기믹 데이터
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	TEnumAsByte<EAttackPattern> CurrentGimmick;
 
 	UPROPERTY(VisibleAnywhere)

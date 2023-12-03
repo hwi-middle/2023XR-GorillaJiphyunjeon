@@ -308,12 +308,12 @@ void AIGPlayerCharacter::BeginPlay()
 		DMI_Fade = FadeMaterial;
 		PlayFadeInSequence();
 	}
-	if(!GameInstance->bIsBossRoomEnterSequenceDisplayed)
+	if (!GameInstance->bIsBossRoomEnterSequenceDisplayed)
 	{
 		SetVillageBGM();	
 		Shinmyophil->ProvisoStartProvisoPhase();
 	}
-	
+
 	// if(UGameplayStatics::GetCurrentLevelName(GetWorld()) == FString("BOSS"))
 	// {
 	// 	TutorialWidget->CloseTutorialWidget();
@@ -420,7 +420,7 @@ void AIGPlayerCharacter::Tick(float DeltaTime)
 
 	// 바닥에 떨어지면 사망
 	if (GetActorLocation().Z <= DieZLocation)
-	{		
+	{
 		if (!CheckPlayerState(EPlayerState::Dead))
 		{
 			PlayerAnimInstance->Die();
@@ -465,18 +465,68 @@ float AIGPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 {
 	//UE_LOG(LogTemp, Log, TEXT("플레이어 TakeDamage"));
 
-	AIGBoss* Boss = Cast<AIGBoss>(DamageCauser);
-	if (Boss)
+
+	TArray<AActor*> BossArr;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AIGBoss::StaticClass(), BossArr);
+
+	if (!BossArr.IsEmpty())
 	{
+		AIGBoss* Boss = Cast<AIGBoss>(BossArr[0]);
 		EAttackPattern CurGimmick = Boss->GetCurrentGimmick();
 
-		if ((ActivatedCrystal == ECrystal::Mountain && CurGimmick == EAttackPattern::Close) ||
-			(ActivatedCrystal == ECrystal::Wave && CurGimmick == EAttackPattern::Far) ||
-			(ActivatedCrystal == ECrystal::Tree && CurGimmick == EAttackPattern::Floor)
-		)
+		if (ActivatedCrystal == ECrystal::Mountain && CurGimmick == EAttackPattern::Close)
 		{
+			UE_LOG(LogTemp, Log, TEXT("근접공격 - 산 무효화"));
 			return 0.f;
 		}
+		if (ActivatedCrystal == ECrystal::Wave && CurGimmick == EAttackPattern::Far)
+		{
+			UE_LOG(LogTemp, Log, TEXT("원거리공격 - 물결 무효화"));
+			return 0.f;
+		}
+		if (ActivatedCrystal == ECrystal::Tree && CurGimmick == EAttackPattern::Floor)
+		{
+			UE_LOG(LogTemp, Log, TEXT("장판공격 - 나무 무효화"));
+			return 0.f;
+		}
+
+
+		UE_LOG(LogTemp, Log, TEXT("무효화 실패"));
+		switch (ActivatedCrystal)
+		{
+		case ECrystal::Mountain:
+			UE_LOG(LogTemp, Log, TEXT("현재 활성화: 산"));
+			break;
+		case ECrystal::Wave:
+			UE_LOG(LogTemp, Log, TEXT("현재 활성화: 물결"));
+			break;
+		case ECrystal::Tree:
+			UE_LOG(LogTemp, Log, TEXT("현재 활성화: 나무"));
+			break;
+		default:
+			UE_LOG(LogTemp, Log, TEXT("현재 활성화: 없음"));
+			break;
+		}
+
+		switch (CurGimmick)
+		{
+		case EAttackPattern::Close:
+			UE_LOG(LogTemp, Log, TEXT("현재 기믹: 근거리"));
+			break;
+		case EAttackPattern::Floor:
+			UE_LOG(LogTemp, Log, TEXT("현재 기믹: 장판"));
+			break;
+		case EAttackPattern::Far:
+			UE_LOG(LogTemp, Log, TEXT("현재 기믹: 원거리"));
+			break;
+		default:
+			UE_LOG(LogTemp, Log, TEXT("현재 기믹: 그 외"));
+			break;
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("Boss Not Found"));
 	}
 
 
@@ -1068,7 +1118,7 @@ void AIGPlayerCharacter::UseHeal()
 void AIGPlayerCharacter::PlayDieSequence()
 {
 	constexpr float Duration = 1.f;
-	if(ElapsedDieSequenceTime == 0)
+	if (ElapsedDieSequenceTime == 0)
 	{
 		UGameplayStatics::PlaySound2D(this, SoundDataAsset->PlayerDeadSoundCue);
 	}
@@ -1226,7 +1276,7 @@ void AIGPlayerCharacter::ShowFirstBossGIFTutorial()
 	{
 		return;
 	}
-	
+
 	GIFTutorialWidget->VisibleGIFTutorialWidget();
 	GIFTutorialWidget->PreSetByFirstBoss();
 	GameInstance->bIsBossTutorialDisplayed = true;

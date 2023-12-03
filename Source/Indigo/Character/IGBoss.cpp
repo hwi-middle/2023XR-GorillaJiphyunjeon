@@ -537,7 +537,6 @@ void AIGBoss::GenerateFarAttack()
 
 void AIGBoss::EndAttack()
 {
-	CurrentGimmick = EAttackPattern::None;
 	OnFinishBossAttack.Broadcast();
 }
 
